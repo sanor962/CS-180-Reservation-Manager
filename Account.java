@@ -1,0 +1,118 @@
+/**
+ * Account - class that manages the information in the account
+ *
+ * @author Saanvi Verma
+ * @version 11/5/2025
+ */
+
+public class Account implements AccountInterface {
+    private String firstName;
+    private String lastName;
+    private int age;
+    private String userName;
+    private String password;
+    private String email;
+    private String phoneNumber;
+    private String ID;
+
+    //Constructor
+    public Account(String firstName, String lastName, int age, String userName, String password, String email, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.userName = userName;
+        this.password = password;
+        this.email = email;
+        /*int charAt = 0;
+        while (Integer.parseInt(phoneNumber) / 1 != Integer.parseInt(phoneNumber)) {
+            if (Character.isDigit(phoneNumber.charAt(charAt))) {
+                phoneNumber = phoneNumber.replaceAll("" + phoneNumber.charAt(charAt), "");
+            }
+        }*/
+        this.phoneNumber = phoneNumber;
+    }
+
+    //Getter Methods
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUserID() {
+        return ID;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    //Setter Methods
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    //Creating a specialized ID per account
+    public String createID() {
+        String firstName1 = firstName.toUpperCase();
+        String result = firstName1.charAt(1) + "" + firstName1.charAt((firstName1.length() - 2));
+        String lastName1 = lastName.toUpperCase();
+        result = (lastName1.charAt(0) + "" + lastName1.charAt(2)).concat(result);
+        result = result.concat("-" + phoneNumber.substring(6, 10));
+        result = result.replaceAll("6", "");
+        result = result.replaceAll("7", "");
+        setID(result);
+        return result;
+    }
+
+    //To write the account in the file
+    public String toString() {
+        return getUserID() + "," + getUserName() + "," + getPassword() + "," + getEmail();
+    }
+
+    //Comparing different usernames
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Account)) {
+            return false;
+        }
+        Account other = (Account) obj;
+        return (this.getUserID().equals(other.getUserID()));
+    }
+}
