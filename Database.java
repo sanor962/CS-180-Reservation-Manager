@@ -47,6 +47,7 @@ public class Database {
         }
     }
 
+    //Creating each account
     public boolean createAccount(String firstName, String lastName, int age, String userName, String password, String email, String phoneNumber) {
         synchronized (accountO) {
             //Making sure the username doesn't exist
@@ -82,6 +83,7 @@ public class Database {
         }
     }
 
+    //Logging into your account
     public boolean loginIntoAccount(String username, String password) {
         synchronized (accountO) {
             ArrayList<String> lines = new ArrayList<>();
@@ -112,7 +114,8 @@ public class Database {
         }
     }
 
-    public boolean deleteUser(String accountID, String userName, String password) {
+    //Deleting your account
+    public boolean deleteAccount(String accountID, String userName, String password) {
         synchronized (accountO) {
             ArrayList<String> lines = new ArrayList<>();
             try (BufferedReader brA = new BufferedReader(new FileReader(fileA))) {
@@ -160,6 +163,7 @@ public class Database {
         }
     }
 
+    //Getting your account from the file
     public Account getAccount(String accountID, String password) {
         synchronized (accountO) {
             ArrayList<String> lines = new ArrayList<>();
@@ -174,9 +178,9 @@ public class Database {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            
+
             for (int i = 0; i < lines.size(); i++) {
-                Account account = Account.fromFile(lines.get(i));
+                Account account = new Account(lines.get(i));
                 if (account.getUserID().equals(accountID) && account.getPassword().equals(password)) {
                     return account;
                 }
