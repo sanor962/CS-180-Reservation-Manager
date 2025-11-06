@@ -32,6 +32,18 @@ public class Account implements AccountInterface {
         this.phoneNumber = phoneNumber;
     }
 
+    //Constructor that takes in from the line from the file
+    public Account(String line) {
+        String[] partOfAccount = line.split(",");
+        this.firstName = partOfAccount[0];
+        this.lastName = partOfAccount[1];
+        this.age = Integer.parseInt(partOfAccount[2]);
+        this.userName = partOfAccount[3];
+        this.password = partOfAccount[4];
+        this.email = partOfAccount[5];
+        this.phoneNumber = partOfAccount[6];
+    }
+
     //Getter Methods
     public String getFirstName() {
         return firstName;
@@ -101,11 +113,11 @@ public class Account implements AccountInterface {
 
     //To write the account in the file
     public String toString() {
-        return getUserID() + "," + getUserName() + "," + getPassword() + "," + getEmail();
+        //return getUserID() + "," + getUserName() + "," + getPassword() + "," + getEmail();
+        return getFirstName() + "," + getLastName() + "," + getAge() + "," + getUserName() + "," + getPassword() + "," + getEmail() + "," + getPhoneNumber() + "," + getUserID();
     }
 
-    //Comparing different usernames
-    public boolean equals(Object obj) {
+    /*public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -114,5 +126,5 @@ public class Account implements AccountInterface {
         }
         Account other = (Account) obj;
         return (this.getUserID().equals(other.getUserID()));
-    }
+    }*/
 }
