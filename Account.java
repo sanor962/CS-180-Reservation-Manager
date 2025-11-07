@@ -23,12 +23,6 @@ public class Account implements AccountInterface {
         this.userName = userName;
         this.password = password;
         this.email = email;
-        /*int charAt = 0;
-        while (Integer.parseInt(phoneNumber) / 1 != Integer.parseInt(phoneNumber)) {
-            if (Character.isDigit(phoneNumber.charAt(charAt))) {
-                phoneNumber = phoneNumber.replaceAll("" + phoneNumber.charAt(charAt), "");
-            }
-        }*/
         this.phoneNumber = phoneNumber;
     }
 
@@ -113,18 +107,6 @@ public class Account implements AccountInterface {
 
     //To write the account in the file
     public String toString() {
-        //return getUserID() + "," + getUserName() + "," + getPassword() + "," + getEmail();
         return getFirstName() + "," + getLastName() + "," + getAge() + "," + getUserName() + "," + getPassword() + "," + getEmail() + "," + getPhoneNumber() + "," + getID();
     }
-
-    /*public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof Account)) {
-            return false;
-        }
-        Account other = (Account) obj;
-        return (this.getUserID().equals(other.getUserID()));
-    }*/
 }
