@@ -18,6 +18,7 @@ public class Reservations implements ReservationsInterface, Serializable {
     private String time;
     private double totalPrice;
 
+    // Constructor
     public Reservations(String reservationID, String userID, String showID, List<String> seatIDs, String date, String time, double totalPrice) {
         this.reservationID = reservationID;
         this.userID = userID;
@@ -28,6 +29,7 @@ public class Reservations implements ReservationsInterface, Serializable {
         this.totalPrice = totalPrice;
     }
 
+    //Getter Methods
     public String getReservationID() {
         return reservationID;
     }
@@ -59,6 +61,7 @@ public class Reservations implements ReservationsInterface, Serializable {
         return totalPrice;
     }
 
+    //Setter Methods
     public void setUserID(String userID) {
         this.userID = userID;
     }
@@ -86,6 +89,7 @@ public class Reservations implements ReservationsInterface, Serializable {
         this.totalPrice = totalPrice;
     }
 
+    //toString
     @Override
     public String toString() {
         return "Reservation{" +
