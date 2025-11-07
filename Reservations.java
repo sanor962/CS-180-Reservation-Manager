@@ -39,6 +39,7 @@ public class Reservations implements ReservationsInterface, Serializable {
         this.userID = partOfReservation[1];
         this.showID = partOfReservation[2];
         this.seatIDs = Arrays.asList(partOfReservation[3].split("\\|"));
+        this.numSeats = seatIDs.size();
         this.date = partOfReservation[4];
         this.time = partOfReservation[5];
         this.totalPrice = Double.parseDouble(partOfReservation[6]);
