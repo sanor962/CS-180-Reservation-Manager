@@ -207,7 +207,7 @@ public class Database {
 
         //Creating a reservation and adding it into the reservations file
         Reservations reservation = new Reservations(reservationID, accountID, eventTime, availableSeats, eventDate, eventTime, totalPrice);
-        reservation.setNumSeats(seatIDs.size());
+        // reservation.setNumSeats(seatIDs.size());
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR, true))) {
             bufferedWriter.write(reservation.toString() + "\n");
         } catch (IOException e) {
