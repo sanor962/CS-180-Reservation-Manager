@@ -1,10 +1,12 @@
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Reservations - Implements a reservation with user, show, seat, and pricing details.
  *
- * @author Arav Nair
+ * @author Arav Nair and Saanvi Verma
  * @version Nov 6, 2025
  */
 
@@ -27,6 +29,18 @@ public class Reservations implements ReservationsInterface, Serializable {
         this.date = date;
         this.time = time;
         this.totalPrice = totalPrice;
+    }
+
+    //Constructor that takes in from the line from the file
+    public Reservations(String line) {
+        String[] partOfReservation= line.split(",");
+        this.reservationID = partOfReservation[0];
+        this.userID = partOfReservation[1];
+        this.showID = partOfReservation[2];
+        this.seatIDs = Arrays.asList(partOfReservation[3].split("\\|"));
+        this.date = partOfReservation[4];
+        this.time = partOfReservation[5];
+        this.totalPrice = Double.parseDouble(partOfReservation[6]);
     }
 
     //Getter Methods
