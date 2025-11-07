@@ -5,7 +5,7 @@
  * @version 11/5/2025
  */
 
-public class Account implements AccountInterface {
+public class Account implements AccountInterface, Serializable {
     private String firstName;
     private String lastName;
     private int age;
