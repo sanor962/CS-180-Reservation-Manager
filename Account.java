@@ -2,10 +2,10 @@
  * Account - class that manages the information in the account
  *
  * @author Saanvi Verma
- * @version 11/5/2025
+ * @version November 5, 2025
  */
 
-public class Account implements AccountInterface, Serializable {
+public class Account implements AccountInterface {
     private String firstName;
     private String lastName;
     private int age;
@@ -65,7 +65,7 @@ public class Account implements AccountInterface, Serializable {
         return password;
     }
 
-    public String getUserID() {
+    public String getID() {
         return ID;
     }
 
@@ -114,7 +114,7 @@ public class Account implements AccountInterface, Serializable {
     //To write the account in the file
     public String toString() {
         //return getUserID() + "," + getUserName() + "," + getPassword() + "," + getEmail();
-        return getFirstName() + "," + getLastName() + "," + getAge() + "," + getUserName() + "," + getPassword() + "," + getEmail() + "," + getPhoneNumber() + "," + getUserID();
+        return getFirstName() + "," + getLastName() + "," + getAge() + "," + getUserName() + "," + getPassword() + "," + getEmail() + "," + getPhoneNumber() + "," + getID();
     }
 
     /*public boolean equals(Object obj) {
