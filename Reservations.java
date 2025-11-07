@@ -24,6 +24,7 @@ public class Reservations implements ReservationsInterface, Serializable {
         this.userID = userID;
         this.showID = showID;
         this.seatIDs = seatIDs;
+        this.numSeats = seatIDs.size(); //sync numSeats with size of seatIDs arraylsit
         this.date = date;
         this.time = time;
         this.totalPrice = totalPrice;
@@ -71,10 +72,7 @@ public class Reservations implements ReservationsInterface, Serializable {
 
     public void setSeatIDs(List<String> seatIDs) {
         this.seatIDs = seatIDs;
-    }
-
-    public void setNumSeats(int numSeats) {
-        this.numSeats = numSeats;
+        this.numSeats = seatIDs.size(); //updates numSeats to equal size of seatIDs arraylist
     }
 
     public void setDate(String date) {
