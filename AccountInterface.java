@@ -2,7 +2,7 @@
  * AccountInterface - Interface for Account class
  *
  * @author Saanvi Verma
- * @version 11/5/2025
+ * @version November 5, 2025
  */
 
 public interface AccountInterface {
@@ -15,7 +15,7 @@ public interface AccountInterface {
     String getPhoneNumber();
     void setPhoneNumber(String phoneNumber);
     String getEmail();
-    String getUserID();
+    String getID();
     void setPassword(String password);
     void setEmail(String email);
     String createID();
