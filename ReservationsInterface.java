@@ -4,7 +4,7 @@ import java.util.List;
  * ReservationsInterface - Defines methods for accessing and modifying reservation data.
  *
  * @author Arav Nair
- * @version Nov 6, 2025
+ * @version November 6, 2025
  */
 
 public interface ReservationsInterface {

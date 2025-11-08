@@ -2,6 +2,14 @@ import org.junit.Test;
 import java.util.*;
 import static org.junit.Assert.*;
 
+/**
+ * JUnit tests for the Reservations class, verifying constructors,
+ * getters/setters, file parsing, and string formatting.
+ *
+ * @author Arav Nair
+ * @version November 8, 2025
+ */
+
 public class ReservationsTest {
 
     // Helper to create a test Account

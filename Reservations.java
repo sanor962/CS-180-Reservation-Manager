@@ -7,7 +7,7 @@ import java.util.List;
  * Reservations - Implements a reservation with user, show, seat, and pricing details.
  *
  * @author Arav Nair and Saanvi Verma
- * @version Nov 6, 2025
+ * @version November 6, 2025
  */
 
 public class Reservations implements ReservationsInterface, Serializable {
