@@ -253,7 +253,7 @@ public class Database {
         try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
             String line;
             while ((line = brR.readLine()) != null) {
-                if (line.trim().isEmpty()) {
+                if (!line.trim().isEmpty()) {
                     lines.add(line);
                 }
             }
