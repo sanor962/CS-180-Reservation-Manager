@@ -132,7 +132,7 @@ public class Database {
             String userName1 = lines1[3];
             String passWord = lines1[4];
             String id = lines1[7];
-            if (!(passWord.equals(password)) && !(userName1.equals(userName)) && !(id.equals(accountID))) {
+            if (!(passWord.equals(password)) || !(userName1.equals(userName)) || !(id.equals(accountID))) {
                 newLines.add(lines.get(i));
             } else {
                 found = true;
@@ -265,7 +265,9 @@ public class Database {
 
         //Finding the reservation and adding every other reservation to the newLines
         for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).trim().isEmpty()) {continue;}
+            if (lines.get(i).trim().isEmpty()) {
+                continue;
+            }
             Reservations reservations = new Reservations(lines.get(i));
             if (reservations.getReservationID().equals(reservationID)) {
                 cancelledReservation = reservations;
