@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @version November 7, 2025
  */
 
-public class Seat implements SeatInterface, Serializable{
+public class Seat implements SeatInterface, Serializable {
     private String seatID;
     private String row;
     private boolean isAvailable;
