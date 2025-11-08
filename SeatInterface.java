@@ -13,4 +13,6 @@ public interface SeatInterface {
     int getNumber();
     void setAvailable(boolean available);
     void setPrice(double price);
+    String toString();
+    String writingInFile();
 }

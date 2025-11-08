@@ -132,7 +132,7 @@ public class Database {
             String userName1 = lines1[3];
             String passWord = lines1[4];
             String id = lines1[7];
-            if (!(passWord.equals(password)) && !(userName1.equals(userName)) && !(id.equals(accountID))) {
+            if (!(passWord.equals(password)) || !(userName1.equals(userName)) || !(id.equals(accountID))) {
                 newLines.add(lines.get(i));
             } else {
                 found = true;
@@ -253,7 +253,7 @@ public class Database {
         try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
             String line;
             while ((line = brR.readLine()) != null) {
-                if (line.trim().isEmpty()) {
+                if (!line.trim().isEmpty()) {
                     lines.add(line);
                 }
             }
@@ -265,7 +265,9 @@ public class Database {
 
         //Finding the reservation and adding every other reservation to the newLines
         for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).trim().isEmpty()) {continue;}
+            if (lines.get(i).trim().isEmpty()) {
+                continue;
+            }
             Reservations reservations = new Reservations(lines.get(i));
             if (reservations.getReservationID().equals(reservationID)) {
                 cancelledReservation = reservations;
@@ -381,5 +383,35 @@ public class Database {
         }
         return null;
     }
+
+    //Getting the users seat by their ID
+    public Seat getSeat(String seatID) {
+        ArrayList<String> lines = new ArrayList<>();
+        try (BufferedReader brS = new BufferedReader(new FileReader(fileS))) {
+            String line;
+            while (true) {
+                line = brS.readLine();
+                if (line == null) {
+                    break;
+                }
+                if (line.trim().isEmpty()) {
+
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < lines.size(); i++) {
+            Seat seat = new Seat(lines.get(i));
+            if (seat.getSeatID().equals(seatID)) {
+                return seat;
+            }
+        }
+        return null;
+    }
+    
 
 }
