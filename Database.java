@@ -46,6 +46,8 @@ public class Database {
         }
     }
 
+    // ACCOUNT METHODS
+
     //Creating each account
     public boolean createAccount(String firstName, String lastName, int age, String userName, String password, String email, String phoneNumber) {
         //Making sure the username doesn't exist
@@ -194,6 +196,8 @@ public class Database {
         }
         return reservations;
     }
+
+    // RESERVATION METHODS
 
     //Helper method for writing reservations to file
     private void writeReservationsToFile(List<Reservations> reservations) {
