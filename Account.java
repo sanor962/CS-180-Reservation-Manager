@@ -106,7 +106,12 @@ public class Account implements AccountInterface {
     }
 
     //To write the account in the file
-    public String toString() {
+    public String writingInFile() {
         return getFirstName() + "," + getLastName() + "," + getAge() + "," + getUserName() + "," + getPassword() + "," + getEmail() + "," + getPhoneNumber() + "," + getID();
+    }
+
+    //To String method
+    public String toString() {
+        return "First Name: " + getFirstName() + "\nLast Name: " + getLastName() + "\nAge: " + getAge() + "\nUsername: " + getUserName() + "\nPassword: " + getPassword() + "\nID: " + getID() + "\nEmail: " + getEmail() + "\nPhone Number: " + getPhoneNumber();
     }
 }
