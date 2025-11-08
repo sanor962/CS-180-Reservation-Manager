@@ -8,7 +8,7 @@ import java.util.List;
  */
 
 public interface ReservationsInterface {
-    String getReservationID();
+    int getReservationID();
     String getUserID();
     String getShowID();
     List<String> getSeatIDs();

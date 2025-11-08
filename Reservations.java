@@ -23,11 +23,11 @@ public class Reservations implements ReservationsInterface, Serializable {
     private double totalPrice;
 
 
-    // Main Constructor
-    public Reservations(String userID, String showID, List<String> seatIDs, String date, String time, double totalPrice) {
+    // Main Constructor using Account object to sync userID
+    public Reservations(Account account, String showID, List<String> seatIDs, String date, String time, double totalPrice) {
         this.reservationID = nextID++; //Auto generate unique ID
         //Assigns fields with null-checking
-        this.userID = userID  != null ? userID : "";
+        this.userID = account != null ? account.getID() : "";
         this.showID = showID  != null ? showID : "";
         this.seatIDs = seatIDs != null ? new ArrayList<>(seatIDs) : new ArrayList<>();
         this.numSeats = this.seatIDs.size(); //sync numSeats with size of seatIDs arraylist
@@ -125,6 +125,11 @@ public class Reservations implements ReservationsInterface, Serializable {
     }
 
     //Setter Methods
+    public void setReservationID(int reservationID) {
+        this.reservationID = reservationID;
+        if (reservationID >= nextID) nextID = reservationID + 1; // keep auto-increment consistent
+    }
+
     public void setUserID(String userID) {
         this.userID = (userID != null) ? userID : "";
     }
