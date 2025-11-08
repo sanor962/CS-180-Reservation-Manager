@@ -12,7 +12,8 @@ import java.util.List;
 
 public class Reservations implements ReservationsInterface, Serializable {
     // Reservation fields
-    private String reservationID;
+    private static int nextID = 1; // Ensures each new reservation has a unique ID
+    private int reservationID;
     private String userID;
     private String showID;
     private List<String> seatIDs;
@@ -23,9 +24,9 @@ public class Reservations implements ReservationsInterface, Serializable {
 
 
     // Main Constructor
-    public Reservations(String reservationID, String userID, String showID, List<String> seatIDs, String date, String time, double totalPrice) {
+    public Reservations(String userID, String showID, List<String> seatIDs, String date, String time, double totalPrice) {
+        this.reservationID = nextID++; //Auto generate unique ID
         //Assigns fields with null-checking
-        this.reservationID = reservationID != null ? reservationID : "";
         this.userID = userID  != null ? userID : "";
         this.showID = showID  != null ? showID : "";
         this.seatIDs = seatIDs != null ? new ArrayList<>(seatIDs) : new ArrayList<>();
@@ -40,7 +41,7 @@ public class Reservations implements ReservationsInterface, Serializable {
 
         //empty/null line handling
         if (line == null || line.isBlank()) {
-            this.reservationID = "";
+            this.reservationID = nextID++;
             this.userID = "";
             this.showID = "";
             this.seatIDs = new ArrayList<>();
@@ -54,7 +55,15 @@ public class Reservations implements ReservationsInterface, Serializable {
         String[] parts= line.split(",", -1); // -1 keeps empty trailing fields
 
         //Assign fields if parts exist
-        this.reservationID = parts.length > 0 && parts[0] != null ? parts[0] : "";
+
+        //reservationID handling
+        try {
+            this.reservationID = Integer.parseInt(parts[0]);
+            if (this.reservationID >= nextID) nextID = this.reservationID + 1; // keeps ID sequence consistent
+        } catch (Exception e) {
+            this.reservationID = nextID++;
+        }
+
         this.userID = parts.length > 1 && parts[1] != null ? parts[1] : "";
         this.showID = parts.length > 2 && parts[2] != null ? parts[2] : "";
 
@@ -83,7 +92,7 @@ public class Reservations implements ReservationsInterface, Serializable {
     }
 
     //Getter Methods
-    public String getReservationID() {
+    public int getReservationID() {
         return reservationID;
     }
 
@@ -117,23 +126,23 @@ public class Reservations implements ReservationsInterface, Serializable {
 
     //Setter Methods
     public void setUserID(String userID) {
-        this.userID = userID;
+        this.userID = (userID != null) ? userID : "";
     }
     public void setShowID(String showID) {
-        this.showID = showID;
+        this.showID = (showID != null) ? showID : "";
     }
 
     public void setSeatIDs(List<String> seatIDs) {
-        this.seatIDs = seatIDs;
-        this.numSeats = seatIDs.size(); //updates numSeats to equal size of seatIDs arraylist
+        this.seatIDs = (seatIDs != null) ? new ArrayList<>(seatIDs) : new ArrayList<>();
+        this.numSeats = this.seatIDs.size(); //updates numSeats to equal size of seatIDs arraylist
     }
 
     public void setDate(String date) {
-        this.date = date;
+        this.date = (date != null) ? date : "";
     }
 
     public void setTime(String time) {
-        this.time = time;
+        this.time = (time != null) ? time : "";
     }
 
     public void setTotalPrice(double totalPrice) {
