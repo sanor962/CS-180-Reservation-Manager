@@ -4,7 +4,7 @@ import java.util.*;
 /**
  * Database class
  *
- * @author Saanvi Verma
+ * @author Saanvi Verma, Kunj Arora
  * @version November 6, 2025
  */
 
@@ -84,7 +84,7 @@ public class Database {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        
+
         //Checking and logging the user into their account
         for (int i = 0; i < lines.size(); i++) {
             String[] lines1 = lines.get(i).split(",");
@@ -169,17 +169,8 @@ public class Database {
     }
 
     //Creating a reservation
-    public String createReservation(String accountID, String eventDate, String eventTime, ArrayList<String> seatIDs, ArrayList<Integer> whatNumbers, double totalPrice) {
-        //Checking for available seats
-        //Assuming getSeatID(), isAvailable(), and the constructor takes that in because I don't have the Seat class yet
-        ArrayList<String> availableSeats = new ArrayList<>();
-        for (int i = 0; i < seatIDs.size(); i++) {
-            Seat seat = new Seat(seatIDs.get(i));
-            if (seat.isAvailable()) {
-                availableSeats.add(seatIDs.get(i).getSeatID());
-            }
-        }
-
+    public String createReservation(String accountID, String eventDate, String eventTime,
+                                    ArrayList<String> seatIDs, ArrayList<Integer> whatNumbers, double totalPrice) {
         //Reading in all the reservations
         ArrayList<String> lines = new ArrayList<>();
         try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
@@ -206,7 +197,7 @@ public class Database {
         String reservationID = max + "";
 
         //Creating a reservation and adding it into the reservations file
-        Reservations reservation = new Reservations(reservationID, accountID, eventTime, availableSeats, eventDate, eventTime, totalPrice);
+        Reservations reservation = new Reservations(reservationID, accountID, eventTime, seatIDs, eventDate, eventTime, totalPrice);
         // reservation.setNumSeats(seatIDs.size());
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR, true))) {
             bufferedWriter.write(reservation.toString() + "\n");
@@ -246,13 +237,13 @@ public class Database {
 
         //Updating the seats used and added the new lines without the reservation to the file
         //I'm currently assuming that updateSeatAvailability() exists at the moment waiting for Arav to write that
-        if (!(cancelledReservation == null)) {
+        if (cancelledReservation != null) {
             for (int i = 0; i < cancelledReservation.getSeatIDs().size(); i++) {
                 updateSeatAvailability(cancelledReservation.getSeatIDs().get(i), true);
             }
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR, true))) {
+            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR))) {
                 for (int i = 0; i < newLines.size(); i++) {
-                    bufferedWriter.write(newLines + "\n");
+                    bufferedWriter.write(newLines.get(i) + "\n");
                 }
             } catch (IOException e) {
                 System.out.println("Error adding reservation " + fileR + e.getMessage());
@@ -261,6 +252,39 @@ public class Database {
         }
         return false;
     }
+
+    private void updateSeatAvailability(String seatID, boolean available) {
+        ArrayList<String> lines = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fileS))) {
+            String line = br.readLine();
+            while (line != null) {
+                lines.add(line);
+                line = br.readLine();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int i = 0; i < lines.size(); i++) {
+            String[] parts = lines.get(i).split(",");
+
+            if (parts[0].equals(seatID)) {
+                parts[1] = String.valueOf(available);
+                lines.set(i, parts[0] + "," + parts[1]);
+                break;
+            }
+        }
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileS))) {
+            for (int i = 0; i < lines.size(); i++) {
+                bw.write(lines.get(i) + "\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     //Getting the reservations by the user account
     public ArrayList<Reservations> getReservationsByAccount(String accountID) {
@@ -277,7 +301,7 @@ public class Database {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        
+
         //Searching for the different reservations and returning them
         ArrayList<Reservations> accountReservations = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {

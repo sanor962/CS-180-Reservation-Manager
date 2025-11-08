@@ -1,0 +1,65 @@
+import java.io.Serializable;
+
+/**
+ * Represents a single seat with different variables
+ *
+ * @author Kunj Arora
+ * @version November 7, 2025
+ */
+
+public class Seat implements SeatInterface, Serializable{
+    private String seatID;
+    private String row;
+    private boolean isAvailable;
+    private int number;
+    private double price;
+
+    public Seat(String seatID, String row, int number, double price) {
+        this.seatID = seatID;
+        this.row = row;
+        this.number = number;
+        this.price = price;
+        this.isAvailable = true;
+    }
+
+    public Seat(String line) {
+        String[] parts = line.split(",");
+        this.seatID = parts[0];
+        this.row = parts[3];
+        this.isAvailable = Boolean.parseBoolean(parts[1]);
+        this.number = Integer.parseInt(parts[4]);
+        this.price = Double.parseDouble(parts[2]);
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
+
+    public String getSeatID() {
+        return seatID;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getRow() {
+        return row;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public String toString() {
+        return "Seat ID: " + seatID + "\n Available: " + isAvailable + "\n Price: $" + price;
+    }
+}
