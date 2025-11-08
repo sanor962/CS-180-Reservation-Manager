@@ -25,10 +25,10 @@ public class Seat implements SeatInterface, Serializable {
     public Seat(String line) {
         String[] parts = line.split(",");
         this.seatID = parts[0];
-        this.row = parts[3];
-        this.isAvailable = Boolean.parseBoolean(parts[1]);
-        this.number = Integer.parseInt(parts[4]);
-        this.price = Double.parseDouble(parts[2]);
+        this.row = parts[1];
+        this.isAvailable = Boolean.parseBoolean(parts[2]);
+        this.number = Integer.parseInt(parts[3]);
+        this.price = Double.parseDouble(parts[4]);
     }
 
     public void setPrice(double price) {
@@ -61,5 +61,9 @@ public class Seat implements SeatInterface, Serializable {
 
     public String toString() {
         return "Seat ID: " + seatID + "\n Available: " + isAvailable + "\n Price: $" + price;
+    }
+
+    public String writingInFile() {
+        return getSeatID() + "," + getRow() + "," + isAvailable() + "," + getNumber() + "," + getPrice();
     }
 }
