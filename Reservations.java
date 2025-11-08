@@ -106,11 +106,11 @@ public class Reservations implements ReservationsInterface, Serializable {
     //toString
     @Override
     public String toString() {
+        String seatsJoined = String.join("|", seatIDs);
         return reservationID + "," +
                 userID + "," +
                 showID + "," +
-                seatIDs + "," +
-                numSeats + "," +
+                seatsJoined + "," +
                 date + "," +
                 time + "," +
                 totalPrice;
