@@ -277,7 +277,6 @@ public class Database {
         }
 
         //Updating the seats used and added the new lines without the reservation to the file
-        //I'm currently assuming that updateSeatAvailability() exists at the moment waiting for Arav to write that
         if (cancelledReservation != null) {
             for (int i = 0; i < cancelledReservation.getSeatIDs().size(); i++) {
                 updateSeatAvailability(cancelledReservation.getSeatIDs().get(i), true);
@@ -308,11 +307,16 @@ public class Database {
         }
 
         for (int i = 0; i < lines.size(); i++) {
-            String[] parts = lines.get(i).split(",");
-
-            if (parts[0].equals(seatID)) {
+            //String[] parts = lines.get(i).split(",");
+            Seat seat = new Seat(lines.get(i));
+            /*if (parts[0].equals(seatID)) {
                 parts[1] = String.valueOf(available);
                 lines.set(i, parts[0] + "," + parts[1]);
+                break;
+            }*/
+            if (seat.getSeatID().equals(seatID)) {
+                seat.setAvailable(available);
+                lines.set(i, seat.writingInFile());
                 break;
             }
         }
@@ -412,6 +416,6 @@ public class Database {
         }
         return null;
     }
-    
+
 
 }
