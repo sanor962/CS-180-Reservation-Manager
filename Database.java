@@ -4,7 +4,7 @@ import java.util.*;
 /**
  * Database class
  *
- * @author Saanvi Verma, Kunj Arora
+ * @author Saanvi Verma, Kunj Arora, Arav Nair
  * @version November 6, 2025
  */
 
@@ -29,6 +29,17 @@ public class Database {
             fileA = new File(accountFile);
             fileS = new File(seatsFile);
             fileR = new File(reservationFile);
+
+            //creates files if they don't exist
+            if (!fileA.exists()) {
+                fileA.createNewFile();
+            }
+            if (!fileS.exists()) {
+                fileS.createNewFile();
+            }
+            if (!fileR.exists()) {
+                fileR.createNewFile();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
