@@ -49,6 +49,7 @@ public class Reservations implements ReservationsInterface, Serializable {
     public String getReservationID() {
         return reservationID;
     }
+
     public String getUserID() {
         return userID;
     }
@@ -105,15 +106,13 @@ public class Reservations implements ReservationsInterface, Serializable {
     //toString
     @Override
     public String toString() {
-        return "Reservation{" +
-                "reservationID=\'" + reservationID + "\'" +
-                ", userID=\'" + userID + "\'" +
-                ", showID=\'" + showID + "\'" +
-                ", seatIDs=" + seatIDs +
-                ", numSeats=" + numSeats +
-                ", date=\'" + date + "\'" +
-                ", time=\'" + time + "\'" +
-                ", totalPrice=" + totalPrice +
-                "}";
+        return reservationID + "," +
+                userID + "," +
+                showID + "," +
+                seatIDs + "," +
+                numSeats + "," +
+                date + "," +
+                time + "," +
+                totalPrice;
     }
 }
