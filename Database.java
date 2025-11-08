@@ -211,47 +211,32 @@ public class Database {
         }
     }
 
-    //Creating a reservation
-    public String createReservation(String accountID, String showID, List<String> seatIDs,
+    //Creating a reservation using Account object
+    public String createReservation(Account account, String showID, List<String> seatIDs,
                                     String date, String time, double totalPrice) {
-        //Reading in all the reservations
-        ArrayList<String> lines = new ArrayList<>();
-        try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
-            String line;
-            while ((line = brR.readLine()) != null) {
-                if (!line.trim().isEmpty()) {
-                    lines.add(line);
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (account == null) {
+            throw new IllegalArgumentException("Account cannot be null when creating a reservation.");
         }
 
-        //Finding max id
-        int max = 0;
-        for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).trim().isEmpty()) {continue;}
-            Reservations reservation = new Reservations(lines.get(i));
-            if (Integer.parseInt(reservation.getReservationID()) > max) {
-                max = Integer.parseInt(reservation.getReservationID());
-            }
-        }
-        max = max + 1;
-        String reservationID = max + "";
+        // Create the reservation object
+        Reservations reservation = new Reservations(account, showID, seatIDs, date, time, totalPrice);
 
-        //Creating a reservation and adding it into the reservations file
-        Reservations reservation = new Reservations(reservationID, accountID, showID, seatIDs, date, time, totalPrice);
-        // reservation.setNumSeats(seatIDs.size());
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR, true))) {
-            bufferedWriter.write(reservation.toString() + "\n");
+        // Append the reservation to the file
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileR, true))) {
+            bw.write(reservation.toString());
+            bw.newLine();
         } catch (IOException e) {
-            System.out.println("Error adding reservation " + e.getMessage());
+            System.out.println("Error adding reservation: " + e.getMessage());
+            return null;
         }
-        return reservationID;
+
+        // Return the reservation ID as a string
+        return String.valueOf(reservation.getReservationID());
     }
 
+
     //Canceling the Reservation
-    public boolean cancelReservation(String reservationID) {
+    public boolean cancelReservation(int reservationID) {
         //Reading in file
         ArrayList<String> lines = new ArrayList<>();
         try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
@@ -273,7 +258,7 @@ public class Database {
                 continue;
             }
             Reservations reservations = new Reservations(lines.get(i));
-            if (reservations.getReservationID().equals(reservationID)) {
+            if (reservations.getReservationID() == reservationID) {
                 cancelledReservation = reservations;
             } else {
                 newLines.add(lines.get(i));
@@ -365,7 +350,7 @@ public class Database {
     }
 
     //Getting your reservation by the ID
-    public Reservations getReservationByID(String reservationID) {
+    public Reservations getReservationByID(int reservationID) {
         //Reading in the reservations
         ArrayList<String> lines = new ArrayList<>();
         try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
@@ -385,7 +370,7 @@ public class Database {
         for (int i = 0; i < lines.size(); i++) {
             if (lines.get(i).trim().isEmpty()) {continue;}
             Reservations reservation = new Reservations(lines.get(i));
-            if (reservation.getReservationID().equals(reservationID)) {
+            if (reservation.getReservationID() == reservationID) {
                 return reservation;
             }
         }
