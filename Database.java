@@ -208,17 +208,16 @@ public class Database {
     }
 
     //Creating a reservation
-    public String createReservation(String accountID, String eventDate, String eventTime,
-                                    ArrayList<String> seatIDs, ArrayList<Integer> whatNumbers, double totalPrice) {
+    public String createReservation(String accountID, String showID, List<String> seatIDs,
+                                    String date, String time, double totalPrice) {
         //Reading in all the reservations
         ArrayList<String> lines = new ArrayList<>();
         try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
-            while (true) {
-                String line = brR.readLine();
-                if (line == null) {
-                    break;
+            String line;
+            while ((line = brR.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    lines.add(line);
                 }
-                lines.add(line);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -227,6 +226,7 @@ public class Database {
         //Finding max id
         int max = 0;
         for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).trim().isEmpty()) {continue;}
             Reservations reservation = new Reservations(lines.get(i));
             if (Integer.parseInt(reservation.getReservationID()) > max) {
                 max = Integer.parseInt(reservation.getReservationID());
@@ -236,12 +236,12 @@ public class Database {
         String reservationID = max + "";
 
         //Creating a reservation and adding it into the reservations file
-        Reservations reservation = new Reservations(reservationID, accountID, eventTime, seatIDs, eventDate, eventTime, totalPrice);
+        Reservations reservation = new Reservations(reservationID, accountID, showID, seatIDs, date, time, totalPrice);
         // reservation.setNumSeats(seatIDs.size());
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR, true))) {
             bufferedWriter.write(reservation.toString() + "\n");
         } catch (IOException e) {
-            System.out.println("Error adding reservation " + fileR + e.getMessage());
+            System.out.println("Error adding reservation " + e.getMessage());
         }
         return reservationID;
     }
@@ -251,12 +251,11 @@ public class Database {
         //Reading in file
         ArrayList<String> lines = new ArrayList<>();
         try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
-            while (true) {
-                String line = brR.readLine();
-                if (line == null) {
-                    break;
+            String line;
+            while ((line = brR.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    lines.add(line);
                 }
-                lines.add(line);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -266,6 +265,7 @@ public class Database {
 
         //Finding the reservation and adding every other reservation to the newLines
         for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).trim().isEmpty()) {continue;}
             Reservations reservations = new Reservations(lines.get(i));
             if (reservations.getReservationID().equals(reservationID)) {
                 cancelledReservation = reservations;
@@ -335,6 +335,7 @@ public class Database {
                 if (line == null) {
                     break;
                 }
+                if (line.trim().isEmpty()) {continue;}
                 lines.add(line);
             }
         } catch (Exception e) {
@@ -344,6 +345,7 @@ public class Database {
         //Searching for the different reservations and returning them
         ArrayList<Reservations> accountReservations = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).trim().isEmpty()) {continue;}
             Reservations reservation = new Reservations(lines.get(i));
             if (reservation.getUserID().equals(accountID)) {
                 accountReservations.add(reservation);
@@ -362,6 +364,7 @@ public class Database {
                 if (line == null) {
                     break;
                 }
+                if (line.trim().isEmpty()) {continue;}
                 lines.add(line);
             }
         } catch (Exception e) {
@@ -370,6 +373,7 @@ public class Database {
 
         //Comparing reservations IDs and returning the reservation with the same ID
         for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).trim().isEmpty()) {continue;}
             Reservations reservation = new Reservations(lines.get(i));
             if (reservation.getReservationID().equals(reservationID)) {
                 return reservation;
