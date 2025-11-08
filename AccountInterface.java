@@ -20,5 +20,6 @@ public interface AccountInterface {
     void setEmail(String email);
     String createID();
     String toString();
+    String writingInFile();
     boolean equals(Object obj);
 }
