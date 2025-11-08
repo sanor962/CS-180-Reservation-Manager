@@ -179,6 +179,34 @@ public class Database {
         return null;
     }
 
+    //Helper method for reading reservations from file
+    private List<Reservations> readReservationsFromFile() {
+        List<Reservations> reservations = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader((new FileReader(fileR)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    reservations.add(new Reservations(line));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading reservations: " + e.getMessage());
+        }
+        return reservations;
+    }
+
+    //Helper method for writing reservations to file
+    private void writeReservationsToFile(List<Reservations> reservations) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileR, false))) {
+            for (Reservations reservation : reservations) {
+                bw.write(reservation.toString());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing reservations: " + e.getMessage());
+        }
+    }
+
     //Creating a reservation
     public String createReservation(String accountID, String eventDate, String eventTime,
                                     ArrayList<String> seatIDs, ArrayList<Integer> whatNumbers, double totalPrice) {
