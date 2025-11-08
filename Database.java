@@ -384,4 +384,34 @@ public class Database {
         return null;
     }
 
+    //Getting the users seat by their ID
+    public Seat getSeat(String seatID) {
+        ArrayList<String> lines = new ArrayList<>();
+        try (BufferedReader brS = new BufferedReader(new FileReader(fileS))) {
+            String line;
+            while (true) {
+                line = brS.readLine();
+                if (line == null) {
+                    break;
+                }
+                if (line.trim().isEmpty()) {
+
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < lines.size(); i++) {
+            Seat seat = new Seat(lines.get(i));
+            if (seat.getSeatID().equals(seatID)) {
+                return seat;
+            }
+        }
+        return null;
+    }
+    
+
 }
