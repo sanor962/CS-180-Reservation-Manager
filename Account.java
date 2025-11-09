@@ -1,7 +1,7 @@
 /**
  * Account - class that manages the information in the account
  *
- * @author Saanvi Verma, Arav Nair
+ * @author Saanvi Verma
  * @version November 5, 2025
  */
 
@@ -24,6 +24,7 @@ public class Account implements AccountInterface {
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        //createID();
     }
 
     //Constructor that takes in from the line from the file
@@ -36,7 +37,8 @@ public class Account implements AccountInterface {
         this.password = partOfAccount[4];
         this.email = partOfAccount[5];
         this.phoneNumber = partOfAccount[6];
-        createID(); //Auto generate ID when account is created
+        this.setID(partOfAccount[7]);
+        //createID();
     }
 
     //Getter Methods
