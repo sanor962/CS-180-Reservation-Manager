@@ -136,7 +136,7 @@ Jane,Smith,30,janesmith,pass456,jane@email.com,555-5678,2
 ## AccountInterface.java
 
 ### Description
-Defines the contract that the Account class must implement. Ensures all required methods are present with correct signatures.
+Defines the format that the Account class.
 
 ### Required Methods
 - 'String getFirstName()'
@@ -206,7 +206,7 @@ SEAT002,A,false,2,50.0
 ## SeatInterface.java
 
 ### Description
-Defines the contract for Seat class functionality. Ensures consistent seat operations across the application.
+Defines the format for Seat class.
 
 ### Required Methods
 - 'String getSeatID()'
@@ -260,7 +260,7 @@ Manages a collection of seats in memory. Provides a faster access to seat inform
 ## SeatingChartInterface.java
 
 ### Description
-Defines the contract for SeatingChart class functionality.
+Defines the format for SeatingChart class.
 
 ### Required Methods
 - 'void addSeat(Seat seat)'
@@ -330,7 +330,7 @@ Note: Multiple seat IDs are separated by |.
 ## ReservationsInterface.java
 
 ### Description
-Defines the contract for Reservations class functionality.
+Defines the format for Reservations class.
 
 ### Required Methods
 - 'int getReservationID()'
