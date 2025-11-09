@@ -17,8 +17,8 @@ public class SeatTest {
     private final double NEW_PRICE = 99.99;
 
     // data line format
-    private final String AVAILABLE = "A1,true,25.50,A,1";
-    private final String UNAVAILABLE = "B5,false,100.00,B,5";
+    private final String AVAILABLE = "A1,A,true,1,25.50";
+    private final String UNAVAILABLE = "B5,B,false,5,100.00";
 
     // this is the expected string output for a default-constructed seat
     private final String EXPECTED_STRING = "Seat ID: " + SEAT_ID + "\n Available: true\n Price: $" + PRICE;
