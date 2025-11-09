@@ -7,6 +7,7 @@
 
 ## Compilation and Running
 ### To compile all files:
+```
 javac Account.java
 javac Seat.java
 javac SeatingChart.java
@@ -22,6 +23,7 @@ javac SeatTest.java
 javac SeatingChartTest.java
 javac ReservationsTest.java
 javac DatabaseTest.java
+```
 
 ### To run all tests:
 ```
