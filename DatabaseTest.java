@@ -27,21 +27,21 @@ public class DatabaseTest {
     private static final String RESERVATIONS_FILE = "reservations.txt";
 
     // sample account data
-    private final String F_NAME = "Alice";
-    private final String L_NAME = "Smith";
-    private final int AGE = 30;
-    private final String USERNAME = "asmith";
-    private final String PASSWORD = "pass123";
-    private final String EMAIL = "alice@test.com";
-    private final String PHONE = "1234567890";
+    private final String firstName = "Alice";
+    private final String lastName = "Smith";
+    private final int age = 30;
+    private final String username = "asmith";
+    private final String password = "pass123";
+    private final String email = "alice@test.com";
+    private final String phoneNumber = "1234567890";
 
     // placeholder
     private String generatedID = null;
 
     // sample seat data
-    private final String SEAT_ID_1 = "A1";
-    private final String SEAT_AVAILABLE = SEAT_ID_1 + ",A,true,1,50.00";
-    private final String SEAT_RESERVED = SEAT_ID_1 + ",A,false,1,50.00";
+    private final String seatId1 = "A1";
+    private final String seatAvaliable = seatId1 + ",A,true,1,50.00";
+    private final String seatReserved = seatId1 + ",A,false,1,50.00";
 
     // setup method to initialize the Database and ensure files are clean before each test
     @BeforeEach
@@ -96,72 +96,75 @@ public class DatabaseTest {
 
     @Test
     public void testCreateAccountSuccess() throws IOException {
-        assertTrue(db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE), "Account creation should succeed.");
+        assertTrue(db.createAccount(firstName, lastName, age, username, password, email, phoneNumber),
+                "Account creation should succeed.");
 
         generatedID = getLatestAccountID();
         assertNotNull(generatedID, "Generated account ID should not be null after creation.");
 
         // verify the account exists and can be logged into
-        assertTrue(db.loginIntoAccount(USERNAME, PASSWORD), "Login should succeed after creation.");
+        assertTrue(db.loginIntoAccount(username, password), "Login should succeed after creation.");
     }
 
     @Test
     public void testCreateAccountFailureDuplicateUsername() {
         // create the first account
-        db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE);
+        db.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
 
         // attempt to create a second account with the same username
-        assertFalse(db.createAccount("Bob", "Jones", 25, USERNAME, "newpass", "bob@test.com", "9876543210"), "Duplicate username should fail creation.");
+        assertFalse(db.createAccount("Bob", "Jones", 25, username, "newpass", "bob@test.com", "9876543210"),
+                "Duplicate username should fail creation.");
 
         // verify only one account exists in the file (by trying to log in with the second password)
-        assertFalse(db.loginIntoAccount(USERNAME, "newpass"), "Login with duplicate account should fail.");
+        assertFalse(db.loginIntoAccount(username, "newpass"), "Login with duplicate account should fail.");
     }
 
     @Test
     public void testLoginIntoAccountSuccess() {
-        db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE);
-        assertTrue(db.loginIntoAccount(USERNAME, PASSWORD), "Login should succeed with correct credentials.");
+        db.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
+        assertTrue(db.loginIntoAccount(username, password), "Login should succeed with correct credentials.");
     }
 
     @Test
     public void testDeleteAccountSuccess() throws IOException {
         // create account
-        db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE);
+        db.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
         generatedID = getLatestAccountID();
         assertNotNull(generatedID, "Setup failed: Account ID not retrieved.");
 
-        Account account = db.getAccount(generatedID, PASSWORD);
+        Account account = db.getAccount(generatedID, password);
         assertNotNull(account, "Account should be retrievable before deletion.");
 
         // delete account
-        assertTrue(db.deleteAccount(generatedID, USERNAME, PASSWORD), "Deletion should succeed with correct credentials.");
+        assertTrue(db.deleteAccount(generatedID, username, password),
+                "Deletion should succeed with correct credentials.");
 
         // verify deletion by attempting to log in/retrieve
-        assertFalse(db.loginIntoAccount(USERNAME, PASSWORD), "Login should fail after deletion.");
-        assertNull(db.getAccount(generatedID, PASSWORD), "getAccount should return null after deletion.");
+        assertFalse(db.loginIntoAccount(username, password), "Login should fail after deletion.");
+        assertNull(db.getAccount(generatedID, password), "getAccount should return null after deletion.");
     }
 
     @Test
     public void testDeleteAccountFailureInvalidCredentials() throws IOException {
-        db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE);
+        db.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
         generatedID = getLatestAccountID();
 
         // attempt deletion with the wrong password
-        assertFalse(db.deleteAccount(generatedID, USERNAME, "WRONG"), "Deletion should fail with incorrect password.");
+        assertFalse(db.deleteAccount(generatedID, username, "WRONG"), "Deletion should fail with incorrect password.");
 
         // verify the account is still there
-        assertTrue(db.loginIntoAccount(USERNAME, PASSWORD), "Login should still succeed after failed deletion.");
+        assertTrue(db.loginIntoAccount(username, password), "Login should still succeed after failed deletion.");
     }
 
     @Test
     public void testGetAccountSuccess() throws IOException {
-        db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE);
+        db.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
         generatedID = getLatestAccountID();
 
-        Account account = db.getAccount(generatedID, PASSWORD);
+        Account account = db.getAccount(generatedID, password);
 
         assertNotNull(account, "getAccount should return the Account object.");
-        assertEquals(USERNAME, account.getUserName(), "Retrieved account username must match.");
+        assertEquals(username, account.getUserName(), "Retrieved account username must match.");
         assertEquals(generatedID, account.getID(), "Retrieved account ID must match.");
     }
 
@@ -171,13 +174,13 @@ public class DatabaseTest {
     public void testGetSeatSuccess() throws IOException {
         // write the seat data directly to the seats file
         try (FileWriter fw = new FileWriter(SEATS_FILE)) {
-            fw.write(SEAT_AVAILABLE + "\n");
+            fw.write(seatAvaliable + "\n");
         }
 
-        Seat seat = db.getSeat(SEAT_ID_1);
+        Seat seat = db.getSeat(seatId1);
 
         assertNotNull(seat, "getSeat should retrieve the seat from file.");
-        assertEquals(SEAT_ID_1, seat.getSeatID());
+        assertEquals(seatId1, seat.getSeatID());
         assertTrue(seat.isAvailable(), "Seat should be available as it's set up.");
     }
 
@@ -186,9 +189,9 @@ public class DatabaseTest {
     @Test
     public void testCreateReservationSuccess() throws IOException {
         // setup account
-        db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE);
+        db.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
         generatedID = getLatestAccountID();
-        Account account = db.getAccount(generatedID, PASSWORD);
+        Account account = db.getAccount(generatedID, password);
 
         String showID = "S101";
         List<String> seatIDs = Arrays.asList("A1", "A2");
@@ -208,17 +211,17 @@ public class DatabaseTest {
     @Test
     public void testCancelReservationSuccess() throws IOException {
         // setup account and seat
-        db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE);
+        db.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
         generatedID = getLatestAccountID();
-        Account account = db.getAccount(generatedID, PASSWORD);
+        Account account = db.getAccount(generatedID, password);
 
         // write the seat data directly to the seats file
         try (FileWriter fw = new FileWriter(SEATS_FILE)) {
-            fw.write(SEAT_RESERVED + "\n");
+            fw.write(seatReserved + "\n");
         }
 
         // create reservation
-        String resIDStr = db.createReservation(account, "S101", Arrays.asList(SEAT_ID_1), "2025-12-01", "19:00", 50.00);
+        String resIDStr = db.createReservation(account, "S101", Arrays.asList(seatId1), "2025-12-01", "19:00", 50.00);
         int resID = Integer.parseInt(resIDStr);
 
         // cancel the reservation
@@ -228,15 +231,15 @@ public class DatabaseTest {
         assertNull(db.getReservationByID(resID), "Reservation should be removed from file.");
 
         // seat availability should be updated
-        Seat seat = db.getSeat(SEAT_ID_1);
+        Seat seat = db.getSeat(seatId1);
         assertTrue(seat.isAvailable(), "The cancelled seat should be marked available (true) in the seats file.");
     }
 
     @Test
     public void testGetReservationByAccountSuccess() throws IOException {
-        db.createAccount(F_NAME, L_NAME, AGE, USERNAME, PASSWORD, EMAIL, PHONE);
+        db.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
         generatedID = getLatestAccountID();
-        Account account = db.getAccount(generatedID, PASSWORD);
+        Account account = db.getAccount(generatedID, password);
 
         // create two reservations for this user
         String resID1Str = db.createReservation(account, "S101", Arrays.asList("A1"), "D1", "T1", 50.0);
@@ -247,7 +250,9 @@ public class DatabaseTest {
 
         // create one reservation for another user
         Account otherAccount = new Account("B", "X", 40, "bx", "p", "b@x.com", "9999999999");
-        db.createAccount(otherAccount.getFirstName(), otherAccount.getLastName(), otherAccount.getAge(), otherAccount.getUserName(), otherAccount.getPassword(), otherAccount.getEmail(), otherAccount.getPhoneNumber());
+        db.createAccount(otherAccount.getFirstName(), otherAccount.getLastName(), otherAccount.getAge(),
+                otherAccount.getUserName(), otherAccount.getPassword(), otherAccount.getEmail(),
+                otherAccount.getPhoneNumber());
 
         // retrieve reservations for the first user
         ArrayList<Reservations> userReservations = db.getReservationsByAccount(generatedID);
