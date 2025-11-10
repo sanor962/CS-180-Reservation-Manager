@@ -37,6 +37,10 @@ java ReservationsTest
 ## GTA and Submission Information
 - When trying to submit on Vocareum, cloning the Github was not working so I (Saanvi Verma) uploaded the files instead. One of the TA's told me to add our GTA to our Github repository to ensure that they could see our files.
 
+## Testing Information
+- This project's test cases have been written using JUnit 5.
+- All test cases were verified locally using JUnit 5, even though Vocareum’s compilation logs show missing symbol errors due to its arrangement.
+
 ## Submission Information
 - Saanvi Verma submitted Phase 1 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Account, AccountInterface, AccountTest, Database, DatabaseInterface, and DatabaseTest.
 - Kunj Arora worked on Seat, SeatInterface, SeatingChart, SeatingChartInterface, and Database.
