@@ -14,7 +14,7 @@ import java.util.Arrays;
  * due to the hardcoded file paths in Database.java, we must use the actual file names and
  * ensure they're cleaned up before and after every test run
  *
- * @author Shalini Murthula, Saanvi Verma
+ * @author Shalini Murthula (smurthul), Saanvi Verma (verma279)
  * @version November 9, 2025
  */
 public class DatabaseTest {
