@@ -98,9 +98,18 @@ public class Account implements AccountInterface {
     //Creating a specialized ID per account
     public String createID() {
         String firstName1 = firstName.toUpperCase();
-        String result = firstName1.charAt(1) + "" + firstName1.charAt((firstName1.length() - 2));
+        String result;
+        if (firstName1.length() >= 2) {
+            result = firstName1.charAt(1) + "" + firstName1.charAt((firstName1.length() - 2));
+        } else {
+            result = firstName1.charAt(0) + "";
+        }
         String lastName1 = lastName.toUpperCase();
-        result = (lastName1.charAt(0) + "" + lastName1.charAt(2)).concat(result);
+        if (lastName1.length() >= 2) {
+            result = (lastName1.charAt(0) + "" + lastName1.charAt(2)).concat(result);
+        } else {
+            result = lastName1.charAt(0) + "";
+        }
         result = result.concat("-" + phoneNumber.substring(6, 10));
         result = result.replaceAll("6", "");
         result = result.replaceAll("7", "");
