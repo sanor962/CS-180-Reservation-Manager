@@ -4,7 +4,7 @@ import java.util.*;
 /**
  * Database class
  *
- * @author Saanvi Verma, Kunj Arora, Arav Nair
+ * @author Saanvi Verma (verma279), Kunj Arora (arora271), Arav Nair (nair234)
  * @version November 6, 2025
  */
 
