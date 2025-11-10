@@ -75,7 +75,7 @@ public class Database {
         Account account = new Account(firstName, lastName, age, userName, password, email, phoneNumber);
         account.createID();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileA, true))) {
-            bufferedWriter.write(account.toString() + "\n");
+            bufferedWriter.write(account.writingInFile() + "\n");
         } catch (IOException e) {
             System.out.println("Error adding account " + fileA + e.getMessage());
         }
