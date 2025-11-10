@@ -7,6 +7,9 @@
 - Shalini Murthula
 
 ## Compilation and Running
+
+### This project must run on a local IDE
+
 ### To compile all files:
 ```
 javac Account.java
