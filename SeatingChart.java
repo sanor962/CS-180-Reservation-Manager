@@ -4,7 +4,7 @@ import java.util.List;
 /**
  * SeatingChart - Manages all the seats in a layout
  *
- * @author Kunj Arora
+ * @author Kunj Arora (arora271)
  * @version November 8, 2025
  */
 
