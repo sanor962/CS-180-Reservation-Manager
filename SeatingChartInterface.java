@@ -3,7 +3,7 @@ import java.util.List;
 /**
  * SeatingChartInterface - Interface for SeatingChart class
  *
- * @author Kunj Arora
+ * @author Kunj Arora (arora271)
  * @version November 7, 2025
  */
 
