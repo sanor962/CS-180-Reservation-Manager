@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Reservations - Implements a reservation with user, show, seat, and pricing details.
  *
- * @author Arav Nair and Saanvi Verma
+ * @author Arav Nair
  * @version November 6, 2025
  */
 
