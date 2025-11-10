@@ -282,6 +282,7 @@ public class Database {
         return false;
     }
 
+    //Updates the availability seat with the seatID to the boolean
     private void updateSeatAvailability(String seatID, boolean available) {
         ArrayList<String> lines = new ArrayList<>();
 
