@@ -14,7 +14,7 @@ import java.util.Arrays;
  * due to the hardcoded file paths in Database.java, we must use the actual file names and
  * ensure they're cleaned up before and after every test run
  *
- * @author Shalini Murthula
+ * @author Shalini Murthula, Saanvi Verma
  * @version November 9, 2025
  */
 public class DatabaseTest {
@@ -40,8 +40,8 @@ public class DatabaseTest {
 
     // sample seat data
     private final String SEAT_ID_1 = "A1";
-    private final String SEAT_AVAILABLE = SEAT_ID_1 + ",true,50.00,A,1";
-    private final String SEAT_RESERVED = SEAT_ID_1 + ",false,50.00,A,1";
+    private final String SEAT_AVAILABLE = SEAT_ID_1 + ",A,true,1,50.00";
+    private final String SEAT_RESERVED = SEAT_ID_1 + ",A,false,1,50.00";
 
     // setup method to initialize the Database and ensure files are clean before each test
     @BeforeEach
