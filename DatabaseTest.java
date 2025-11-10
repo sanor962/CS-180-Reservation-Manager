@@ -246,7 +246,7 @@ public class DatabaseTest {
         int resID2 = Integer.parseInt(resID2Str);
 
         // create one reservation for another user
-        Account otherAccount = new Account("B", "X", 40, "bx", "p", "b@x.com", "999999999");
+        Account otherAccount = new Account("B", "X", 40, "bx", "p", "b@x.com", "9999999999");
         db.createAccount(otherAccount.getFirstName(), otherAccount.getLastName(), otherAccount.getAge(), otherAccount.getUserName(), otherAccount.getPassword(), otherAccount.getEmail(), otherAccount.getPhoneNumber());
 
         // retrieve reservations for the first user
