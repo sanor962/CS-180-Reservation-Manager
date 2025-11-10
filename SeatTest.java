@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit test cases for the Seat class
  * Tests cover all constructors, all getters and setters, and the toString() method
  *
- * @author Shalini Murthula
+ * @author Shalini Murthula (smurthul)
  * @version November 8, 2025
  */
 public class SeatTest {
