@@ -22,4 +22,6 @@ public interface ReservationsInterface {
     void setDate(String date);
     void setTime(String time);
     void setTotalPrice(double totalPrice);
+    void setReservationID(int reservationID);
+    String toString();
 }
