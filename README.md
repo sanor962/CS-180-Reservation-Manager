@@ -34,7 +34,7 @@ java ReservationsTest
 ```
 
 ## Submission Information
-- Saanvi Verma submitted Phase 1 on Vocareum, worked on Account, AccountInterface, Database, DatabaseInterface, AccountTest, and Reservations.
+- Saanvi Verma submitted Phase 1 on Vocareum, worked on Account, AccountInterface, Database, DatabaseInterface, DatabaseTest, AccountTest, and Reservations.
 - Kunj Arora worked on Seat, SeatInterface, SeatingChart, SeatingChartInterface, and Database.
 - Arav Nair worked on Database, Reservations, ReservationsInterface, and ReservationsTest.
 - Shalini Murthula worked on AccountTest, DatabaseTest, SeatTest, and SeatingChartTest.
