@@ -10,28 +10,28 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SeatTest {
 
     // sample data for a valid seat
-    private final String SEAT_ID = "C15";
-    private final String ROW = "C";
-    private final int NUMBER = 15;
-    private final double PRICE = 45.99;
-    private final double NEW_PRICE = 99.99;
+    private final String seatId = "C15";
+    private final String row = "C";
+    private final int number = 15;
+    private final double price = 45.99;
+    private final double newPrice = 99.99;
 
     // data line format
-    private final String AVAILABLE = "A1,A,true,1,25.50";
-    private final String UNAVAILABLE = "B5,B,false,5,100.00";
+    private final String avaliable = "A1,A,true,1,25.50";
+    private final String unavaliable = "B5,B,false,5,100.00";
 
     // this is the expected string output for a default-constructed seat
-    private final String EXPECTED_STRING = "Seat ID: " + SEAT_ID + "\n Available: true\n Price: $" + PRICE;
+    private final String expectedString = "Seat ID: " + seatId + "\n Available: true\n Price: $" + price;
 
     @Test
     // test the standard constructor via getters
     public void testConstructor() {
-        Seat seat = new Seat(SEAT_ID, ROW, NUMBER, PRICE);
+        Seat seat = new Seat(seatId, row, number, price);
 
-        assertEquals(SEAT_ID, seat.getSeatID(), "Seat ID must match the input.");
-        assertEquals(ROW, seat.getRow(), "Row must match the input.");
-        assertEquals(NUMBER, seat.getNumber(), "Number must match the input.");
-        assertEquals(PRICE, seat.getPrice(), "Price must match the input.");
+        assertEquals(seatId, seat.getSeatID(), "Seat ID must match the input.");
+        assertEquals(row, seat.getRow(), "Row must match the input.");
+        assertEquals(number, seat.getNumber(), "Number must match the input.");
+        assertEquals(price, seat.getPrice(), "Price must match the input.");
         assertTrue(seat.isAvailable(), "New seats must be available by default.");
     }
 
@@ -39,7 +39,7 @@ public class SeatTest {
     // test the constructor that parses data from a file line
     public void testStringConstructorParsing() {
         // test an available seat
-        Seat availableSeat = new Seat(AVAILABLE);
+        Seat availableSeat = new Seat(avaliable);
         assertEquals("A1", availableSeat.getSeatID());
         assertEquals("A", availableSeat.getRow());
         assertEquals(1, availableSeat.getNumber());
@@ -47,7 +47,7 @@ public class SeatTest {
         assertTrue(availableSeat.isAvailable());
 
         // test an unavailable seat
-        Seat unavailableSeat = new Seat(UNAVAILABLE);
+        Seat unavailableSeat = new Seat(unavaliable);
         assertEquals("B5", unavailableSeat.getSeatID());
         assertEquals("B", unavailableSeat.getRow());
         assertEquals(5, unavailableSeat.getNumber());
@@ -58,11 +58,11 @@ public class SeatTest {
     @Test
     // test the setter methods for price and availability
     public void testSetters() {
-        Seat seat = new Seat(SEAT_ID, ROW, NUMBER, PRICE);
+        Seat seat = new Seat(seatId, row, number, price);
 
         // test setPrice
-        seat.setPrice(NEW_PRICE);
-        assertEquals(NEW_PRICE, seat.getPrice(), "Price should be updated to the new value.");
+        seat.setPrice(newPrice);
+        assertEquals(newPrice, seat.getPrice(), "Price should be updated to the new value.");
 
         // test setAvailable (to false)
         seat.setAvailable(false);
@@ -76,12 +76,12 @@ public class SeatTest {
     @Test
     // test the toString() method
     public void testToString() {
-        Seat seat = new Seat(SEAT_ID, ROW, NUMBER, PRICE);
+        Seat seat = new Seat(seatId, row, number, price);
 
-        assertEquals(EXPECTED_STRING, seat.toString(), "toString() must match specification for available seat.");
+        assertEquals(expectedString, seat.toString(), "toString() must match specification for available seat.");
 
         seat.setAvailable(false);
-        String expectedUnavailable = "Seat ID: C15\n Available: false\n Price: $" + PRICE;
+        String expectedUnavailable = "Seat ID: C15\n Available: false\n Price: $" + price;
         assertEquals(expectedUnavailable, seat.toString(), "toString() must match specifcation for unavailable seat.");
     }
 }
