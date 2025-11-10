@@ -8,6 +8,7 @@ import java.util.List;
  */
 
 public interface SeatingChartInterface {
+    void addSeat(Seat seat);
     Seat getSeat(String seatID);
     boolean reserveSeat(String seatID);
     boolean cancelSeat(String seatID);
