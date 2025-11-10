@@ -8,7 +8,7 @@ import java.util.List;
  * including adding, retrieving, reserving, and filtering available seats
  * NOTE: assumes the Seat class and its methods work correctly
  *
- * @author Shalini Murthula
+ * @author Shalini Murthula (smurthul)
  * @version November 8, 2025
  */
 class SeatingChartTest {
