@@ -3,7 +3,7 @@ import java.util.List;
 /**
  * ReservationsInterface - Defines methods for accessing and modifying reservation data.
  *
- * @author Arav Nair
+ * @author Arav Nair (nair234)
  * @version November 6, 2025
  */
 
