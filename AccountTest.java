@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
  * JUnit test cases for the Account class
  * Tests cover all constructors, getters, setters, toString(), and the createID() logic
  *
- * @author Shalini Murthula, Saanvi Verma
+ * @author Shalini Murthula (smurthul), Saanvi Verma (verma279)
  * @version November 8, 2025
  */
 // JUnit test cases for the Account class
@@ -108,11 +108,11 @@ public class AccountTest {
                 username + "," + password + "," + email + "," + phoneNumber + "," + "null";
         Account account = new Account(firstName, lastName, age, username, password, email, phoneNumber);
         System.out.println(account.writingInFile());
-        assertEquals("toString should match the expected format with 'null' ID before generation.",
+        assertEquals("toString should match the expected format with 'null' ID before generation.", 
                 expectedIdNull, account.writingInFile());
 
         account.createID();
-        assertEquals("toString should match the expected format with the generated ID.",
+        assertEquals("toString should match the expected format with the generated ID.", 
                 expectedId, account.writingInFile());
     }
 }
