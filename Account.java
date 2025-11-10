@@ -1,7 +1,7 @@
 /**
  * Account - class that manages the information in the account
  *
- * @author Saanvi Verma
+ * @author Saanvi Verma (verma279)
  * @version November 5, 2025
  */
 
@@ -127,9 +127,9 @@ public class Account implements AccountInterface {
 
     //To String method
     public String toString() {
-        return "First Name: " + getFirstName() + "\nLast Name: " + getLastName() +
-                "\nAge: " + getAge() + "\nUsername: " + getUserName() + "\nPassword: " +
-                getPassword() + "\nID: " + getID() + "\nEmail: " + getEmail() +
+        return "First Name: " + getFirstName() + "\nLast Name: " + getLastName() + 
+                "\nAge: " + getAge() + "\nUsername: " + getUserName() + "\nPassword: " + 
+                getPassword() + "\nID: " + getID() + "\nEmail: " + getEmail() + 
                 "\nPhone Number: " + getPhoneNumber();
     }
 }
