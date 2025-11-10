@@ -38,7 +38,7 @@ java ReservationsTest
 ```
 
 ## GTA and Submission Information
-- When trying to submit on Vocareum, cloning the Github was not working so I (Saanvi Verma) uploaded the files instead. One of the TA's told me to add our GTA to our Github repository to ensure that they could see our files.
+- When trying to submit on Vocareum, cloning the Github was not working as I was not able to sign in properly so I (Saanvi Verma) uploaded the files instead. One of the TA's told me to add our GTA to our Github repository to ensure that they could see our files.
 
 ## Testing Information
 - This project's test cases have been written using JUnit 5.
