@@ -13,10 +13,11 @@ public class Account implements AccountInterface {
     private String password;
     private String email;
     private String phoneNumber;
-    private String ID;
+    private String id;
 
     //Constructor
-    public Account(String firstName, String lastName, int age, String userName, String password, String email, String phoneNumber) {
+    public Account(String firstName, String lastName, int age, String userName,
+                   String password, String email, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -63,7 +64,7 @@ public class Account implements AccountInterface {
     }
 
     public String getID() {
-        return ID;
+        return id;
     }
 
     public String getEmail() {
@@ -83,8 +84,8 @@ public class Account implements AccountInterface {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setID(String id1) {
+        this.id = id1;
     }
 
     public void setUserName(String userName) {
@@ -119,11 +120,16 @@ public class Account implements AccountInterface {
 
     //To write the account in the file
     public String writingInFile() {
-        return getFirstName() + "," + getLastName() + "," + getAge() + "," + getUserName() + "," + getPassword() + "," + getEmail() + "," + getPhoneNumber() + "," + getID();
+        return getFirstName() + "," + getLastName() + "," + getAge() + "," +
+                getUserName() + "," + getPassword() + "," + getEmail() + "," +
+                getPhoneNumber() + "," + getID();
     }
 
     //To String method
     public String toString() {
-        return "First Name: " + getFirstName() + "\nLast Name: " + getLastName() + "\nAge: " + getAge() + "\nUsername: " + getUserName() + "\nPassword: " + getPassword() + "\nID: " + getID() + "\nEmail: " + getEmail() + "\nPhone Number: " + getPhoneNumber();
+        return "First Name: " + getFirstName() + "\nLast Name: " + getLastName() +
+                "\nAge: " + getAge() + "\nUsername: " + getUserName() + "\nPassword: " +
+                getPassword() + "\nID: " + getID() + "\nEmail: " + getEmail() +
+                "\nPhone Number: " + getPhoneNumber();
     }
 }
