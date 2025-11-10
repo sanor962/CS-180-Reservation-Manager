@@ -3,7 +3,7 @@ import java.io.Serializable;
 /**
  * Represents a single seat with different variables
  *
- * @author Kunj Arora
+ * @author Kunj Arora (arora271)
  * @version November 7, 2025
  */
 
@@ -35,8 +35,8 @@ public class Seat implements SeatInterface, Serializable {
         this.price = price;
     }
 
-    public void setAvailable(boolean isAvailable) {
-        this.isAvailable = isAvailable;
+    public void setAvailable(boolean avaliable) {
+        this.isAvailable = avaliable;
     }
 
     public String getSeatID() {
