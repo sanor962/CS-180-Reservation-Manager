@@ -1,7 +1,7 @@
 /**
  * AccountInterface - Interface for Account class
  *
- * @author Saanvi Verma
+ * @author Saanvi Verma (verma279)
  * @version November 5, 2025
  */
 
