@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
  * JUnit tests for the Reservations class, verifying constructors,
  * getters/setters, file parsing, and string formatting.
  *
- * @author Arav Nair
+ * @author Arav Nair (nair234)
  * @version November 8, 2025
  */
 
