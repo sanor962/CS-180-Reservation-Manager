@@ -1,4 +1,5 @@
 # Concert Reservation System - Phase 1
+## L30-Team 4
 ## Team Members
 - Saanvi Verma
 - Kunj Arora
@@ -33,8 +34,11 @@ java SeatTest
 java ReservationsTest
 ```
 
+## GTA and Submission Information
+- When trying to submit on Vocareum, cloning the Github was not working so I (Saanvi Verma) uploaded the files instead. One of the TA's told me to add our GTA to our Github repository to ensure that they could see our files.
+
 ## Submission Information
-- Saanvi Verma submitted Phase 1 on Vocareum, worked on Account, AccountInterface, Database, DatabaseInterface, DatabaseTest, and AccountTest.
+- Saanvi Verma submitted Phase 1 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Account, AccountInterface, AccountTest, Database, DatabaseInterface, and DatabaseTest.
 - Kunj Arora worked on Seat, SeatInterface, SeatingChart, SeatingChartInterface, and Database.
 - Arav Nair worked on Database, Reservations, ReservationsInterface, and ReservationsTest.
 - Shalini Murthula worked on AccountTest, DatabaseTest, SeatTest, and SeatingChartTest.
@@ -46,7 +50,7 @@ java ReservationsTest
 
 ### Database.java
 **Purpose:** 
-Main database manager that handles all the data storage and retrieval (in text files) for the concert reservation system. Manages three text files: accounts.txt, seats.txt, and reservations.txt. Database is responsible for reading from and writing to files, while SeatingChart manages seats in memory.
+Main database manager that handles all the data storage and retrieval (in text files) for the concert reservation system. Manages three text files: accounts.txt, seats.txt, and reservations.txt. Thread safety has been implemented within Database.java. Database is responsible for reading from and writing to files, while SeatingChart manages seats in memory.
 
 
 **Key Functionality:**
@@ -453,7 +457,6 @@ java org.junit.runner.JUnitCore ReservationsTest
 - Phase 2 will add: Server, Client, Network IO
 - Phase 2 will handle and manage inaccurate information.
 - Phase 3 will add: GUI
-- Thread safety will be implemented in Phase 2 when multiple clients connect.
 
 ---
 
