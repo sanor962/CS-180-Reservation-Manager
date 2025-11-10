@@ -1,7 +1,7 @@
 /**
  * SeatInterface - Interface for Seating class
  *
- * @author Kunj Arora
+ * @author Kunj Arora (arora271)
  * @version November 7, 2025
  */
 
