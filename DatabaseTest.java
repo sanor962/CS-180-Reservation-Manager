@@ -197,10 +197,9 @@ public class DatabaseTest {
         List<String> seatIDs = Arrays.asList("A1", "A2");
         double price = 100.00;
 
-        String reservationIDStr = db.createReservation(account, showID, seatIDs, "2025-12-01", "19:00", price);
-        assertNotNull(reservationIDStr, "Reservation ID should be returned on success.");
+        int reservationID = db.createReservation(account, showID, seatIDs, "2025-12-01", "19:00", price);
+        assertTrue(reservationID > 0);
 
-        int reservationID = Integer.parseInt(reservationIDStr);
         Reservations res = db.getReservationByID(reservationID);
 
         assertNotNull(res, "Reservation should be retrievable by ID after creation.");
@@ -221,8 +220,7 @@ public class DatabaseTest {
         }
 
         // create reservation
-        String resIDStr = db.createReservation(account, "S101", Arrays.asList(seatId1), "2025-12-01", "19:00", 50.00);
-        int resID = Integer.parseInt(resIDStr);
+        int resID = db.createReservation(account, "S101", Arrays.asList(seatId1), "2025-12-01", "19:00", 50.00);
 
         // cancel the reservation
         assertTrue(db.cancelReservation(resID), "Cancellation should succeed.");
@@ -242,11 +240,8 @@ public class DatabaseTest {
         Account account = db.getAccount(generatedID, password);
 
         // create two reservations for this user
-        String resID1Str = db.createReservation(account, "S101", Arrays.asList("A1"), "D1", "T1", 50.0);
-        String resID2Str = db.createReservation(account, "S102", Arrays.asList("B2"), "D2", "T2", 60.0);
-
-        int resID1 = Integer.parseInt(resID1Str);
-        int resID2 = Integer.parseInt(resID2Str);
+        int resID1 = db.createReservation(account, "S101", Arrays.asList("A1"), "D1", "T1", 50.0);
+        int resID2 = db.createReservation(account, "S102", Arrays.asList("B2"), "D2", "T2", 60.0);
 
         // create one reservation for another user
         Account otherAccount = new Account("B", "X", 40, "bx", "p", "b@x.com", "9999999999");

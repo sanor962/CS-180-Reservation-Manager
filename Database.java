@@ -224,8 +224,8 @@ public class Database {
     }
 
     //Creating a reservation using Account object
-    public String createReservation(Account account, String showID, List<String> seatIDs,
-                                    String date, String time, double totalPrice) {
+    public int createReservation(Account account, String showID, List<String> seatIDs,
+                                 String date, String time, double totalPrice) {
         synchronized (reservationO) {
             if (account == null) {
                 throw new IllegalArgumentException("Account cannot be null when creating a reservation.");
@@ -240,13 +240,12 @@ public class Database {
                 bw.newLine();
             } catch (IOException e) {
                 System.out.println("Error adding reservation: " + e.getMessage());
-                return null;
+                return -1; // or throw an exception
             }
 
-            // Return the reservation ID as a string
-            return String.valueOf(reservation.getReservationID());
+            // Return the reservation ID as int
+            return reservation.getReservationID();
         }
-
     }
 
 
