@@ -1,6 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * PaymentManager - Manages processing and refunding payments for reservations.
+ * Maintains a list of payments and allows querying payment amounts.
+ *
+ * @author Arav Nair (nair234)
+ * @version Nov 16 2025
+ */
+
+
 public class PaymentManager implements PaymentManagerInterface {
 
     private List<Payment> payments;

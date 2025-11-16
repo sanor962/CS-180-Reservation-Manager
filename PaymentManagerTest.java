@@ -1,6 +1,15 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * PaymentManagerTest - JUnit tests for PaymentManager class.
+ * Tests payment processing, refunding, and handling of invalid/duplicate payments.
+ *
+ * @author Arav Nair (nair234)
+ * @version Nov 16 2025
+ */
+
+
 public class PaymentManagerTest {
 
     @Test
