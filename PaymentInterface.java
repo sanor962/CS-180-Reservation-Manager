@@ -1,4 +1,4 @@
 public interface PaymentInterface {
-    String getReservationID();
+    int getReservationID();
     double getAmount();
 }

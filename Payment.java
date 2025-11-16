@@ -1,4 +1,6 @@
-public class Payment implements PaymentInterface {
+import java.io.Serializable;
+
+public class Payment implements PaymentInterface, Serializable {
     private int reservationID;
     private double amount;
 
