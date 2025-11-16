@@ -1,14 +1,14 @@
 public class Payment implements PaymentInterface {
-    private String reservationID;
+    private int reservationID;
     private double amount;
 
-    public Payment(String reservationID, double amount) {
+    public Payment(int reservationID, double amount) {
         this.reservationID = reservationID;
         this.amount = amount;
     }
 
     @Override
-    public String getReservationID() {
+    public int getReservationID() {
         return reservationID;
     }
 

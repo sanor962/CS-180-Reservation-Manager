@@ -10,7 +10,7 @@ public class PaymentManager implements PaymentManagerInterface {
     }
 
     @Override
-    public boolean processPayment(String reservationID, double amount) {
+    public boolean processPayment(int reservationID, double amount) {
         if (amount <= 0 || getPaymentAmount(reservationID) > 0) {
             return false; // already paid or invalid amount
         }
@@ -19,9 +19,9 @@ public class PaymentManager implements PaymentManagerInterface {
     }
 
     @Override
-    public boolean refundPayment(String reservationID) {
+    public boolean refundPayment(int reservationID) {
         for (int i = 0; i < payments.size(); i++) {
-            if (payments.get(i).getReservationID().equals(reservationID)) {
+            if (payments.get(i).getReservationID() == reservationID) {
                 payments.remove(i);
                 return true;
             }
@@ -30,9 +30,9 @@ public class PaymentManager implements PaymentManagerInterface {
     }
 
     @Override
-    public double getPaymentAmount(String reservationID) {
+    public double getPaymentAmount(int reservationID) {
         for (Payment p : payments) {
-            if (p.getReservationID().equals(reservationID)) {
+            if (p.getReservationID() == reservationID) {
                 return p.getAmount();
             }
         }
