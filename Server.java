@@ -251,7 +251,7 @@ public class Server implements ServerInterface {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected: " + clientSocket.getInetAddress());
+                System.out.println("Client connected");
 
                 Thread thread = new Thread(new Runnable() {
                     @Override
