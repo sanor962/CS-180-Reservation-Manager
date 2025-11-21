@@ -16,7 +16,7 @@ import java.util.Scanner;
  * @version November 17, 2025
  */
 
-public class Client implements ClientInterface, Runnable {
+public class Client implements ClientInterface {
     //Variables
     private boolean run;
     private Socket socket;
@@ -40,8 +40,9 @@ public class Client implements ClientInterface, Runnable {
         //Sets the client to localhost and port 6767
         Client client = new Client("localhost", 6767);
         if (client.connect()) {
-            Thread thread = new Thread(client);
-            thread.start();
+            /*Thread thread = new Thread(client);
+            thread.start();*/
+            client.start();
         } else {
             System.out.println("Could not connect.");
         }
@@ -52,7 +53,7 @@ public class Client implements ClientInterface, Runnable {
         try {
             socket = new Socket(host, port);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            writer = new PrintWriter(socket.getOutputStream());
+            writer = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("Connected");
             return true;
         } catch (Exception e) {
@@ -61,7 +62,8 @@ public class Client implements ClientInterface, Runnable {
         }
     }
 
-    public void run() {
+    //Starts the program
+    public void start() {
         run = true;
         System.out.println("Concert System");
         System.out.println();
@@ -131,13 +133,13 @@ public class Client implements ClientInterface, Runnable {
                             System.out.println("Please enter a valid age.");
                         }
                     }
-                    
+
                     //Making sure they are inputting a correct username
                     String username = "";
                     while (true) {
                         System.out.println("Username: ");
                         username = scanner.nextLine().trim();
-                        if (username.length() >= 5) {
+                        if (username.length() <= 5) {
                             System.out.println("Please enter a valid username.");
                         } else if (username.isEmpty() || username == null) {
                             System.out.println("Please enter a valid username.");
@@ -145,13 +147,13 @@ public class Client implements ClientInterface, Runnable {
                             break;
                         }
                     }
-                    
+
                     //Making sure they are inputting a correct password
                     String password = "";
                     while (true) {
                         System.out.println("Password: ");
                         password = scanner.nextLine().trim();
-                        if (password.length() >= 8) {
+                        if (password.length() <= 8) {
                             System.out.println("Please enter a valid password.");
                         } else if (password.isEmpty() || password == null) {
                             System.out.println("Please enter a valid password.");
@@ -183,7 +185,7 @@ public class Client implements ClientInterface, Runnable {
                             break;
                         }
                     }
-                    
+
                     //Creates the account
                     try {
                         writer.write("createAccount\n");
@@ -312,7 +314,7 @@ public class Client implements ClientInterface, Runnable {
                     String d = "";
                     String m = "";
                     String y = "";
-                    
+
                     //Checks to make sure the date is correct
                     while (true) {
                         num = 0;
@@ -412,33 +414,6 @@ public class Client implements ClientInterface, Runnable {
                     }
 
                 } else if (choice.equals("3")) {
-                    //Gets all the reservations by the account
-                    try {
-                        writer.write("getReservations\n");
-                        writer.write(account + "\n");
-                        writer.flush();
-
-                        String count = reader.readLine();
-                        int num = Integer.parseInt(count);
-
-                        if (num == 0) {
-                            System.out.println("You have no reservations.");
-                        } else {
-                            if (num > 1) {
-                                System.out.println("You have " + num + " reservations:");
-                            } else {
-                                System.out.println("You have " + num + " reservation:");
-                            }
-                            for (int i = 0; i < num; i++) {
-                                String reservationSetails = reader.readLine();
-                                System.out.println(reservationSetails);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                } else if (choice.equals("4")) {
                     //Cancels reservation by ID
                     System.out.println("Reservation ID: ");
                     String reservationID = scanner.nextLine().trim();
@@ -470,6 +445,32 @@ public class Client implements ClientInterface, Runnable {
                         } catch (Exception e) {
                             System.out.println(e.getMessage());
                         }
+                    }
+                } else if (choice.equals("4")) {
+                    //Gets all the reservations by the account
+                    try {
+                        writer.write("getReservations\n");
+                        writer.write(account + "\n");
+                        writer.flush();
+
+                        String count = reader.readLine();
+                        int num = Integer.parseInt(count);
+
+                        if (num == 0) {
+                            System.out.println("You have no reservations.");
+                        } else {
+                            if (num > 1) {
+                                System.out.println("You have " + num + " reservations:");
+                            } else {
+                                System.out.println("You have " + num + " reservation:");
+                            }
+                            for (int i = 0; i < num; i++) {
+                                String reservationSetails = reader.readLine();
+                                System.out.println(reservationSetails);
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
 
                 } else if (choice.equals("5")) {
@@ -552,12 +553,12 @@ public class Client implements ClientInterface, Runnable {
     public boolean isRunning() {
         return run;
     }
-    
+
     //Setter methods
     public void setHost(String host) {
         this.host = host;
     }
-    
+
     public void setPort(int port) {
         this.port = port;
     }
