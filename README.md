@@ -1,4 +1,4 @@
-# Concert Reservation System - Phase 1
+# Concert Reservation System - Phase 1 and 2
 ## L30-Team 4
 ## Team Members
 - Saanvi Verma
@@ -17,16 +17,26 @@ javac Seat.java
 javac SeatingChart.java
 javac Reservations.java
 javac Database.java
+javac Client.java
+javac Server.java
+javac Payment.java
+javac PaymentManager.java
 javac AccountInterface.java
 javac SeatInterface.java
 javac SeatingChartInterface.java
 javac ReservationsInterface.java
 javac DatabaseInterface.java
+javac ClientInterface.java
+javac ServerInterface.java
+javac PaymentInterface.java
+javac PaymentManagerInterface.java
 javac AccountTest.java
 javac SeatTest.java
 javac SeatingChartTest.java
 javac ReservationsTest.java
 javac DatabaseTest.java
+javac PaymentManagerTest.java
+javac seats.txt
 ```
 
 ### To run all tests:
@@ -34,7 +44,9 @@ javac DatabaseTest.java
 java DatabaseTest
 java AccountTest
 java SeatTest
+java SeatingChartTest
 java ReservationsTest
+java PaymentManagerTest
 ```
 
 ## GTA and Submission Information
@@ -44,7 +56,7 @@ java ReservationsTest
 - This project's test cases have been written using JUnit 5.
 - All test cases were verified locally using JUnit 5, even though Vocareum’s compilation logs show missing symbol errors due to its arrangement.
 
-## Submission Information
+## Submission Information (Phase 1)
 - Saanvi Verma submitted Phase 1 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Account, AccountInterface, AccountTest, Database, DatabaseInterface, and DatabaseTest.
 - Kunj Arora worked on Seat, SeatInterface, SeatingChart, SeatingChartInterface, and Database.
 - Arav Nair worked on Database, Reservations, ReservationsInterface, and ReservationsTest.
