@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 /**
  * Handles the user interface (Client Class) and communicates with the server
- * 
+ *
  * Port Number: 6767
  * Host Name: localhost
  *
@@ -89,6 +89,7 @@ public class Client implements ClientInterface, Runnable {
                         writer.write("login\n");
                         writer.write(username + "\n");
                         writer.write(password + "\n");
+                        writer.flush();
                         String response = reader.readLine();
                         if (response.equals("s")) {
                             account = reader.readLine();
@@ -179,6 +180,7 @@ public class Client implements ClientInterface, Runnable {
                         writer.write(password + "\n");
                         writer.write(email + "\n");
                         writer.write(phone + "\n");
+                        writer.flush();
 
                         String response = reader.readLine();
                         if (response.equals("s")) {
@@ -226,7 +228,8 @@ public class Client implements ClientInterface, Runnable {
                     String m = "";
                     String y = "";
                     while (true) {
-                        System.out.println("Date (DD/MM/YYYY): ");
+                        num = 0;
+                        System.out.println("Date (DD/MM/YYYY) (For example March 3, 2025 will be 03/03/2025): ");
                         date = scanner.nextLine().trim();
                         for (int i = 0; i < date.length(); i++) {
                             if (date.charAt(i) == '/') {
@@ -263,6 +266,7 @@ public class Client implements ClientInterface, Runnable {
                         writer.write("getAvailableSeats\n");
                         writer.write(showID + "\n");
                         writer.write(date + "\n");
+                        writer.flush();
 
                         String count = reader.readLine();
                         int numOfSeats = Integer.parseInt(count);
@@ -289,7 +293,8 @@ public class Client implements ClientInterface, Runnable {
                     String m = "";
                     String y = "";
                     while (true) {
-                        System.out.println("Date (DD/MM/YYYY): ");
+                        num = 0;
+                        System.out.println("Date (DD/MM/YYYY) (For example March 3, 2025 will be 03/03/2025): ");
                         date = scanner.nextLine().trim();
                         for (int i = 0; i < date.length(); i++) {
                             if (date.charAt(i) == '/') {
@@ -371,6 +376,7 @@ public class Client implements ClientInterface, Runnable {
                         }
                         writer.write(date + "\n");
                         writer.write(totalPrice + "\n");
+                        writer.flush();
 
                         String r = reader.readLine();
                         if (r.equals("s")) {
@@ -387,6 +393,7 @@ public class Client implements ClientInterface, Runnable {
                     try {
                         writer.write("getReservations\n");
                         writer.write(account + "\n");
+                        writer.flush();
 
                         String count = reader.readLine();
                         int num = Integer.parseInt(count);
@@ -427,6 +434,7 @@ public class Client implements ClientInterface, Runnable {
                         try {
                             writer.write("cancelReservation\n");
                             writer.write(reservationID + "\n");
+                            writer.flush();
                             String response = reader.readLine();
 
                             if (response.equals("s")) {
@@ -463,6 +471,7 @@ public class Client implements ClientInterface, Runnable {
                             writer.write(account + "\n");
                             writer.write(password + "\n");
                             writer.write(acountID + "\n");
+                            writer.flush();
                             String r = reader.readLine();
                             if (r.equals("s")) {
                                 System.out.println("Account deleted.");
@@ -489,6 +498,7 @@ public class Client implements ClientInterface, Runnable {
         try {
             if (socket != null && !socket.isClosed()) {
                 writer.write("disconnect\n");
+                writer.flush();
                 socket.close();
                 System.out.println("Disconnected.");
             }
