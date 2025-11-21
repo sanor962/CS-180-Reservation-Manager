@@ -13,4 +13,6 @@ public interface ClientInterface {
     void disconnect();
     void run();
     boolean connect();
+    void setPort(int port);
+    void setHost(String host);
 }
