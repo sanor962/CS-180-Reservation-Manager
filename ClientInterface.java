@@ -11,7 +11,7 @@ public interface ClientInterface {
     int getPort();
     String getHost();
     void disconnect();
-    void run();
+    void start();
     boolean connect();
     void setPort(int port);
     void setHost(String host);
