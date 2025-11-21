@@ -64,15 +64,20 @@ public class Server implements ServerInterface {
                 } else if (command.equals("getAvailableSeats")) {
                     ArrayList<Seat> seats = getAvailableSeats();
                     writer.println(seats.size());
-                    for (Seat seat : seats) {
-                        writer.println(seat.writingInFile());
+
+                    for (int i = 0; i < seats.size(); i++) {
+                        writer.println(seats.get(i).writingInFile());
                     }
                 } else if (command.equals("makeReservation")) {
                     String user = reader.readLine();
                     String showID = reader.readLine();
                     int numSeats = Integer.parseInt(reader.readLine());
                     List<String> seatIDs = new ArrayList<>();
-                    for (int i = 0; i < numSeats; i++) seatIDs.add(reader.readLine());
+
+                    for (int i = 0; i < numSeats; i++) {
+                        seatIDs.add(reader.readLine());
+                    }
+
                     String date = reader.readLine();
                     double totalPrice = Double.parseDouble(reader.readLine());
 
@@ -94,8 +99,9 @@ public class Server implements ServerInterface {
                     String user = reader.readLine();
                     ArrayList<Reservations> reservations = getReservationsByAccount(user);
                     writer.println(reservations.size());
-                    for (Reservations r : reservations) {
-                        writer.println(r.toString());
+
+                    for (int i =0; i < reservations.size(); i++) {
+                        writer.println(reservations.get(i).toString());
                     }
                 } else if (command.equals("deleteAccount")) {
                     String user = reader.readLine();
