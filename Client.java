@@ -475,10 +475,10 @@ public class Client implements ClientInterface {
 
                 } else if (choice.equals("5")) {
                     //Deletes account by password and accountID
+                    System.out.println("Confirm username: ");
+                    String username = scanner.nextLine().trim();
                     System.out.println("Confirm password: ");
                     String password = scanner.nextLine().trim();
-                    System.out.println("Confirm accountID: ");
-                    String acountID = scanner.nextLine().trim();
 
                     String confirm = "";
                     while (true) {
@@ -498,7 +498,7 @@ public class Client implements ClientInterface {
                             writer.write("deleteAccount\n");
                             writer.write(account + "\n");
                             writer.write(password + "\n");
-                            writer.write(acountID + "\n");
+                            writer.write(username + "\n");
                             writer.flush();
                             String r = reader.readLine();
                             if (r.equals("success")) {
