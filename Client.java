@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Client implements Runnable {
+public class Client implements ClientInterface, Runnable {
     private boolean run;
     private Socket socket;
     private BufferedReader reader;
