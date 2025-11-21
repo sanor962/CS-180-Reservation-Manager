@@ -301,7 +301,7 @@ public class Database {
     }
 
     //Updates the availability seat with the seatID to the boolean
-    private void updateSeatAvailability(String seatID, boolean available) {
+    public void updateSeatAvailability(String seatID, boolean available) {
         synchronized (seatO) {
             ArrayList<String> lines = new ArrayList<>();
 
@@ -444,6 +444,4 @@ public class Database {
         }
 
     }
-
-
 }
