@@ -246,11 +246,20 @@ public class Server implements ServerInterface {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected: " + clientSocket.getInetAddress());
-                new Thread(() -> server.handleClient(clientSocket)).start();
+
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        server.handleClient(clientSocket);
+                    }
+                });
+
+                thread.start();
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }
