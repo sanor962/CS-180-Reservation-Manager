@@ -100,7 +100,7 @@ public class Client implements ClientInterface {
                         writer.write(password + "\n");
                         writer.flush();
                         String response = reader.readLine();
-                        if (response.equals("s")) {
+                        if (response.equals("success")) {
                             account = reader.readLine();
                             System.out.println("Login successful. Welcome, " + username + "!");
                         } else {
@@ -199,7 +199,7 @@ public class Client implements ClientInterface {
                         writer.flush();
 
                         String response = reader.readLine();
-                        if (response.equals("s")) {
+                        if (response.equals("success")) {
                             System.out.println("Account created! You can now login.");
                         } else {
                             String couldNotCreate = reader.readLine();
@@ -403,7 +403,7 @@ public class Client implements ClientInterface {
                         writer.flush();
 
                         String r = reader.readLine();
-                        if (r.equals("s")) {
+                        if (r.equals("success")) {
                             String reservationID = reader.readLine();
                             System.out.println("Reservation was successful. Your reservation ID is: " + reservationID);
                         } else {
@@ -437,7 +437,7 @@ public class Client implements ClientInterface {
                             writer.flush();
                             String response = reader.readLine();
 
-                            if (response.equals("s")) {
+                            if (response.equals("success")) {
                                 System.out.println("Your reservation has been cancelled.");
                             } else {
                                 System.out.println("Cancellation failed. Please try again.");
@@ -501,7 +501,7 @@ public class Client implements ClientInterface {
                             writer.write(acountID + "\n");
                             writer.flush();
                             String r = reader.readLine();
-                            if (r.equals("s")) {
+                            if (r.equals("success")) {
                                 System.out.println("Account deleted.");
                                 account = null;
                             } else {
