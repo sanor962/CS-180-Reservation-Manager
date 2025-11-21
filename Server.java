@@ -9,7 +9,7 @@ import java.util.List;
  *
  * Port Number: 6767
  *
- * @author Kunj Arora (arora271)
+ * @author Kunj Arora (arora271) and Saanvi Verma (verma279)
  * @version November 21, 2025
  */
 
@@ -60,8 +60,12 @@ public class Server implements ServerInterface {
                         writer.println("success");
                     } else {
                         writer.println("fail");
+                        writer.println("Account could not be created because username has already been taken.");
                     }
                 } else if (command.equals("getAvailableSeats")) {
+                    //Need to figure out what tf we are doing for this
+                    String showID = reader.readLine();
+                    String date = reader.readLine();
                     ArrayList<Seat> seats = getAvailableSeats();
                     writer.println(seats.size());
 
@@ -104,9 +108,9 @@ public class Server implements ServerInterface {
                         writer.println(reservations.get(i).toString());
                     }
                 } else if (command.equals("deleteAccount")) {
-                    String user = reader.readLine();
-                    String password = reader.readLine();
                     String id = reader.readLine();
+                    String password = reader.readLine();
+                    String user = reader.readLine();
                     if (deleteAccount(id, user, password)) {
                         writer.println("success");
                     } else {
