@@ -6,6 +6,16 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Handles the user interface (Client Class) and communicates with the server
+ * 
+ * Port Number: 6767
+ * Host Name: localhost
+ *
+ * @author Saanvi Verma (verma279)
+ * @version November 17, 2025
+ */
+
 public class Client implements ClientInterface, Runnable {
     private boolean run;
     private Socket socket;
