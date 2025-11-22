@@ -101,8 +101,8 @@ public class Client implements ClientInterface {
                         writer.flush();
                         String response = reader.readLine();
                         if (response.equals("success")) {
-                            account = reader.readLine();
                             System.out.println("Login successful. Welcome, " + username + "!");
+                            account = username;
                         } else {
                             System.out.println("Login failed. Invalid username or password.");
                         }
@@ -141,6 +141,8 @@ public class Client implements ClientInterface {
                         username = scanner.nextLine().trim();
                         if (username.length() <= 5) {
                             System.out.println("Please enter a valid username.");
+                        } else if (username.contains(",")) {
+                            System.out.println("Please enter a valid username.");
                         } else if (username.isEmpty() || username == null) {
                             System.out.println("Please enter a valid username.");
                         } else {
@@ -154,6 +156,8 @@ public class Client implements ClientInterface {
                         System.out.println("Password: ");
                         password = scanner.nextLine().trim();
                         if (password.length() <= 8) {
+                            System.out.println("Please enter a valid password.");
+                        } else if (password.contains(",")) {
                             System.out.println("Please enter a valid password.");
                         } else if (password.isEmpty() || password == null) {
                             System.out.println("Please enter a valid password.");
@@ -220,8 +224,10 @@ public class Client implements ClientInterface {
                 System.out.println("2) Make Reservation");
                 System.out.println("3) Cancel Reservation");
                 System.out.println("4) View My Reservations");
-                System.out.println("5) Delete Account");
-                System.out.println("6) Logout");
+                System.out.println("5) View all Concerts");
+                System.out.println("6) Add a concert");
+                System.out.println("7) Delete Account");
+                System.out.println("8) Logout");
 
                 //Making sure they are choosing an option that is valid
                 String choice = "";
@@ -307,6 +313,8 @@ public class Client implements ClientInterface {
 
                 } else if (choice.equals("2")) {
                     //Books a reservation
+                    System.out.println("Password: ");
+                    String password = scanner.nextLine().trim();
                     System.out.println("Show ID: ");
                     String showID = scanner.nextLine().trim();
                     String date = "";
@@ -374,32 +382,32 @@ public class Client implements ClientInterface {
                         seatIDs.add(scanner.nextLine().trim());
                     }
 
-                    double totalPrice = 0;
-                    while (true) {
-                        System.out.println("Total Price: $");
-                        String priceStr = scanner.nextLine().trim();
-                        try {
-                            totalPrice = Double.parseDouble(priceStr);
-                            if (totalPrice >= 0) {
-                                break;
-                            } else {
-                                System.out.println("Price cannot be negative.");
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Please enter a valid price.");
-                        }
-                    }
-
                     try {
                         writer.write("makeReservation\n");
                         writer.write(account + "\n");
+                        writer.write(password + "\n");
                         writer.write(showID + "\n");
                         writer.write(numOfSeats + "\n");
                         for (int i = 0; i < seatIDs.size(); i++) {
                             writer.write(seatIDs.get(i) + "\n");
                         }
                         writer.write(date + "\n");
-                        writer.write(totalPrice + "\n");
+                        writer.flush();
+
+                        double price = Double.parseDouble(reader.readLine());
+                        System.out.println("Total Price: " + price);
+
+                        System.out.println("Proceed with payment? (y/n): ");
+                        String confirm = scanner.nextLine().trim();
+                        confirm = confirm.toLowerCase();
+
+                        if (!confirm.equals("y")) {
+                            writer.println("cancel");
+                            System.out.println("Reservation cancelled.");
+                            return;
+                        }
+
+                        writer.write("pay\n");
                         writer.flush();
 
                         String r = reader.readLine();
@@ -474,6 +482,106 @@ public class Client implements ClientInterface {
                     }
 
                 } else if (choice.equals("5")) {
+                    try {
+                        writer.write("getALlConcerts\n");
+                        writer.flush();
+                        int count = Integer.parseInt(reader.readLine());
+
+                        for (int i = 0; i < count; i++) {
+                            String line = reader.readLine();
+                            String[] parts = line.split(",");
+                            String name = parts[0];
+                            String date = parts[1];
+                            String time = parts[2];
+                            String concertD = parts[3];
+                            System.out.println(concertD + ". " + name + " on " + date + " at " + time);
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+
+                } else if (choice.equals("6")) {
+                    System.out.println("Name of Concert: ");
+                    String name = scanner.nextLine();
+                    String date = "";
+                    int num = 0;
+                    String d = "";
+                    String m = "";
+                    String y = "";
+
+                    //Checks to make sure the date is correct
+                    while (true) {
+                        num = 0;
+                        System.out.println("Date (DD/MM/YYYY) (For example March 3, 2025 will be 03/03/2025): ");
+                        date = scanner.nextLine().trim();
+                        for (int i = 0; i < date.length(); i++) {
+                            if (date.charAt(i) == '/') {
+                                num++;
+                            }
+                        }
+                        if (num != 2) {
+                            System.out.println("Please enter a valid date.");
+                            try {
+                                d = date.substring(0);
+                                m = d.substring(d.indexOf("/") + 1);
+                                d = d.substring(0, d.indexOf("/"));
+                                y = m.substring(m.indexOf("/") + 1);
+                                m = m.substring(0, m.indexOf("/"));
+                                if (Integer.parseInt(d) > 31 || d.length() > 2) {
+                                    System.out.println("Please enter a valid date.");
+                                }
+                                if (Integer.parseInt(m) > 12 || m.length() > 2) {
+                                    System.out.println("Please enter a valid date.");
+                                }
+                                if (y.length() > 4) {
+                                    System.out.println("Please enter a valid date.");
+                                }
+                            } catch (Exception e) {
+                                System.out.println(e.getMessage());
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    String time = "";
+                    String h = "";
+                    String min = "";
+                    while (true) {
+                        System.out.println("Time: ");
+                        time = scanner.nextLine();
+                        
+                        try {
+                            h = time.substring(0, time.indexOf(":"));
+                            min = time.substring(time.indexOf(":") + 1);
+                            if (time.contains(":") && Integer.parseInt(h) <= 23 && Integer.parseInt(min) <= 60) {
+                                break;
+                            }
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+
+
+
+                    try {
+                        writer.write("createConcert\n");
+                        writer.write(name + "\n");
+                        writer.write(date + "\n");
+                        writer.write(time + "\n");
+                        writer.flush();
+                        String r = reader.readLine();
+                        if (r.equals("success")) {
+                            System.out.println("Concert Created.");
+                        } else {
+                            System.out.println("Concert Creation failed. Please try again.");
+                        }
+
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                } else if (choice.equals("7")) {
                     //Deletes account by password and accountID
                     System.out.println("Confirm username: ");
                     String username = scanner.nextLine().trim();
@@ -512,7 +620,7 @@ public class Client implements ClientInterface {
                         }
                     }
 
-                } else if (choice.equals("6")) {
+                } else if (choice.equals("8")) {
                     //Logs the user out
                     account = null;
                     System.out.println("Logged-out");
