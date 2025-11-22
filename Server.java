@@ -16,6 +16,7 @@ import java.util.List;
 
 public class Server implements ServerInterface {
     private Database database;
+    private PaymentManager paymentManager = new PaymentManager();
 
     public Server() {
         database = new Database();
@@ -44,7 +45,6 @@ public class Server implements ServerInterface {
                     if (login(username, password)) {
                         accountID = username;
                         writer.println("success");
-                        writer.println(accountID);
                     } else {
                         writer.println("fail");
                     }
@@ -66,7 +66,7 @@ public class Server implements ServerInterface {
                     //Need to figure out what tf we are doing for this
                     String showID = reader.readLine();
                     String date = reader.readLine();
-                    ArrayList<Seat> seats = getAvailableSeats();
+                    ArrayList<Seat> seats = getAvailableSeats(showID, date);
                     writer.println(seats.size());
 
                     for (int i = 0; i < seats.size(); i++) {
@@ -74,6 +74,7 @@ public class Server implements ServerInterface {
                     }
                 } else if (command.equals("makeReservation")) {
                     String user = reader.readLine();
+                    String password = reader.readLine();
                     String showID = reader.readLine();
                     int numSeats = Integer.parseInt(reader.readLine());
                     List<String> seatIDs = new ArrayList<>();
@@ -83,14 +84,42 @@ public class Server implements ServerInterface {
                     }
 
                     String date = reader.readLine();
-                    double totalPrice = Double.parseDouble(reader.readLine());
+                    double totalPrice = 0;
+                    for (int i = 0; i < seatIDs.size(); i++) {
+                        Seat s = database.getSeat(seatIDs.get(i));
+                        if (s == null || !s.isAvailable()) {
+                            writer.println("Seat " + seatIDs.get(i) + " is unavailable.");
+                            return;
+                        }
+                        totalPrice = totalPrice + s.getPrice();
+                    }
+                    writer.println(totalPrice);
 
-                    int reservationID = createReservation(user, showID, seatIDs, date, "", totalPrice);
+                    String payCommand = reader.readLine();
+                    if (!"pay".equals(payCommand)) {
+                        writer.println("cancelled");
+                        return;
+                    }
+
+                    String time = getTime(showID);
+
+                    int reservationID = createReservation(user, password, showID, seatIDs, date, time, totalPrice);
+                    boolean success = paymentManager.processPayment(reservationID, totalPrice);
+
+                    if (!success) {
+                        writer.println("fail");
+                        return;
+                    }
+
                     if (reservationID != -1) {
                         writer.println("success");
                         writer.println(reservationID);
                     } else {
                         writer.println("fail");
+                    }
+
+                    for (String seatID : seatIDs) {
+                        database.updateSeatAvailability(seatID, false);
                     }
                 } else if (command.equals("cancelReservation")) {
                     int reservationID = Integer.parseInt(reader.readLine());
@@ -112,6 +141,22 @@ public class Server implements ServerInterface {
                     String password = reader.readLine();
                     String user = reader.readLine();
                     if (deleteAccount(id, user, password)) {
+                        writer.println("success");
+                    } else {
+                        writer.println("fail");
+                    }
+                } else if (command.equals("getALlConcerts")) {
+                    ArrayList<String> concerts = getAllConcerts();
+                    writer.println(concerts.size());
+
+                    for (int i = 0; i < concerts.size(); i++) {
+                        writer.println(concerts.get(i));
+                    }
+                } else if (command.equals("createConcert")) {
+                    String name = reader.readLine();
+                    String date = reader.readLine();
+                    String time = reader.readLine();
+                    if (createConcert(name, date, time)) {
                         writer.println("success");
                     } else {
                         writer.println("fail");
@@ -148,6 +193,21 @@ public class Server implements ServerInterface {
     }
 
     @Override
+    public String getTime(String concertID) {
+        return database.getTime(concertID);
+    }
+
+    @Override
+    public ArrayList<String> getAllConcerts() {
+        return database.getAllConcerts();
+    }
+
+    @Override
+    public boolean createConcert(String name, String date, String time) {
+        return database.createConcert(name, date, time);
+    }
+
+    @Override
     public boolean createAccount(String firstName, String lastName, int age, String username,
                                  String password, String email, String phoneNumber) {
         return database.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
@@ -164,9 +224,9 @@ public class Server implements ServerInterface {
     }
 
     @Override
-    public int createReservation(String accountID, String showID, List<String> seatIDs,
+    public int createReservation(String accountID, String password, String showID, List<String> seatIDs,
                                  String date, String time, double totalPrice) {
-        Account account = database.getAccount(accountID, "");
+        Account account = database.getAccount(accountID, password);
 
         if (account == null) {
             return -1;
@@ -220,11 +280,12 @@ public class Server implements ServerInterface {
     }
 
     @Override
-    public ArrayList<Seat> getAvailableSeats() {
+    public ArrayList<Seat> getAvailableSeats(String showID, String date) {
         ArrayList<Seat> allSeats = new ArrayList<>();
         BufferedReader br = null;
+        String name = "Concert" + showID;
         try {
-            br = new BufferedReader(new FileReader("seats.txt"));
+            br = new BufferedReader(new FileReader(name));
             String line;
             while ((line = br.readLine()) != null) {
                 Seat seat = new Seat(line);
