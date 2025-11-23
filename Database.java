@@ -172,12 +172,17 @@ public class Database {
                 String[] lines1 = lines.get(i).split(",");
                 String userName1 = lines1[3];
                 String passWord = lines1[4];
-                boolean isAccountToDelete = userName1.equals(userName) && passWord.equals(password);
-
-                if (isAccountToDelete) {
-                    found = true;
-                } else {
+                String id = lines1[7];
+                if (!(passWord.equals(password)) || !(userName1.equals(userName)) || !(id.equals(accountID))) {
                     newLines.add(lines.get(i));
+                } else {
+                    boolean isAccountToDelete = userName1.equals(userName) && passWord.equals(password) && id.equals(accountID);
+
+                    if (isAccountToDelete) {
+                        found = true;
+                    } else {
+                        newLines.add(lines.get(i));
+                    }
                 }
             }
 
@@ -197,7 +202,7 @@ public class Database {
     }
 
     //Getting your Account using ID and Password
-    public Account getAccount(String username, String password) {
+    public Account getAccount(String accountID, String password) {
         synchronized (accountO) {
             //Reading the file
             ArrayList<String> lines = new ArrayList<>();
@@ -216,7 +221,7 @@ public class Database {
             //Returning the account
             for (int i = 0; i < lines.size(); i++) {
                 Account account = new Account(lines.get(i));
-                if (account.getUserName().equals(username) && account.getPassword().equals(password)) {
+                if (account.getID().equals(accountID) && account.getPassword().equals(password)) {
                     return account;
                 }
             }
