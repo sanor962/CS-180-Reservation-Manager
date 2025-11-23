@@ -10,7 +10,7 @@ import java.nio.file.Path;
  * seat availability, and time retrieval
  * NOTE: some tests assume certain seat files exist
  *
- * @author Shalini Murthula (smurthul)
+ * @author Shalini Murthula (smurthul) and Saanvi Verma (verma279)
  * @version November 23, 2025
  */
 public class ServerTest {
@@ -101,13 +101,14 @@ public class ServerTest {
     public void testReserveAndCancelSeat() {
         // assume a seat exists with id "B1"
         String seatID = "B1";
+        String showID = "Billie";
 
         // reserve seat
-        boolean reserved = server.reserveSeat(seatID);
+        boolean reserved = server.reserveSeat(showID, seatID);
         assertTrue(reserved || !reserved);
 
         // cancel seat
-        boolean cancelled = server.cancelSeat(seatID);
+        boolean cancelled = server.cancelSeat(showID, seatID);
         assertTrue(cancelled || !cancelled);
     }
 
