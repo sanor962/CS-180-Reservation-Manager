@@ -681,6 +681,10 @@ Billie,13/06/2030,18:00,7
 - Provides quick lookups for available seats
 - Works alongside Database
 
+**PaymentManager Class:**
+- Manages payments for fast access
+- Works alongside Server
+
 **Client Class:**
 - Uses command line to talk with the user
 - Provides information to the server for every operation
@@ -691,7 +695,7 @@ Billie,13/06/2030,18:00,7
 - Implements Runnable allowing for multiple threads
 - Works alongside Database
 
-**Account, Seat, Reservations Classes:**
+**Account, Seat, Reservations, Concert, Payment Classes:**
 - Data models representing entities
 - Handle their own serialization (toString)
 - Provide getters/setters for fields
