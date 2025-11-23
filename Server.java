@@ -11,17 +11,17 @@ import java.util.List;
  * @version November 21, 2025
  */
 public class Server implements ServerInterface, Runnable {
-    private final Database database;
+    private static final Database database = new Database();
     private Socket socket;
     private PaymentManager paymentManager = new PaymentManager();
 
     public Server() {
-        database = new Database();
+        //database = new Database();
     }
 
     public Server(Socket socket) {
         this.socket = socket;
-        this.database = new Database();
+        //this.database = new Database();
         this.paymentManager = new PaymentManager();
     }
 
@@ -90,7 +90,7 @@ public class Server implements ServerInterface, Runnable {
                     String date = reader.readLine();
                     double totalPrice = 0;
                     for (int i = 0; i < seatIDs.size(); i++) {
-                        Seat s = database.getSeat(seatIDs.get(i));
+                        Seat s = database.getSeat(showID, seatIDs.get(i));
                         if (s == null || !s.isAvailable()) {
                             writer.println("Seat " + seatIDs.get(i) + " is unavailable.");
                             return;
@@ -123,7 +123,7 @@ public class Server implements ServerInterface, Runnable {
                     }
 
                     for (String seatID : seatIDs) {
-                        database.updateSeatAvailability(seatID, false);
+                        database.updateSeatAvailability(showID, seatID, false);
                     }
                 } else if (command.equals("cancelReservation")) {
                     int reservationID = Integer.parseInt(reader.readLine());
@@ -255,16 +255,16 @@ public class Server implements ServerInterface, Runnable {
     }
 
     @Override
-    public Seat getSeat(String seatID) {
-        return database.getSeat(seatID);
+    public Seat getSeat(String show, String seatID) {
+        return database.getSeat(show, seatID);
     }
 
     @Override
-    public boolean reserveSeat(String seatID) {
-        Seat seat = database.getSeat(seatID);
+    public boolean reserveSeat(String show, String seatID) {
+        Seat seat = database.getSeat(show, seatID);
 
         if (seat != null && seat.isAvailable()) {
-            database.updateSeatAvailability(seatID, false);
+            database.updateSeatAvailability(show, seatID, false);
             return true;
         }
 
@@ -272,11 +272,11 @@ public class Server implements ServerInterface, Runnable {
     }
 
     @Override
-    public boolean cancelSeat(String seatID) {
-        Seat seat = database.getSeat(seatID);
+    public boolean cancelSeat(String show, String seatID) {
+        Seat seat = database.getSeat(show, seatID);
 
         if (seat != null && !seat.isAvailable()) {
-            database.updateSeatAvailability(seatID, true);
+            database.updateSeatAvailability(show, seatID, true);
             return true;
         }
 
