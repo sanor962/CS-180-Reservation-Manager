@@ -3,17 +3,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * The Server class handles all client connections
- *
  * Port Number: 6767
  *
- * @author Kunj Arora (arora271) and Saanvi Verma (verma279)
+ * @author Kunj Arora (arora271), Saanvi Verma (verma279), and Shalini Murthula (smurthul)
  * @version November 21, 2025
  */
-
-
 public class Server implements ServerInterface {
     private Database database;
     private PaymentManager paymentManager = new PaymentManager();
@@ -286,6 +282,10 @@ public class Server implements ServerInterface {
         String name = "Concert" + showID;
         try {
             br = new BufferedReader(new FileReader(name));
+            String firstLine = br.readLine();
+            if (firstLine == null) {
+                return allSeats;
+            }
             String line;
             while ((line = br.readLine()) != null) {
                 Seat seat = new Seat(line);
@@ -332,5 +332,4 @@ public class Server implements ServerInterface {
             e.printStackTrace();
         }
     }
-
 }
