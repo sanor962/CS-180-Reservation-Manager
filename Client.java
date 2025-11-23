@@ -8,11 +8,10 @@ import java.util.Scanner;
 
 /**
  * Handles the user interface (Client Class) and communicates with the server
- *
  * Port Number: 6767
  * Host Name: localhost
  *
- * @author Saanvi Verma (verma279)
+ * @author Saanvi Verma (verma279), Shalini Murthula (smurthul)
  * @version November 17, 2025
  */
 
@@ -20,10 +19,10 @@ public class Client implements ClientInterface {
     //Variables
     private boolean run;
     private Socket socket;
-    private BufferedReader reader;
-    private PrintWriter writer;
-    private Scanner scanner = new Scanner(System.in);
-    private String account;
+    protected BufferedReader reader;
+    protected PrintWriter writer;
+    protected Scanner scanner = new Scanner(System.in);
+    protected String account;
     private String host;
     private int port;
 
@@ -33,7 +32,6 @@ public class Client implements ClientInterface {
         this.port = port;
         this.run = false;
         this.account = null;
-
     }
 
     public static void main(String[] args) {
@@ -68,7 +66,7 @@ public class Client implements ClientInterface {
         System.out.println("Concert System");
         System.out.println();
 
-        while (run) {
+        while (run && scanner.hasNextLine()) {
             if (account == null) {
                 //Menu #1
                 System.out.println("1) Login");
@@ -100,7 +98,7 @@ public class Client implements ClientInterface {
                         writer.write(password + "\n");
                         writer.flush();
                         String response = reader.readLine();
-                        if (response.equals("success")) {
+                        if ("success".equals(response)) {
                             System.out.println("Login successful. Welcome, " + username + "!");
                             account = username;
                         } else {
@@ -113,14 +111,26 @@ public class Client implements ClientInterface {
                 } else if (choice.equals("2")) {
                     //Makes an account
                     System.out.println("First Name: ");
+                    if (!scanner.hasNextLine()) {
+                        run = false;
+                        break;
+                    }
                     String firstName = scanner.nextLine().trim();
                     System.out.println("Last Name: ");
+                    if (!scanner.hasNextLine()) {
+                        run = false;
+                        break;
+                    }
                     String lastName = scanner.nextLine().trim();
 
                     //Making sure they are inputting a correct age
                     String age = "";
                     while (true) {
                         System.out.println("Age: ");
+                        if (!scanner.hasNextLine()) {
+                            run = false;
+                            break;
+                        }
                         age = scanner.nextLine().trim();
                         try {
                             int ageNum = Integer.parseInt(age);
@@ -138,6 +148,10 @@ public class Client implements ClientInterface {
                     String username = "";
                     while (true) {
                         System.out.println("Username: ");
+                        if (!scanner.hasNextLine()) {
+                            run = false;
+                            break;
+                        }
                         username = scanner.nextLine().trim();
                         if (username.length() <= 5) {
                             System.out.println("Please enter a valid username.");
@@ -154,6 +168,10 @@ public class Client implements ClientInterface {
                     String password = "";
                     while (true) {
                         System.out.println("Password: ");
+                        if (!scanner.hasNextLine()) {
+                            run = false;
+                            break;
+                        }
                         password = scanner.nextLine().trim();
                         if (password.length() <= 8) {
                             System.out.println("Please enter a valid password.");
@@ -170,6 +188,10 @@ public class Client implements ClientInterface {
                     String email = "";
                     while (true) {
                         System.out.println("Email: ");
+                        if (!scanner.hasNextLine()) {
+                            run = false;
+                            break;
+                        }
                         email = scanner.nextLine().trim();
                         if (!email.contains("@")) {
                             System.out.println("Please enter a valid email.");
@@ -182,6 +204,10 @@ public class Client implements ClientInterface {
                     String phone = "";
                     while (true) {
                         System.out.println("Phone Number: ");
+                        if (!scanner.hasNextLine()) {
+                            run = false;
+                            break;
+                        }
                         phone = scanner.nextLine().trim();
                         if (phone.length() != 10) {
                             System.out.println("Please enter a valid phone number.");
@@ -235,14 +261,14 @@ public class Client implements ClientInterface {
                     System.out.println("Choose an option: ");
                     choice = scanner.nextLine().trim();
 
-                    if (choice.equals("1") || choice.equals("2") || choice.equals("3") || choice.equals("4") || choice.equals("5") || choice.equals("6")) {
+                    if (choice.matches("[1-8]")) {
                         break;
                     } else {
-                        System.out.println("Invalid option. Please enter a number from 1-6.");
+                        System.out.println("Invalid option. Please enter a number from 1-8.");
                     }
                 }
 
-                //Gets avaliable seats in a concert by the ID
+                //Gets available seats in a concert by the ID
                 if (choice.equals("1")) {
                     System.out.println("Concert ID: ");
                     String showID = scanner.nextLine().trim();
@@ -288,7 +314,7 @@ public class Client implements ClientInterface {
 
                     }
 
-                    //Gets the avaliable seats in the concert
+                    //Gets the available seats in the concert
                     try {
                         writer.write("getAvailableSeats\n");
                         writer.write(showID + "\n");
@@ -437,7 +463,7 @@ public class Client implements ClientInterface {
                         }
                     }
 
-                    //Confirms the cancelation
+                    //Confirms the cancellation
                     if (confirm.equals("y")) {
                         try {
                             writer.write("cancelReservation\n");
@@ -473,8 +499,8 @@ public class Client implements ClientInterface {
                                 System.out.println("You have " + num + " reservation:");
                             }
                             for (int i = 0; i < num; i++) {
-                                String reservationSetails = reader.readLine();
-                                System.out.println(reservationSetails);
+                                String reservationDetails = reader.readLine();
+                                System.out.println(reservationDetails);
                             }
                         }
                     } catch (Exception e) {
@@ -550,7 +576,7 @@ public class Client implements ClientInterface {
                     while (true) {
                         System.out.println("Time: ");
                         time = scanner.nextLine();
-                        
+
                         try {
                             h = time.substring(0, time.indexOf(":"));
                             min = time.substring(time.indexOf(":") + 1);
