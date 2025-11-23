@@ -11,7 +11,7 @@ import java.util.List;
  * @version November 21, 2025
  */
 public class Server implements ServerInterface, Runnable {
-    private Database database;
+    final private Database database;
     private Socket socket;
     private PaymentManager paymentManager = new PaymentManager();
 
