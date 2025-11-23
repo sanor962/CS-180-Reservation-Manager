@@ -1,13 +1,12 @@
 import java.io.*;
 import java.util.*;
-
 /**
  * Database class
  *
- * @author Saanvi Verma (verma279), Kunj Arora (arora271), Arav Nair (nair234)
+ * @author Saanvi Verma (verma279), Kunj Arora (arora271),
+ * Arav Nair (nair234), and Shalini Murthula (smurthul)
  * @version November 6, 2025
  */
-
 public class Database {
     //Files to store data in
     private static final String ACCOUNTFILE = "accounts.txt";
@@ -148,11 +147,12 @@ public class Database {
                 String[] lines1 = lines.get(i).split(",");
                 String userName1 = lines1[3];
                 String passWord = lines1[4];
-                String id = lines1[7];
-                if (!(passWord.equals(password)) || !(userName1.equals(userName)) || !(id.equals(accountID))) {
-                    newLines.add(lines.get(i));
-                } else {
+                boolean isAccountToDelete = userName1.equals(userName) && passWord.equals(password);
+
+                if (isAccountToDelete) {
                     found = true;
+                } else {
+                    newLines.add(lines.get(i));
                 }
             }
 
@@ -169,11 +169,10 @@ public class Database {
             }
             return false;
         }
-
     }
 
     //Getting your Account using ID and Password
-    public Account getAccount(String accountID, String password) {
+    public Account getAccount(String username, String password) {
         synchronized (accountO) {
             //Reading the file
             ArrayList<String> lines = new ArrayList<>();
@@ -192,7 +191,7 @@ public class Database {
             //Returning the account
             for (int i = 0; i < lines.size(); i++) {
                 Account account = new Account(lines.get(i));
-                if (account.getID().equals(accountID) && account.getPassword().equals(password)) {
+                if (account.getUserName().equals(username) && account.getPassword().equals(password)) {
                     return account;
                 }
             }
@@ -560,8 +559,4 @@ public class Database {
             return time;
         }
     }
-
 }
-
-
-
