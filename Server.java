@@ -10,13 +10,21 @@ import java.util.List;
  * @author Kunj Arora (arora271), Saanvi Verma (verma279), and Shalini Murthula (smurthul)
  * @version November 21, 2025
  */
-public class Server implements ServerInterface {
+public class Server implements ServerInterface, Runnable {
     private Database database;
+    private Socket socket;
     private PaymentManager paymentManager = new PaymentManager();
 
     public Server() {
         database = new Database();
     }
+
+    public Server(Socket socket) {
+        this.socket = socket;
+        this.database = new Database();
+        this.paymentManager = new PaymentManager();
+    }
+
 
     private void handleClient(Socket socket) {
         BufferedReader reader = null;
@@ -308,6 +316,10 @@ public class Server implements ServerInterface {
         return allSeats;
     }
 
+    public void run() {
+        handleClient(socket);
+    }
+
     public static void main(String[] args) {
         Server server = new Server();
         try {
@@ -318,16 +330,9 @@ public class Server implements ServerInterface {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected");
 
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        server.handleClient(clientSocket);
-                    }
-                });
-
+                Thread thread = new Thread(new Server(clientSocket));
                 thread.start();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
