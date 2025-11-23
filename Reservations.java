@@ -6,13 +6,13 @@ import java.util.List;
 /**
  * Reservations - Implements a reservation with user, show, seat, and pricing details.
  *
- * @author Arav Nair and Saanvi Verma
+ * @author Arav Nair (nair234), Saanvi Verma (verma279), Kunj Arora (arora271)
  * @version November 6, 2025
  */
 
 public class Reservations implements ReservationsInterface, Serializable {
     // Reservation fields
-    //private static int nextID = 1; // Ensures each new reservation has a unique ID
+    private static int nextID = 1;
     private int reservationID;
     private String userID;
     private String showID;
@@ -41,7 +41,7 @@ public class Reservations implements ReservationsInterface, Serializable {
 
         //empty/null line handling
         if (line == null || line.isBlank()) {
-            //this.reservationID = nextID++;
+            this.reservationID = nextID++;
             this.userID = "";
             this.showID = "";
             this.seatIDs = new ArrayList<>();

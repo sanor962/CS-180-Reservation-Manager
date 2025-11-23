@@ -14,7 +14,7 @@ import java.util.Arrays;
  * due to the hardcoded file paths in Database.java, we must use the actual file names and
  * ensure they're cleaned up before and after every test run
  *
- * @author Shalini Murthula (smurthul), Saanvi Verma (verma279)
+ * @author Shalini Murthula (smurthul), Saanvi Verma (verma279), Kunj Arora (arora271)
  * @version November 9, 2025
  */
 public class DatabaseTest {
@@ -42,6 +42,8 @@ public class DatabaseTest {
     private final String seatId1 = "A1";
     private final String seatAvaliable = seatId1 + ",A,true,1,50.00";
     private final String seatReserved = seatId1 + ",A,false,1,50.00";
+
+    String showID = "BillieEilishConcert"; // dummy show ID
 
     // setup method to initialize the Database and ensure files are clean before each test
     @BeforeEach
@@ -177,7 +179,7 @@ public class DatabaseTest {
             fw.write(seatAvaliable + "\n");
         }
 
-        Seat seat = db.getSeat(seatId1);
+        Seat seat = db.getSeat(showID, seatId1);
 
         assertNotNull(seat, "getSeat should retrieve the seat from file.");
         assertEquals(seatId1, seat.getSeatID());
@@ -229,7 +231,8 @@ public class DatabaseTest {
         assertNull(db.getReservationByID(resID), "Reservation should be removed from file.");
 
         // seat availability should be updated
-        Seat seat = db.getSeat(seatId1);
+        Seat seat = db.getSeat(showID, seatId1);
+        assertNotNull(seat, "Seat has to exist in the file before canceling");
         assertTrue(seat.isAvailable(), "The cancelled seat should be marked available (true) in the seats file.");
     }
 

@@ -6,12 +6,11 @@ import static org.junit.Assert.*;
  * JUnit tests for the Reservations class, verifying constructors,
  * getters/setters, file parsing, and string formatting.
  *
- * @author Arav Nair (nair234)
+ * @author Arav Nair (nair234), Kunj Arora (arora271)
  * @version November 8, 2025
  */
 
 public class ReservationsTest {
-
     // Helper to create a test Account
     private Account createTestAccount(String firstName, String lastName, String phone) {
         Account acc = new Account(firstName, lastName, 25, firstName.toLowerCase(), "pass123",
@@ -25,7 +24,7 @@ public class ReservationsTest {
     public void testConstructorAndGetters() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         List<String> seats = Arrays.asList("A1", "A2");
-        Reservations r = new Reservations(acc, "S001", seats, "2025-11-10", "19:00", 40.0);
+        Reservations r = new Reservations(1, acc, "S001", seats, "2025-11-10", "19:00", 40.0);
 
         assertTrue(r.getReservationID() > 0);
         assertEquals(acc.getID(), r.getUserID());
@@ -40,7 +39,7 @@ public class ReservationsTest {
     //Testing constructor null input handling
     @Test(timeout = 1000)
     public void testConstructorHandlesNullInputs() {
-        Reservations r = new Reservations((Account) null, null, null, null, null, 0.0);
+        Reservations r = new Reservations(1, (Account) null, null, null, null, null, 0.0);
 
         assertTrue(r.getReservationID() > 0);
         assertEquals("", r.getUserID());
@@ -56,7 +55,7 @@ public class ReservationsTest {
     @Test(timeout = 1000)
     public void testSetterUpdateValues() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
-        Reservations r = new Reservations(acc, "S002", Arrays.asList("B1"), "2025-12-01", "18:30", 15.0);
+        Reservations r = new Reservations(1, acc, "S002", Arrays.asList("B1"), "2025-12-01", "18:30", 15.0);
 
         r.setUserID("U010"); //manually overrides userID
         r.setShowID("S010");
@@ -120,7 +119,7 @@ public class ReservationsTest {
     @Test(timeout = 1000)
     public void testToStringFormat() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
-        Reservations r = new Reservations(acc, "S004", Arrays.asList("C1", "C2"), "2025-12-10", "17:00", 25.0);
+        Reservations r = new Reservations(1, acc, "S004", Arrays.asList("C1", "C2"), "2025-12-10", "17:00", 25.0);
         String expected = r.getReservationID() + "," + acc.getID() + ",S004,C1|C2,2025-12-10,17:00,25.0";
         assertEquals(expected, r.toString());
     }
@@ -129,7 +128,7 @@ public class ReservationsTest {
     @Test(timeout = 1000)
     public void testNumSeatsConsistency() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
-        Reservations r = new Reservations(acc, "S007", Arrays.asList("E1"), "2025-12-25", "20:00", 20.0);
+        Reservations r = new Reservations(1, acc, "S007", Arrays.asList("E1"), "2025-12-25", "20:00", 20.0);
         assertEquals(1, r.getNumSeats());
 
         r.setSeatIDs(Arrays.asList("E1", "E2", "E3", "E4"));
@@ -158,7 +157,7 @@ public class ReservationsTest {
     @Test(timeout = 1000)
     public void testTotalPriceEdgeCases() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
-        Reservations r = new Reservations(acc, "S009", Arrays.asList("F1"), "2025-12-15", "19:00", -50.0);
+        Reservations r = new Reservations(1, acc, "S009", Arrays.asList("F1"), "2025-12-15", "19:00", -50.0);
         assertEquals(-50.0, r.getTotalPrice(), 0.001);
 
         r.setTotalPrice(0);
@@ -173,7 +172,7 @@ public class ReservationsTest {
     public void testPersistentDataStringMatch() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         //First create a reservation object
-        Reservations original = new Reservations(acc, "S006", Arrays.asList("D1", "D2"), "2025-12-20", "19:30", 30.0);
+        Reservations original = new Reservations(1, acc, "S006", Arrays.asList("D1", "D2"), "2025-12-20", "19:30", 30.0);
 
         //Second convert reservation to string (simulates saving to a file)
         String savedLine = original.toString();

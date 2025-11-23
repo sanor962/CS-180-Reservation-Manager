@@ -7,7 +7,7 @@ import java.util.List;
  * The Server class handles all client connections
  * Port Number: 6767
  *
- * @author Kunj Arora (arora271), Saanvi Verma (verma279), and Shalini Murthula (smurthul)
+ * @author Kunj Arora (arora271), Saanvi Verma (verma279), Shalini Murthula (smurthul)
  * @version November 21, 2025
  */
 public class Server implements ServerInterface, Runnable {
@@ -324,7 +324,7 @@ public class Server implements ServerInterface, Runnable {
         Server server = new Server();
         try {
             ServerSocket serverSocket = new ServerSocket(6767);
-            System.out.println("Server running on port 6767...");
+            System.out.println("Server running on port 6767");
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
