@@ -2,7 +2,14 @@ import org.junit.jupiter.api.*;
 import java.io.*;
 import java.util.concurrent.Executors;
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * JUnit test cases for the Client class
+ * Tests verify functionality of the class, which represents a client
+ * in a concert reservation system, using simulations of server interactions
+ *
+ * @author Shalini Murthula (smurthul)
+ * @version November 22, 2025
+ */
 public class ClientTest {
 
     private PipedInputStream clientIn;
