@@ -1,4 +1,4 @@
-# Concert Reservation System - Phase 1
+# Concert Reservation System - Phase 1 and 2
 ## L30-Team 4
 ## Team Members
 - Saanvi Verma
@@ -17,16 +17,29 @@ javac Seat.java
 javac SeatingChart.java
 javac Reservations.java
 javac Database.java
+javac Client.java
+javac Server.java
+javac Payment.java
+javac PaymentManager.java
+javac Concert.java
 javac AccountInterface.java
 javac SeatInterface.java
 javac SeatingChartInterface.java
 javac ReservationsInterface.java
 javac DatabaseInterface.java
+javac ClientInterface.java
+javac ServerInterface.java
+javac PaymentInterface.java
+javac PaymentManagerInterface.java
+javac ConcertInterface.java
 javac AccountTest.java
 javac SeatTest.java
 javac SeatingChartTest.java
 javac ReservationsTest.java
 javac DatabaseTest.java
+javac PaymentManagerTest.java
+javac ClientTest.java
+javac seats.txt
 ```
 
 ### To run all tests:
@@ -34,7 +47,10 @@ javac DatabaseTest.java
 java DatabaseTest
 java AccountTest
 java SeatTest
+java SeatingChartTest
 java ReservationsTest
+java PaymentManagerTest
+java ClientTest
 ```
 
 ## GTA and Submission Information
@@ -44,7 +60,13 @@ java ReservationsTest
 - This project's test cases have been written using JUnit 5.
 - All test cases were verified locally using JUnit 5, even though Vocareum’s compilation logs show missing symbol errors due to its arrangement.
 
-## Submission Information
+## Submission Information (Phase 2)
+- Saanvi Verma submitted Phase 2 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Concert, ConcertInterface, Database, DatabaseInterface, Client, ClientInterface, Server and ServerInterface.
+- Arav Nair worked on Payment, PaymentManager, PaymentManagerInterface, PaymentInterface, and PaymentManagerTest.
+- Kunj Arora worked on Server, ServerInterface, and Database.
+- Shalini Murthula worked on ClientTest, ServerTest, DatabaseTest, ConcertTest, and Database.
+
+## Submission Information (Phase 1)
 - Saanvi Verma submitted Phase 1 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Account, AccountInterface, AccountTest, Database, DatabaseInterface, and DatabaseTest.
 - Kunj Arora worked on Seat, SeatInterface, SeatingChart, SeatingChartInterface, and Database.
 - Arav Nair worked on Database, Reservations, ReservationsInterface, and ReservationsTest.
@@ -94,6 +116,49 @@ Main database manager that handles all the data storage and retrieval (in text f
 - Uses 'Reservations' class to store booking records
 - Works alongside 'SeatingChart' class (Database handles file I/O, SeatingChart handles in-memory operations)
 - Reads from and writes to three text files for data persistence
+
+---
+
+# Concert.java
+
+### Description
+Represents every concert that users can go to. Each concert has a unique ID generated upon creation and a unique seating class associated with every concert to validate avaliable seating.
+
+### Fields
+- 'String name' - Concert's name
+- 'String date' - Date of the concert
+- 'String time' - Time of the concert
+- 'int ID' - Unique for concert (auto-generated upon creation)
+
+### Key Methods
+- 'writingInFile()' - Converts concert to comma-separated string for file storage
+- Constructor 'Account(String line)' - Makes a concert object from file string
+- Getters: 'getName()', 'getDate()', 'getTime()', and 'getID()'
+
+### Testing Done
+**Unit Tests:**
+- Concert creation with all valid fields
+- File string conversion: `concert.toString()` produces correct comma-separated format
+- File reconstruction: `new Concert(line)` correctly parses all fields from string
+- All getters return correct values after creation
+- Concert reconstruction preserves all data
+
+### File Format
+Format: 'name,date,time,ID'
+
+# WORKING ON THIS RN
+
+Example:
+```
+John,Doe,25,johndoe,password123,john@email.com,555-1234,1
+Jane,Smith,30,janesmith,pass456,jane@email.com,555-5678,2
+```
+
+### Relationship to Other Classes
+- Used by 'Database' for account management and persistence
+- Implements 'AccountInterface'
+- Used in 'Reservations' to identify who made a booking
+- Stored in accounts.txt
 
 ---
 

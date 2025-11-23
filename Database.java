@@ -13,15 +13,18 @@ public class Database {
     private static final String ACCOUNTFILE = "accounts.txt";
     private static final String SEATSFILE = "seats.txt";
     private static final String RESERVATIONSFILE = "reservations.txt";
+    private static final String CONCERTFILE = "concert.txt";
 
     private File fileA;
     private File fileS;
     private File fileR;
+    private File fileC;
 
     //Thread objects
     private final Object accountO = new Object();
     private final Object seatO = new Object();
     private final Object reservationO = new Object();
+    private final Object concertO = new Object();
 
     //Constructor
     public Database() {
@@ -29,6 +32,7 @@ public class Database {
             fileA = new File(ACCOUNTFILE);
             fileS = new File(SEATSFILE);
             fileR = new File(RESERVATIONSFILE);
+            fileC = new File(CONCERTFILE);
 
             //creates files if they don't exist
             if (!fileA.exists()) {
@@ -39,6 +43,9 @@ public class Database {
             }
             if (!fileR.exists()) {
                 fileR.createNewFile();
+            }
+            if (!fileC.exists()) {
+                fileC.createNewFile();
             }
 
         } catch (Exception e) {
@@ -301,7 +308,7 @@ public class Database {
     }
 
     //Updates the availability seat with the seatID to the boolean
-    private void updateSeatAvailability(String seatID, boolean available) {
+    public void updateSeatAvailability(String seatID, boolean available) {
         synchronized (seatO) {
             ArrayList<String> lines = new ArrayList<>();
 
@@ -445,5 +452,116 @@ public class Database {
 
     }
 
+    public boolean createConcert(String name, String date, String time) {
+        synchronized (concertO) {
+            ArrayList<String> lines = new ArrayList<>();
+            try (BufferedReader bwC = new BufferedReader(new FileReader(fileC))) {
+                while (true) {
+                    String line = bwC.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    lines.add(line);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            for (int i = 0; i < lines.size(); i++) {
+                String[] parts = lines.get(i).split(",");
+                if (parts[1].equals(date) && parts[2].equals(time)) {
+                    return false;
+                }
+            }
+            int num = lines.size() + 1;
+            Concert concert = new Concert(name, date, time, num);
+
+            String nameOfFile = "Concert" + num;
+            File file = new File(nameOfFile);
+
+            ArrayList<String> seats = new ArrayList<>();
+            try (BufferedWriter bC = new BufferedWriter(new FileWriter(file))) {
+                bC.write(concert.getID());
+                bC.newLine();
+                try (BufferedReader bwS = new BufferedReader(new FileReader(fileS))) {
+                    while (true) {
+                        String line = bwS.readLine();
+                        if (line == null) {
+                            break;
+                        }
+                        seats.add(line);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                for (int i = 0; i < seats.size(); i++) {
+                    bC.write(seats.get(i));
+                    bC.newLine();
+                }
+            } catch (IOException e) {
+                return false;
+            }
+
+            try (BufferedWriter bC = new BufferedWriter(new FileWriter(fileC, true))) {
+                bC.write(concert.writingInFile());
+                bC.newLine();
+            } catch (IOException e) {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public ArrayList<String> getAllConcerts() {
+        synchronized (concertO) {
+            ArrayList<String> concerts = new ArrayList<>();
+            String line = "";
+            try (BufferedReader brC = new BufferedReader(new FileReader(fileC))) {
+                while (true) {
+                    line = brC.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    concerts.add(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return concerts;
+        }
+    }
+
+    public String getTime(String concertID) {
+        synchronized (concertO) {
+            ArrayList<String> concerts = new ArrayList<>();
+            String line = "";
+            try (BufferedReader brC = new BufferedReader(new FileReader(fileC))) {
+                while (true) {
+                    line = brC.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    concerts.add(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            String ID = "";
+            String time = "";
+            for (int i = 0 ; i < concerts.size(); i++) {
+                String[] partsOfConcert = concerts.get(i).split(",");
+                ID = (partsOfConcert[3]);
+                if (concertID.equals(ID)) {
+                    time = partsOfConcert[2];
+                }
+            }
+            return time;
+        }
+    }
 
 }
+
+
+
