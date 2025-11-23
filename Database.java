@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Database class
  *
@@ -13,6 +15,8 @@ public class Database {
     private static final String SEATSFILE = "seats.txt";
     private static final String RESERVATIONSFILE = "reservations.txt";
     private static final String CONCERTFILE = "concert.txt";
+
+    private final AtomicInteger nextID = new AtomicInteger(1);
 
     private File fileA;
     private File fileS;
@@ -50,6 +54,27 @@ public class Database {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        int id = 0;
+        ArrayList<String> res = new ArrayList<>();
+        try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
+            while (true) {
+                String line = brR.readLine();
+                if (line == null) {
+                    break;
+                }
+                res.add(line);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        for (int i = 0; i < res.size(); i++) {
+            Reservations reservations = new Reservations(res.get(i));
+            if (reservations.getReservationID() > id) {
+                id = reservations.getReservationID();
+            }
+        }
+        nextID.set(id + 1);
     }
 
     // ACCOUNT METHODS
@@ -237,8 +262,15 @@ public class Database {
                 throw new IllegalArgumentException("Account cannot be null when creating a reservation.");
             }
 
+            synchronized (seatO) {
+                for (int i = 0; i < seatIDs.size(); i++) {
+                    updateSeatAvailability(showID, seatIDs.get(i), false);
+                }
+            }
+
             // Create the reservation object
-            Reservations reservation = new Reservations(account, showID, seatIDs, date, time, totalPrice);
+            int id = nextID.getAndIncrement();
+            Reservations reservation = new Reservations(id, account, showID, seatIDs, date, time, totalPrice);
 
             // Append the reservation to the file
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileR, true))) {
@@ -290,7 +322,7 @@ public class Database {
             if (cancelledReservation != null) {
                 for (int i = 0; i < cancelledReservation.getSeatIDs().size(); i++) {
                     //This can cause a deadlock so make sure to always have reservationO then seatO
-                    updateSeatAvailability(cancelledReservation.getSeatIDs().get(i), true);
+                    updateSeatAvailability(cancelledReservation.getShowID(), cancelledReservation.getSeatIDs().get(i), true);
                 }
                 try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR))) {
                     for (int i = 0; i < newLines.size(); i++) {
@@ -307,11 +339,16 @@ public class Database {
     }
 
     //Updates the availability seat with the seatID to the boolean
-    public void updateSeatAvailability(String seatID, boolean available) {
+    public void updateSeatAvailability(String show, String seatID, boolean available) {
         synchronized (seatO) {
+            String f = "Concert" + show;
+            File file = new File(f);
+            if (!file.exists()) {
+                return;
+            }
             ArrayList<String> lines = new ArrayList<>();
 
-            try (BufferedReader br = new BufferedReader(new FileReader(fileS))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line = br.readLine();
                 while (line != null) {
                     lines.add(line);
@@ -321,7 +358,7 @@ public class Database {
                 throw new RuntimeException(e);
             }
 
-            for (int i = 0; i < lines.size(); i++) {
+            for (int i = 1; i < lines.size(); i++) {
                 //String[] parts = lines.get(i).split(",");
                 Seat seat = new Seat(lines.get(i));
             /*if (parts[0].equals(seatID)) {
@@ -336,7 +373,7 @@ public class Database {
                 }
             }
 
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileS))) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
                 for (int i = 0; i < lines.size(); i++) {
                     bw.write(lines.get(i) + "\n");
                 }
@@ -420,10 +457,20 @@ public class Database {
     }
 
     //Getting the users seat by their ID
-    public Seat getSeat(String seatID) {
+    public Seat getSeat(String show, String seatID) {
         synchronized (seatO) {
+            String name = "Concert" + show;
+            File file = new File(name);
+            if (!file.exists()) {
+                return null;
+            }
+
             ArrayList<String> lines = new ArrayList<>();
-            try (BufferedReader brS = new BufferedReader(new FileReader(fileS))) {
+            try (BufferedReader brS = new BufferedReader(new FileReader(file))) {
+                String header = brS.readLine();
+                if (header == null) {
+                    return null;
+                }
                 String line;
                 while (true) {
                     line = brS.readLine();
