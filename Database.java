@@ -240,6 +240,34 @@ public class Database {
         }
     }
 
+    public Account getAccountByUsername(String username, String password) {
+        synchronized (accountO) {
+            // read all account entries from the file
+            ArrayList<String> lines = new ArrayList<>();
+            try (BufferedReader brA = new BufferedReader(new FileReader(fileA))) {
+                String line;
+                while ((line = brA.readLine()) != null) {
+                    if (!line.trim().isEmpty()) {
+                        lines.add(line);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            for (String line : lines) {
+                Account account = new Account(line);
+                // check if both username and password match
+                if (account.getUserName().equals(username) &&
+                        account.getPassword().equals(password)) {
+                    return account; // return the matching account
+                }
+            }
+
+            return null;
+        }
+    }
+
     //Helper method for reading reservations from file
     private List<Reservations> readReservationsFromFile() {
         List<Reservations> reservations = new ArrayList<>();
