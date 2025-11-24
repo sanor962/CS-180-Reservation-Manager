@@ -1,7 +1,6 @@
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import java.util.*;
-import static org.junit.Assert.*;
-
+import static org.junit.jupiter.api.Assertions.*;
 /**
  * JUnit tests for the Reservations class, verifying constructors,
  * getters/setters, file parsing, and string formatting.
@@ -9,7 +8,6 @@ import static org.junit.Assert.*;
  * @author Arav Nair (nair234), Kunj Arora (arora271)
  * @version November 8, 2025
  */
-
 public class ReservationsTest {
     // Helper to create a test Account
     private Account createTestAccount(String firstName, String lastName, String phone) {
@@ -20,7 +18,7 @@ public class ReservationsTest {
     }
 
     //Testing Reservations constructors and getter methods
-    @Test(timeout = 1000)
+    @Test
     public void testConstructorAndGetters() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         List<String> seats = Arrays.asList("A1", "A2");
@@ -37,7 +35,7 @@ public class ReservationsTest {
     }
 
     //Testing constructor null input handling
-    @Test(timeout = 1000)
+    @Test
     public void testConstructorHandlesNullInputs() {
         Reservations r = new Reservations(1, (Account) null, null, null, null, null, 0.0);
 
@@ -52,7 +50,7 @@ public class ReservationsTest {
     }
 
     //Testing Reservations setter methods
-    @Test(timeout = 1000)
+    @Test
     public void testSetterUpdateValues() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         Reservations r = new Reservations(1, acc, "S002", Arrays.asList("B1"), "2025-12-01", "18:30", 15.0);
@@ -74,7 +72,7 @@ public class ReservationsTest {
     }
 
     //Testing Constructor that takes from reservations.txt File
-    @Test(timeout = 1000)
+    @Test
     public void testFileLineConstructor() {
         //Create a sample line as it would appear in reservations.txt
         String line = "3,U003,S003,A1|A2|A3,2025-11-15,21:00,60.0";
@@ -91,7 +89,7 @@ public class ReservationsTest {
     }
 
     //Testing parsing when the line is blank, null, or missing fields
-    @Test(timeout = 1000)
+    @Test
     public void testLineConstructorEdgeCases() {
         Reservations blank = new Reservations("");
         Reservations nullLine = new Reservations(null);
@@ -108,7 +106,7 @@ public class ReservationsTest {
     }
 
     //Testing invalid numeric totalPrice (should default to 0.0)
-    @Test(timeout = 1000)
+    @Test
     public void testInvalidPriceParsing() {
         String line = "11,U011,S011,A1|A2,2025-11-20,18:00,INVALID";
         Reservations r = new Reservations(line);
@@ -116,7 +114,7 @@ public class ReservationsTest {
     }
 
     //Testing toString formatting
-    @Test(timeout = 1000)
+    @Test
     public void testToStringFormat() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         Reservations r = new Reservations(1, acc, "S004", Arrays.asList("C1", "C2"), "2025-12-10", "17:00", 25.0);
@@ -125,7 +123,7 @@ public class ReservationsTest {
     }
 
     //Testing numSeats consistency
-    @Test(timeout = 1000)
+    @Test
     public void testNumSeatsConsistency() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         Reservations r = new Reservations(1, acc, "S007", Arrays.asList("E1"), "2025-12-25", "20:00", 20.0);
@@ -139,7 +137,7 @@ public class ReservationsTest {
     }
 
     //Testing empty seat list from constructor
-    @Test(timeout = 1000)
+    @Test
     public void testEmptySeatsFromLine() {
         String line = "9,U009,S009,,2025-12-31,20:00,50.0";
         Reservations r = new Reservations(line);
@@ -154,7 +152,7 @@ public class ReservationsTest {
     }
 
     //Testing totalPrice edge cases
-    @Test(timeout = 1000)
+    @Test
     public void testTotalPriceEdgeCases() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         Reservations r = new Reservations(1, acc, "S009", Arrays.asList("F1"), "2025-12-15", "19:00", -50.0);
@@ -168,7 +166,7 @@ public class ReservationsTest {
     }
 
     //Testing if Reservations properly saves and reloads data
-    @Test(timeout = 1000)
+    @Test
     public void testPersistentDataStringMatch() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         //First create a reservation object
@@ -184,7 +182,5 @@ public class ReservationsTest {
         assertEquals(original.getReservationID(), loaded.getReservationID());
         assertEquals(original.getSeatIDs(), loaded.getSeatIDs());
         assertEquals(original.getTotalPrice(), loaded.getTotalPrice(), 0.001);
-
     }
-
 }
