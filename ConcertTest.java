@@ -71,7 +71,7 @@ public class ConcertTest {
     // test to see if constructor throws an exception
     @Test
     public void testConstructorWithMalformedString() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             new Concert("Two Fields,2025-03-05"); // missing time and id
         });
     }
