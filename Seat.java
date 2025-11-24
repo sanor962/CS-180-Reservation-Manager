@@ -14,6 +14,7 @@ public class Seat implements SeatInterface, Serializable {
     private int number;
     private double price;
 
+    //Constructor
     public Seat(String seatID, String row, int number, double price) {
         this.seatID = seatID;
         this.row = row;
@@ -22,6 +23,7 @@ public class Seat implements SeatInterface, Serializable {
         this.isAvailable = true;
     }
 
+    //Constructor with text file line
     public Seat(String line) {
         String[] parts = line.split(",");
         if (parts.length < 5) {
@@ -34,6 +36,7 @@ public class Seat implements SeatInterface, Serializable {
         this.price = Double.parseDouble(parts[4]);
     }
 
+    //Setter methods
     public void setPrice(double price) {
         this.price = price;
     }
@@ -42,6 +45,7 @@ public class Seat implements SeatInterface, Serializable {
         this.isAvailable = avaliable;
     }
 
+    //Getter methods
     public String getSeatID() {
         return seatID;
     }
@@ -62,10 +66,12 @@ public class Seat implements SeatInterface, Serializable {
         return number;
     }
 
+    //To String
     public String toString() {
         return "Seat ID: " + seatID + "\n Available: " + isAvailable + "\n Price: $" + price;
     }
 
+    //Writing in the file
     public String writingInFile() {
         return getSeatID() + "," + getRow() + "," + isAvailable() + "," + getNumber() + "," + getPrice();
     }
