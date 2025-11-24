@@ -1,9 +1,10 @@
 /**
  * Account - class that manages the information in the account
  *
- * @author Saanvi Verma (verma279) and Shalini Murthula (smurthul)
+ * @author Saanvi Verma
  * @version November 5, 2025
  */
+
 public class Account implements AccountInterface {
     private String firstName;
     private String lastName;
@@ -29,7 +30,13 @@ public class Account implements AccountInterface {
 
     //Constructor that takes in from the line from the file
     public Account(String line) {
+        if (line == null) {
+            throw new IllegalArgumentException();
+        }
         String[] partOfAccount = line.split(",");
+        if (partOfAccount.length < 8) {
+            throw new IllegalArgumentException();
+        }
         this.firstName = partOfAccount[0];
         this.lastName = partOfAccount[1];
         this.age = Integer.parseInt(partOfAccount[2]);
@@ -99,17 +106,13 @@ public class Account implements AccountInterface {
     public String createID() {
         String firstName1 = firstName.toUpperCase();
         String result;
-        if (firstName1.length() == 0) {
-            result = "A";
-        } else if (firstName1.length() >= 2) {
+        if (firstName1.length() >= 2) {
             result = firstName1.charAt(1) + "" + firstName1.charAt((firstName1.length() - 2));
         } else {
             result = firstName1.charAt(0) + "";
         }
         String lastName1 = lastName.toUpperCase();
-        if (lastName1.length() == 0) {
-            result = "B" + result;
-        } else if (lastName1.length() >= 2) {
+        if (lastName1.length() >= 2) {
             result = (lastName1.charAt(0) + "" + lastName1.charAt(2)).concat(result);
         } else {
             result = lastName1.charAt(0) + "";
