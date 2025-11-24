@@ -18,6 +18,7 @@ public class PaymentManager implements PaymentManagerInterface {
         payments = new ArrayList<>();
     }
 
+    //Processing the payment
     @Override
     public boolean processPayment(int reservationID, double amount) {
         if (amount <= 0 || getPaymentAmount(reservationID) > 0) {
@@ -27,6 +28,7 @@ public class PaymentManager implements PaymentManagerInterface {
         return true;
     }
 
+    //Refunding the payment
     @Override
     public boolean refundPayment(int reservationID) {
         for (int i = 0; i < payments.size(); i++) {
@@ -38,6 +40,7 @@ public class PaymentManager implements PaymentManagerInterface {
         return false; // no payment found
     }
 
+    //Getting the full payment amount
     @Override
     public double getPaymentAmount(int reservationID) {
         for (Payment p : payments) {
