@@ -13,11 +13,13 @@ public class Payment implements PaymentInterface, Serializable {
     private int reservationID;
     private double amount;
 
+    //Constructor
     public Payment(int reservationID, double amount) {
         this.reservationID = reservationID;
         this.amount = amount;
     }
 
+    //Getter methods
     @Override
     public int getReservationID() {
         return reservationID;
