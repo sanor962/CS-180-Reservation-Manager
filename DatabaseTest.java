@@ -264,13 +264,13 @@ public class DatabaseTest {
         // write the seat data directly to the seats file
         try (FileWriter fw = new FileWriter(SeatFile)) {
             fw.write("101\n");
-            String seatLine = seatId1 + ",A,false,1,50.00";
+            String seatLine = seatId1 + ",A,true,1,50.00";
             fw.write(seatLine + "\n");
         }
 
         // create reservation
         int resID = db.createReservation(account, showID, Arrays.asList(seatId1), "2025-12-01", "19:00", 50.00);
-
+        //System.out.println("Reservation ID = " + resID);
         // cancel the reservation
         assertTrue(db.cancelReservation(resID), "Cancellation should succeed.");
 
@@ -516,7 +516,7 @@ public class DatabaseTest {
 
         // malformed line should not create an account
         Account invalidAccount = db.getAccount("", "pass");
-        assertNotNull(invalidAccount, "Malformed line without ID should not create an account.");
+        assertNull(invalidAccount, "Malformed line without ID should not create an account.");
     }
 
     @Test
