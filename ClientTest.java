@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ClientTest {
 
+    //Variables
     private PipedInputStream clientIn;
     private PipedOutputStream clientOut;
     private PipedInputStream serverIn;
@@ -70,6 +71,7 @@ public class ClientTest {
         });
     }
 
+    //Testing constructor and setters
     @Test
     public void testConstructorAndSetters() {
         // check default constructor values
@@ -85,6 +87,7 @@ public class ClientTest {
         assertEquals(1234, client.getPort());
     }
 
+    //Connecting and Disconnecting
     @Test
     public void testConnectAndDisconnect() {
         // client should connect successfully
@@ -93,6 +96,7 @@ public class ClientTest {
         assertDoesNotThrow(client::disconnect);
     }
 
+    //Login
     @Test
     public void testLoginFlow() {
         // simulate user input for login (menu option 1)
@@ -108,6 +112,7 @@ public class ClientTest {
         assertEquals("user_test", client.getAccount());
     }
 
+    //Create Account
     @Test
     public void testCreateAccountFlow() {
         String input = "2\nJohn\nDoe\n25\njohnDoe123\npassword123\njohn@example.com\n1234567890\n3\n";
@@ -124,6 +129,7 @@ public class ClientTest {
         assertNull(client.getAccount());
     }
 
+    //Delete Account
     @Test
     public void testDeleteAccountFlow() {
         client.account = "user_test";
@@ -137,6 +143,7 @@ public class ClientTest {
         assertNull(client.getAccount());
     }
 
+    //Make reservation
     @Test
     public void testMakeReservationFlow() {
         // set client as logged in
@@ -153,6 +160,7 @@ public class ClientTest {
         client.start();
     }
 
+    //Cancelling a reservation
     @Test
     public void testCancelReservationFlow() {
         client.account = "user_test";
@@ -165,6 +173,7 @@ public class ClientTest {
         client.start();
     }
 
+    //View reservation
     @Test
     public void testViewReservationFlow() {
         client.account = "user_test";
@@ -178,6 +187,7 @@ public class ClientTest {
         client.start();
     }
 
+    //Login fail
     @Test
     public void testLoginFailure() {
         client.scanner = new java.util.Scanner(new ByteArrayInputStream("1\nuser_fail\nwrong_pass\n3\n".getBytes()));
@@ -189,6 +199,7 @@ public class ClientTest {
         assertNull(client.getAccount());
     }
 
+    //Creating an account fail
     @Test
     public void testCreateAccountFailure() {
         client.scanner = new java.util.Scanner(new ByteArrayInputStream(
@@ -203,6 +214,7 @@ public class ClientTest {
         assertNull(client.getAccount());
     }
 
+    //Reservation fail
     @Test
     public void testMakeReservationFailure() {
         client.account = "user_test";
@@ -215,6 +227,7 @@ public class ClientTest {
         client.start();
     }
 
+    //Disconnecting during the sessions
     @Test
     public void testDisconnectDuringSession() throws IOException {
         client.account = "user_test";
