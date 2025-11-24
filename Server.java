@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -228,9 +229,9 @@ public class Server implements ServerInterface, Runnable {
     }
 
     @Override
-    public int createReservation(String accountID, String password, String showID, List<String> seatIDs,
+    public int createReservation(String username, String password, String showID, List<String> seatIDs,
                                  String date, String time, double totalPrice) {
-        Account account = database.getAccount(accountID, password);
+        Account account = database.getAccountByUsername(username, password);
 
         if (account == null) {
             return -1;
