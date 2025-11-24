@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Arav Nair (nair234), and Shalini Murthula (smurthul)
  * @version November 6, 2025
  */
-public class Database {
+public class Database implements DatabaseInterface {
     //Files to store data in
     private static final String ACCOUNTFILE = "accounts.txt";
     private static final String SEATSFILE = "seats.txt";
