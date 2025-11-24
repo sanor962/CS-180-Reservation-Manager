@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class PaymentTest {
 
+    //Testing constructors and getters
     @Test
     public void testPaymentConstructorAndGetters() {
         int reservationID = 42;
@@ -24,6 +25,7 @@ public class PaymentTest {
                 "Amount should match the value passed to constructor.");
     }
 
+    //Payment of 0 value
     @Test
     public void testZeroAmount() {
         Payment payment = new Payment(10, 0.0);
@@ -34,13 +36,14 @@ public class PaymentTest {
 
     @Test
     public void testNegativeAmountAllowedInModel() {
-    // Payment validation happens in PaymentManager, so all values are stored.
+        // Payment validation happens in PaymentManager, so all values are stored.
         Payment payment = new Payment(100, -5.0);
 
         assertEquals(-5.0, payment.getAmount(),
                 "Payment class should store negative values because validation is in PaymentManager.");
     }
 
+    //Making sure the ID was stored correctly
     @Test
     public void testReservationIDStoredCorrectly() {
         Payment payment = new Payment(999, 12.34);
