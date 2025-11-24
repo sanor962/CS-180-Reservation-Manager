@@ -3,7 +3,7 @@ import java.io.Serializable;
 /**
  * Represents a single seat with different variables
  *
- * @author Kunj Arora (arora271)
+ * @author Kunj Arora (arora271) and Saanvi Verma (verma279)
  * @version November 7, 2025
  */
 
@@ -24,6 +24,9 @@ public class Seat implements SeatInterface, Serializable {
 
     public Seat(String line) {
         String[] parts = line.split(",");
+        if (parts.length < 5) {
+            throw new IllegalArgumentException();
+        }
         this.seatID = parts[0];
         this.row = parts[1];
         this.isAvailable = Boolean.parseBoolean(parts[2]);
