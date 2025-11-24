@@ -245,7 +245,7 @@ public class Client implements ClientInterface {
                 }
 
             } else {
-                //Menu 2
+                //Menu 2 (will only reach here if the user is logged in)
                 System.out.println("1) View Available Seats for a Concert");
                 System.out.println("2) Make Reservation");
                 System.out.println("3) Cancel Reservation");
@@ -508,6 +508,7 @@ public class Client implements ClientInterface {
                     }
 
                 } else if (choice.equals("5")) {
+                    //Gets all the concerts that are going to be there
                     try {
                         writer.write("getALlConcerts\n");
                         writer.flush();
@@ -528,6 +529,7 @@ public class Client implements ClientInterface {
 
 
                 } else if (choice.equals("6")) {
+                    //Adds a new Concert
                     System.out.println("Name of Concert: ");
                     String name = scanner.nextLine();
                     String date = "";
