@@ -20,4 +20,6 @@ public interface DatabaseInterface {
     boolean createConcert(String name, String date, String time);
     ArrayList<String> getAllConcerts();
     String getTime(String concertID);
+    boolean updateSeatAvailability(String show, String seatID, boolean available);
+    Account getAccountByUsername(String username, String password);
 }
