@@ -10,6 +10,7 @@ public class Concert implements ConcertInterface {
     private String time;
     private int ID;
 
+    //Constructor
     public Concert(String name, String date, String time, int num) {
         this.name = name;
         this.date = date;
@@ -17,6 +18,7 @@ public class Concert implements ConcertInterface {
         this.ID = num;
     }
 
+    //Constructor with line
     public Concert(String line) {
         String[] partOfConcert = line.split(",");
         if (partOfConcert.length < 5) {
@@ -28,6 +30,7 @@ public class Concert implements ConcertInterface {
         this.ID = Integer.parseInt(partOfConcert[4]);
     }
 
+    //Getter methods
     public String getName() {
         return name;
     }
@@ -44,6 +47,7 @@ public class Concert implements ConcertInterface {
         return ID;
     }
 
+    //Setter methods
     public void setName(String name) {
         this.name = name;
     }
@@ -60,10 +64,12 @@ public class Concert implements ConcertInterface {
         this.ID = ID;
     }
 
+    //To String
     public String toString() {
         return "Name: " + getName() + "\nDate: " + getDate() + "\nTime: " + getTime() + "\nID: " + getID();
     }
 
+    //Writing in the file
     public String writingInFile() {
         return getName() + "," + getDate() + "," + getTime() + "," + getID();
     }
