@@ -499,7 +499,6 @@ public class DatabaseTest {
     }
 
     // -- MALFORMED FILE TESTS --
-
     @Test
     public void testMalformedAccountFile() throws IOException {
         try (FileWriter fw = new FileWriter(ACCOUNT_FILE)) {
