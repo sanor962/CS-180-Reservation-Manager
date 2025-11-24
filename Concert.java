@@ -1,10 +1,9 @@
 /**
  * Concert class - basic information for each concert
  *
- * @author Saanvi Verma (verma279)
+ * @author Saanvi Verma (verma279) and Shalini Murthula (smurthul)
  * @version November 21, 2025
  */
-
 public class Concert implements ConcertInterface {
     private String name;
     private String date;
@@ -20,10 +19,13 @@ public class Concert implements ConcertInterface {
 
     public Concert(String line) {
         String[] partOfConcert = line.split(",");
-        this.name = partOfConcert[0];
-        this.date = partOfConcert[1];
-        this.time = partOfConcert[2];
-        this.ID = Integer.parseInt(partOfConcert[3]);
+        if (partOfConcert.length < 5) {
+            throw new IllegalArgumentException();
+        }
+        this.name = partOfConcert[1];
+        this.date = partOfConcert[2];
+        this.time = partOfConcert[3];
+        this.ID = Integer.parseInt(partOfConcert[4]);
     }
 
     public String getName() {
@@ -65,5 +67,4 @@ public class Concert implements ConcertInterface {
     public String writingInFile() {
         return getName() + "," + getDate() + "," + getTime() + "," + getID();
     }
-
 }
