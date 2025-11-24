@@ -268,6 +268,7 @@ public class Database {
     //Creating a reservation using Account object
     public int createReservation(Account account, String showID, List<String> seatIDs,
                                  String date, String time, double totalPrice) {
+
         synchronized (reservationO) {
             if (account == null) {
                 throw new IllegalArgumentException("Account cannot be null when creating a reservation.");
