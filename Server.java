@@ -241,6 +241,11 @@ public class Server implements ServerInterface, Runnable {
     }
 
     @Override
+    public Account getAccountByUsername(String username, String password) {
+        return database.getAccountByUsername(username, password);
+    }
+
+    @Override
     public boolean cancelReservation(int reservationID) {
         return database.cancelReservation(reservationID);
     }
