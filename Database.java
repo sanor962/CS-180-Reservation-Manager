@@ -15,8 +15,10 @@ public class Database implements DatabaseInterface {
     private static final String RESERVATIONSFILE = "reservations.txt";
     private static final String CONCERTFILE = "concert.txt";
 
+    //Atomic Integer for number of reservations
     private final AtomicInteger nextID = new AtomicInteger(1);
 
+    //Files
     private File fileA;
     private File fileS;
     private File fileR;
@@ -240,6 +242,7 @@ public class Database implements DatabaseInterface {
         }
     }
 
+    //Getting account by username
     public Account getAccountByUsername(String username, String password) {
         synchronized (accountO) {
             // read all account entries from the file
@@ -557,6 +560,7 @@ public class Database implements DatabaseInterface {
 
     }
 
+    //Creating a concert
     public boolean createConcert(String name, String date, String time) {
         synchronized (concertO) {
             ArrayList<String> lines = new ArrayList<>();
@@ -618,6 +622,7 @@ public class Database implements DatabaseInterface {
         }
     }
 
+    //Getting all the concerts in the file
     public ArrayList<String> getAllConcerts() {
         synchronized (concertO) {
             ArrayList<String> concerts = new ArrayList<>();
@@ -637,6 +642,7 @@ public class Database implements DatabaseInterface {
         }
     }
 
+    //Getting time of concert
     public String getTime(String concertID) {
         synchronized (concertO) {
             ArrayList<String> concerts = new ArrayList<>();
