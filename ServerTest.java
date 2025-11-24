@@ -48,8 +48,13 @@ public class ServerTest {
                 "securepassword", "jane@example.com", "0987654321");
         assertTrue(created);
 
+        // retrieve the account
+        Account acc = server.getAccountByUsername("jane_doe", "securepassword");
+        assertNotNull(acc);
+        String accountID = acc.getID();
+
         // delete the account
-        boolean deleted = server.deleteAccount("jane_doe","jane_doe", "securepassword");
+        boolean deleted = server.deleteAccount(accountID,"jane_doe", "securepassword");
         assertTrue(deleted, "Account should be deleted successfully");
 
         // login should fail after deletion
@@ -137,7 +142,7 @@ public class ServerTest {
         server.createConcert("ErasTour", "15/03/2026", "21:00");
 
         // retrieve the Account object to get the actual unique id
-        Account createdAccount = server.getAccount(username, password);
+        Account createdAccount = server.getAccountByUsername(username, password);
         String expectedUserID = createdAccount.getID();
 
         ArrayList<String> concerts = server.getAllConcerts();
