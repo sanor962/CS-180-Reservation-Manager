@@ -26,4 +26,5 @@ public interface ServerInterface {
     ArrayList<String> getAllConcerts();
     boolean createConcert(String name, String date, String time);
     String getTime(String concertID);
+    Account getAccountByUsername(String username, String password);
 }
