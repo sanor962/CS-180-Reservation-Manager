@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * Database class
  *
@@ -83,6 +82,13 @@ public class Database {
     public boolean createAccount(String firstName, String lastName, int age, String userName,
                                  String password, String email, String phoneNumber) {
         synchronized (accountO) {
+            // input validation
+            if (firstName == null || firstName.trim().isEmpty() ||
+                    lastName == null || lastName.trim().isEmpty() ||
+                    userName == null || userName.trim().isEmpty() ||
+                    age < 0) { // assuming age validation is also needed
+                return false;
+            }
             //Making sure the username doesn't exist
             ArrayList<String> lines = new ArrayList<>();
             try (BufferedReader bwA = new BufferedReader(new FileReader(fileA))) {
@@ -269,7 +275,9 @@ public class Database {
 
             synchronized (seatO) {
                 for (int i = 0; i < seatIDs.size(); i++) {
-                    updateSeatAvailability(showID, seatIDs.get(i), false);
+                    if (!updateSeatAvailability(showID, seatIDs.get(i), false)) {
+                        return -1;
+                    }
                 }
             }
 
@@ -344,12 +352,12 @@ public class Database {
     }
 
     //Updates the availability seat with the seatID to the boolean
-    public void updateSeatAvailability(String show, String seatID, boolean available) {
+    public boolean updateSeatAvailability(String show, String seatID, boolean available) {
         synchronized (seatO) {
             String f = "Concert" + show;
             File file = new File(f);
             if (!file.exists()) {
-                return;
+                file = fileS;
             }
             ArrayList<String> lines = new ArrayList<>();
 
@@ -362,7 +370,7 @@ public class Database {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
+            boolean seatFound = false;
             for (int i = 1; i < lines.size(); i++) {
                 //String[] parts = lines.get(i).split(",");
                 Seat seat = new Seat(lines.get(i));
@@ -374,10 +382,13 @@ public class Database {
                 if (seat.getSeatID().equals(seatID)) {
                     seat.setAvailable(available);
                     lines.set(i, seat.writingInFile());
+                    seatFound = true;
                     break;
                 }
             }
-
+            if (!seatFound) {
+                return false;
+            }
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
                 for (int i = 0; i < lines.size(); i++) {
                     bw.write(lines.get(i) + "\n");
@@ -385,10 +396,9 @@ public class Database {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            return true;
         }
-
     }
-
 
     //Getting the reservations by the user account
     public ArrayList<Reservations> getReservationsByAccount(String accountID) {
