@@ -226,10 +226,15 @@ public class Database {
 
             //Returning the account
             for (int i = 0; i < lines.size(); i++) {
-                Account account = new Account(lines.get(i));
-                if (account.getID().equals(accountID) && account.getPassword().equals(password)) {
-                    return account;
+                try {
+                    Account account = new Account(lines.get(i));
+                    if (account.getID().equals(accountID) && account.getPassword().equals(password)) {
+                        return account;
+                    }
+                } catch (IllegalArgumentException e) {
+
                 }
+
             }
             return null;
         }
@@ -381,6 +386,12 @@ public class Database {
                 break;
             }*/
                 if (seat.getSeatID().equals(seatID)) {
+                    if (!seat.isAvailable() && !available) {
+                        return false;
+                    }
+                    if (seat.isAvailable() && available) {
+                        return false;
+                    }
                     seat.setAvailable(available);
                     lines.set(i, seat.writingInFile());
                     seatFound = true;
@@ -504,9 +515,13 @@ public class Database {
             }
 
             for (int i = 0; i < lines.size(); i++) {
-                Seat seat = new Seat(lines.get(i));
-                if (seat.getSeatID().equals(seatID)) {
-                    return seat;
+                try {
+                    Seat seat = new Seat(lines.get(i));
+                    if (seat.getSeatID().equals(seatID)) {
+                        return seat;
+                    }
+                } catch (IllegalArgumentException e) {
+
                 }
             }
             return null;
