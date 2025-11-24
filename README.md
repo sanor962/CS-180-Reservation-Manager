@@ -72,7 +72,7 @@ java ConcertTest
 ## Submission Information (Phase 2)
 - Saanvi Verma submitted Phase 2 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Concert, ConcertInterface, Database, DatabaseInterface, DatabaseTest, Client, ClientInterface, seats.txt, Reservations, Seat, Account, Server, ServerTest, and ServerInterface.
 - Arav Nair worked on Payment, PaymentManager, PaymentManagerInterface, PaymentInterface, PaymentTest, PaymentManagerTest, Database, and Reservations.
-- Kunj Arora worked on Server, ServerInterface, DatabaseTest, Reservations, and Database.
+- Kunj Arora worked on Server, ServerInterface, DatabaseTest, Reservations, ReservationsTest, and Database.
 - Shalini Murthula worked on ClientTest, Client, Concert, Server, ServerTest, DatabaseTest, AccountTest, ReservationsTest, ConcertTest, and Database.
 
 ## Submission Information (Phase 1)
