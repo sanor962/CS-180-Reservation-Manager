@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit tests for the Reservations class, verifying constructors,
  * getters/setters, file parsing, and string formatting.
  *
- * @author Arav Nair (nair234), Kunj Arora (arora271)
+ * @author Arav Nair (nair234), Kunj Arora (arora271), Shalini Murthula (smurthul)
  * @version November 8, 2025
  */
 public class ReservationsTest {
