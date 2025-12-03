@@ -12,20 +12,30 @@ public class ReservationManagerGUI extends JFrame {
     public ReservationPanel reservationPanel;
     PaymentPanel paymentPanel;
 
+    // Client connection
+    public Client client;
+
     public ReservationManagerGUI() {
         setTitle("Reservation Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
 
+        // Connect to server
+        client = new Client("localhost", 6767);
+        if (!client.connect()) {
+            JOptionPane.showMessageDialog(this, "Could not connect to server. Please start the server and try again.", "Connection Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Initialize panels
-        loginPanel = new LoginPanel(this);
-        dashboardPanel = new DashboardPanel(this);
-        reservationPanel = new ReservationPanel(this);
-        paymentPanel = new PaymentPanel(this);
+        // Initialize panels with client
+        loginPanel = new LoginPanel(this, client);
+        dashboardPanel = new DashboardPanel(this, client);
+        reservationPanel = new ReservationPanel(this, client);
+        paymentPanel = new PaymentPanel(this, client);
 
         // Add panels to mainPanel
         mainPanel.add(loginPanel, "Login");
@@ -50,7 +60,7 @@ public class ReservationManagerGUI extends JFrame {
 
 // --- Login Panel ---
 class LoginPanel extends JPanel {
-    public LoginPanel(ReservationManagerGUI gui) {
+    public LoginPanel(ReservationManagerGUI gui, Client client) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -202,7 +212,7 @@ class LoginPanel extends JPanel {
 
 // --- Dashboard Panel ---
 class DashboardPanel extends JPanel {
-    public DashboardPanel(ReservationManagerGUI gui) {
+    public DashboardPanel(ReservationManagerGUI gui, Client client) {
         setLayout(new BorderLayout());
         JPanel topPanel = new JPanel(new FlowLayout());
         JLabel welcomeLabel = new JLabel("Welcome! Select a date, time, and concert:");
@@ -259,6 +269,14 @@ class DashboardPanel extends JPanel {
                     concertNames.add(c[0]);
                 }
             }
+            // If no concerts found for selected time, show all concerts for selected date
+            if (concertNames.isEmpty()) {
+                for (String[] c : concerts) {
+                    if (c[1].equals(selectedDate)) {
+                        concertNames.add(c[0]);
+                    }
+                }
+            }
             concertBox.setModel(new DefaultComboBoxModel<>(concertNames.toArray(new String[0])));
             if (concertBox.getItemCount() > 0) {
                 concertBox.setSelectedIndex(0);
@@ -273,6 +291,14 @@ class DashboardPanel extends JPanel {
             for (String[] c : concerts) {
                 if (c[1].equals(selectedDate) && c[2].equals(selectedTime)) {
                     concertNames.add(c[0]);
+                }
+            }
+            // If no concerts found for selected time, show all concerts for selected date
+            if (concertNames.isEmpty()) {
+                for (String[] c : concerts) {
+                    if (c[1].equals(selectedDate)) {
+                        concertNames.add(c[0]);
+                    }
                 }
             }
             concertBox.setModel(new DefaultComboBoxModel<>(concertNames.toArray(new String[0])));
@@ -310,7 +336,7 @@ class ReservationPanel extends JPanel {
     private String selectedTime = null;
     private String selectedConcert = null;
 
-    public ReservationPanel(ReservationManagerGUI gui) {
+    public ReservationPanel(ReservationManagerGUI gui, Client client) {
         setLayout(new BorderLayout());
         JLabel infoLabel = new JLabel("Select seats for your reservation:");
         add(infoLabel, BorderLayout.NORTH);
@@ -354,7 +380,7 @@ class ReservationPanel extends JPanel {
 
 // --- Payment Panel ---
 class PaymentPanel extends JPanel {
-    public PaymentPanel(ReservationManagerGUI gui) {
+    public PaymentPanel(ReservationManagerGUI gui, Client client) {
         setLayout(new BorderLayout());
         JLabel label = new JLabel("Payment Panel (Stub)");
         add(label, BorderLayout.CENTER);
