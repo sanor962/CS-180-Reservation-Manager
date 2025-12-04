@@ -582,7 +582,7 @@ public class Client implements ClientInterface {
                         try {
                             h = time.substring(0, time.indexOf(":"));
                             min = time.substring(time.indexOf(":") + 1);
-                            if (time.contains(":") && Integer.parseInt(h) <= 23 && Integer.parseInt(min) <= 60) {
+                            if (time.contains(":") && Integer.parseInt(h) <= 23 && Integer.parseInt(min) < 60) {
                                 break;
                             }
                         } catch (Exception e) {
