@@ -112,14 +112,16 @@ public class Account implements AccountInterface {
             result = firstName1.charAt(0) + "";
         }
         String lastName1 = lastName.toUpperCase();
-        if (lastName1.length() >= 2) {
+        if (lastName1.length() >= 3) {
             result = (lastName1.charAt(0) + "" + lastName1.charAt(2)).concat(result);
         } else {
-            result = lastName1.charAt(0) + "";
+            result = lastName1.charAt(0) + "".concat(result);
         }
-        result = result.concat("-" + phoneNumber.substring(6, 10));
-        result = result.replaceAll("6", "");
-        result = result.replaceAll("7", "");
+        if (phoneNumber.length() == 10) {
+            result = result.concat("-" + phoneNumber.substring(6, 10));
+            result = result.replaceAll("6", "");
+            result = result.replaceAll("7", "");
+        }
         setID(result);
         return result;
     }
