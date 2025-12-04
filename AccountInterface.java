@@ -22,4 +22,5 @@ public interface AccountInterface {
     String toString();
     String writingInFile();
     boolean equals(Object obj);
+    void setID(String id1);
 }
