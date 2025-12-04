@@ -409,7 +409,7 @@ public class Client implements ClientInterface {
                         confirm = confirm.toLowerCase();
 
                         if (!confirm.equals("y")) {
-                            writer.println("cancel");
+                            writer.write("cancel\n");
                             System.out.println("Reservation cancelled.");
                             continue;
                         }
