@@ -153,11 +153,11 @@ public class Client implements ClientInterface {
                             break;
                         }
                         username = scanner.nextLine().trim();
-                        if (username.length() <= 5) {
+                        if (username == null || username.isEmpty()) {
+                            System.out.println("Please enter a valid username.");
+                        } else if (username.length() <= 5) {
                             System.out.println("Please enter a valid username.");
                         } else if (username.contains(",")) {
-                            System.out.println("Please enter a valid username.");
-                        } else if (username.isEmpty() || username == null) {
                             System.out.println("Please enter a valid username.");
                         } else {
                             break;
@@ -173,11 +173,11 @@ public class Client implements ClientInterface {
                             break;
                         }
                         password = scanner.nextLine().trim();
-                        if (password.length() <= 8) {
+                        if (password == null || password.isEmpty()) {
+                            System.out.println("Please enter a valid password.");
+                        }else if (password.length() <= 8) {
                             System.out.println("Please enter a valid password.");
                         } else if (password.contains(",")) {
-                            System.out.println("Please enter a valid password.");
-                        } else if (password.isEmpty() || password == null) {
                             System.out.println("Please enter a valid password.");
                         } else {
                             break;
@@ -193,7 +193,7 @@ public class Client implements ClientInterface {
                             break;
                         }
                         email = scanner.nextLine().trim();
-                        if (!email.contains("@")) {
+                        if (!email.contains("@") || !email.contains(".com")) {
                             System.out.println("Please enter a valid email.");
                         } else {
                             break;
@@ -209,6 +209,11 @@ public class Client implements ClientInterface {
                             break;
                         }
                         phone = scanner.nextLine().trim();
+                        try {
+                            int p = Integer.parseInt(phone);
+                        } catch (NumberFormatException e) {
+                            System.out.println(e.getMessage());
+                        }
                         if (phone.length() != 10) {
                             System.out.println("Please enter a valid phone number.");
                         } else {
@@ -275,9 +280,6 @@ public class Client implements ClientInterface {
 
                     String date = "";
                     int num = 0;
-                    String d = "";
-                    String m = "";
-                    String y = "";
                     while (true) {
                         //Checking to make sure that the date is valid
                         num = 0;
@@ -288,30 +290,21 @@ public class Client implements ClientInterface {
                                 num++;
                             }
                         }
-                        if (num != 2) {
-                            System.out.println("Please enter a valid date.");
+
+                        if (num == 2) {
                             try {
-                                d = date.substring(0);
-                                m = d.substring(d.indexOf("/") + 1);
-                                d = d.substring(0, d.indexOf("/"));
-                                y = m.substring(m.indexOf("/") + 1);
-                                m = m.substring(0, m.indexOf("/"));
-                                if (Integer.parseInt(d) > 31 || d.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (Integer.parseInt(m) > 12 || m.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (y.length() > 4) {
+                                if (confirmDate(date)) {
+                                    break;
+                                } else {
                                     System.out.println("Please enter a valid date.");
                                 }
                             } catch (Exception e) {
-                                System.out.println(e.getMessage());
+                                System.out.println("Please enter a valid date.");
                             }
-                        } else {
-                            break;
-                        }
 
+                        } else {
+                            System.out.println("Please enter a valid date.");
+                        }
                     }
 
                     //Gets the available seats in the concert
@@ -345,9 +338,6 @@ public class Client implements ClientInterface {
                     String showID = scanner.nextLine().trim();
                     String date = "";
                     int num = 0;
-                    String d = "";
-                    String m = "";
-                    String y = "";
 
                     //Checks to make sure the date is correct
                     while (true) {
@@ -359,28 +349,19 @@ public class Client implements ClientInterface {
                                 num++;
                             }
                         }
-                        if (num != 2) {
-                            System.out.println("Please enter a valid date.");
+                        if (num == 2) {
                             try {
-                                d = date.substring(0);
-                                m = d.substring(d.indexOf("/") + 1);
-                                d = d.substring(0, d.indexOf("/"));
-                                y = m.substring(m.indexOf("/") + 1);
-                                m = m.substring(0, m.indexOf("/"));
-                                if (Integer.parseInt(d) > 31 || d.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (Integer.parseInt(m) > 12 || m.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (y.length() > 4) {
+                                if (confirmDate(date)) {
+                                    break;
+                                } else {
                                     System.out.println("Please enter a valid date.");
                                 }
                             } catch (Exception e) {
-                                System.out.println(e.getMessage());
+                                System.out.println("Please enter a valid date.");
                             }
+
                         } else {
-                            break;
+                            System.out.println("Please enter a valid date.");
                         }
 
                     }
@@ -430,7 +411,7 @@ public class Client implements ClientInterface {
                         if (!confirm.equals("y")) {
                             writer.println("cancel");
                             System.out.println("Reservation cancelled.");
-                            return;
+                            continue;
                         }
 
                         writer.write("pay\n");
@@ -534,9 +515,6 @@ public class Client implements ClientInterface {
                     String name = scanner.nextLine();
                     String date = "";
                     int num = 0;
-                    String d = "";
-                    String m = "";
-                    String y = "";
 
                     //Checks to make sure the date is correct
                     while (true) {
@@ -548,29 +526,21 @@ public class Client implements ClientInterface {
                                 num++;
                             }
                         }
-                        if (num != 2) {
-                            System.out.println("Please enter a valid date.");
+                        if (num == 2) {
                             try {
-                                d = date.substring(0);
-                                m = d.substring(d.indexOf("/") + 1);
-                                d = d.substring(0, d.indexOf("/"));
-                                y = m.substring(m.indexOf("/") + 1);
-                                m = m.substring(0, m.indexOf("/"));
-                                if (Integer.parseInt(d) > 31 || d.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (Integer.parseInt(m) > 12 || m.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (y.length() > 4) {
+                                if (confirmDate(date)) {
+                                    break;
+                                } else {
                                     System.out.println("Please enter a valid date.");
                                 }
                             } catch (Exception e) {
-                                System.out.println(e.getMessage());
+                                System.out.println("Please enter a valid date.");
                             }
+
                         } else {
-                            break;
+                            System.out.println("Please enter a valid date.");
                         }
+
                     }
                     String time = "";
                     String h = "";
@@ -662,14 +632,36 @@ public class Client implements ClientInterface {
     public void disconnect() {
         //Disconnects from the server
         try {
-            if (socket != null && !socket.isClosed()) {
+            if (writer != null) {
                 writer.write("disconnect\n");
                 writer.flush();
-                socket.close();
-                System.out.println("Disconnected.");
             }
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+            System.out.println("Disconnected.");
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    //Helper method to confirm date
+    private boolean confirmDate(String date) {
+        String d = "";
+        String m = "";
+        String y = "";
+
+        d = date.substring(0, date.indexOf("/"));
+        m = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
+        y = date.substring(date.lastIndexOf("/") + 1);
+
+        int day = Integer.parseInt(d);
+        int month = Integer.parseInt(m);
+
+        if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && y.length() == 4) {
+            return true;
+        } else {
+            return false;
         }
     }
 
