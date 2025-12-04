@@ -1,7 +1,7 @@
 /**
  * Account - class that manages the information in the account
  *
- * @author Saanvi Verma
+ * @author Saanvi Verma (verma279)
  * @version November 5, 2025
  */
 
