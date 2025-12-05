@@ -1,6 +1,7 @@
+1
 A1,A,true,1,50.0
 A2,A,true,2,50.0
-A3,A,true,3,50.0
+A3,A,false,3,50.0
 A4,A,true,4,50.0
 A5,A,true,5,50.0
 B1,B,true,1,60.0

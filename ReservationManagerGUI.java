@@ -86,7 +86,6 @@ class LoginPanel extends JPanel {
         JButton registerButton = new JButton("Register");
         add(registerButton, gbc);
 
-        // Example action listeners (stub)
         loginButton.addActionListener(e -> {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
@@ -94,31 +93,24 @@ class LoginPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            boolean found = false;
-            try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader("accounts.txt"))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    try {
-                        Account acc = new Account(line);
-                        if (acc.getUserName().equals(username) && acc.getPassword().equals(password)) {
-                            found = true;
-                            break;
-                        }
-                    } catch (Exception ex) {
-                        // skip invalid lines
-                    }
+            try {
+                client.writer.write("login\n");
+                client.writer.write(username + "\n");
+                client.writer.write(password + "\n");
+                client.writer.flush();
+                String response = client.reader.readLine();
+                if ("success".equals(response)) {
+                    client.account = username; // Store username as account identifier
+                    JOptionPane.showMessageDialog(this, "Login successful!");
+                    gui.showPanel("Dashboard");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error reading accounts file.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (found) {
-                JOptionPane.showMessageDialog(this, "Login successful!");
-                gui.showPanel("Dashboard");
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error communicating with server.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
         registerButton.addActionListener(e -> {
             JPanel regPanel = new JPanel(new GridLayout(0, 2, 5, 5));
             JTextField firstNameField = new JTextField();
@@ -158,7 +150,6 @@ class LoginPanel extends JPanel {
                 String password = new String(regPasswordField.getPassword());
                 String confirmPassword = new String(confirmPasswordField.getPassword());
 
-                // Basic validation
                 if (firstName.isEmpty() || lastName.isEmpty() || ageStr.isEmpty() || email.isEmpty() || phone.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -167,64 +158,61 @@ class LoginPanel extends JPanel {
                     JOptionPane.showMessageDialog(this, "Passwords do not match.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                int age;
                 try {
-                    age = Integer.parseInt(ageStr);
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Age must be a number.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                try {
-                    Account newAcc = new Account(firstName, lastName, age, username, password, email, phone);
-                    newAcc.setID(newAcc.createID());
-                    String accountLine = newAcc.writingInFile();
-                    // Check for duplicate username
-                    boolean duplicate = false;
-                    try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader("accounts.txt"))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            try {
-                                Account acc = new Account(line);
-                                if (acc.getUserName().equals(username)) {
-                                    duplicate = true;
-                                    break;
-                                }
-                            } catch (Exception ex) {}
-                        }
+                    client.writer.write("createAccount\n");
+                    client.writer.write(firstName + "\n");
+                    client.writer.write(lastName + "\n");
+                    client.writer.write(ageStr + "\n");
+                    client.writer.write(username + "\n");
+                    client.writer.write(password + "\n");
+                    client.writer.write(email + "\n");
+                    client.writer.write(phone + "\n");
+                    client.writer.flush();
+                    String response = client.reader.readLine();
+                    if ("success".equals(response)) {
+                        JOptionPane.showMessageDialog(this, "Account created successfully! You can now log in.");
+                    } else {
+                        String errorMsg = client.reader.readLine();
+                        JOptionPane.showMessageDialog(this, errorMsg, "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                    if (duplicate) {
-                        JOptionPane.showMessageDialog(this, "Username already exists. Choose a different one.", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    // Append to accounts.txt
-                    try (java.io.FileWriter fw = new java.io.FileWriter("accounts.txt", true)) {
-                        fw.write(accountLine + System.lineSeparator());
-                    }
-                    JOptionPane.showMessageDialog(this, "Account created successfully! You can now log in.");
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Account creation failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Error communicating with server.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
     }
-    }
+}
 
 // --- Dashboard Panel ---
 class DashboardPanel extends JPanel {
     public DashboardPanel(ReservationManagerGUI gui, Client client) {
         setLayout(new BorderLayout());
-        JPanel topPanel = new JPanel(new FlowLayout());
-        JLabel welcomeLabel = new JLabel("Welcome! Select a date, time, and concert:");
-        topPanel.add(welcomeLabel);
 
-        // Parse concert.txt
+        // Top panel for delete button
+        JPanel topPanel = new JPanel(new BorderLayout());
+        JButton deleteAccountButton = new JButton("Delete Account");
+        topPanel.add(deleteAccountButton, BorderLayout.EAST);
+        add(topPanel, BorderLayout.NORTH);
+
+        // Main VBox for selectors
+        JPanel mainVBox = new JPanel();
+        mainVBox.setLayout(new BoxLayout(mainVBox, BoxLayout.Y_AXIS));
+
+        JLabel titleLabel = new JLabel("Select a Date, Time, and Concert");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 18f));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainVBox.add(titleLabel);
+        mainVBox.add(Box.createVerticalStrut(15));
+
+        // Get concerts from server
         java.util.List<String[]> concerts = new java.util.ArrayList<>();
         java.util.Set<String> dates = new java.util.LinkedHashSet<>();
-        java.io.File concertFile = new java.io.File("concert.txt");
-        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(concertFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
+        try {
+            client.writer.write("getALlConcerts\n");
+            client.writer.flush();
+            int count = Integer.parseInt(client.reader.readLine());
+            for (int i = 0; i < count; i++) {
+                String line = client.reader.readLine();
                 String[] parts = line.split(",");
                 if (parts.length >= 4) {
                     concerts.add(parts);
@@ -232,20 +220,38 @@ class DashboardPanel extends JPanel {
                 }
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error reading concert.txt", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading concerts from server.", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        datePanel.add(new JLabel("Date:"));
         JComboBox<String> dateBox = new JComboBox<>(dates.toArray(new String[0]));
-        topPanel.add(new JLabel("Date:"));
-        topPanel.add(dateBox);
+        datePanel.add(dateBox);
+        datePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainVBox.add(datePanel);
+        mainVBox.add(Box.createVerticalStrut(10));
 
+        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        timePanel.add(new JLabel("Time:"));
         JComboBox<String> timeBox = new JComboBox<>();
-        topPanel.add(new JLabel("Time:"));
-        topPanel.add(timeBox);
+        timePanel.add(timeBox);
+        timePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainVBox.add(timePanel);
+        mainVBox.add(Box.createVerticalStrut(10));
 
+        JPanel concertPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        concertPanel.add(new JLabel("Concert:"));
         JComboBox<String> concertBox = new JComboBox<>();
-        topPanel.add(new JLabel("Concert:"));
-        topPanel.add(concertBox);
+        concertPanel.add(concertBox);
+        concertPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainVBox.add(concertPanel);
+        mainVBox.add(Box.createVerticalStrut(15));
+
+        JButton nextButton = new JButton("See Available Seats");
+        nextButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainVBox.add(nextButton);
+
+        add(mainVBox, BorderLayout.CENTER);
 
         // Update times and concerts when date changes
         dateBox.addActionListener(e -> {
@@ -257,11 +263,9 @@ class DashboardPanel extends JPanel {
                 }
             }
             timeBox.setModel(new DefaultComboBoxModel<>(times.toArray(new String[0])));
-            // Set timeBox to first available time
             if (timeBox.getItemCount() > 0) {
                 timeBox.setSelectedIndex(0);
             }
-            // Update concerts for first time
             String selectedTime = (String)timeBox.getSelectedItem();
             java.util.List<String> concertNames = new java.util.ArrayList<>();
             for (String[] c : concerts) {
@@ -269,7 +273,6 @@ class DashboardPanel extends JPanel {
                     concertNames.add(c[0]);
                 }
             }
-            // If no concerts found for selected time, show all concerts for selected date
             if (concertNames.isEmpty()) {
                 for (String[] c : concerts) {
                     if (c[1].equals(selectedDate)) {
@@ -283,7 +286,6 @@ class DashboardPanel extends JPanel {
             }
         });
 
-        // Update concerts when time changes
         timeBox.addActionListener(e -> {
             String selectedDate = (String)dateBox.getSelectedItem();
             String selectedTime = (String)timeBox.getSelectedItem();
@@ -293,7 +295,6 @@ class DashboardPanel extends JPanel {
                     concertNames.add(c[0]);
                 }
             }
-            // If no concerts found for selected time, show all concerts for selected date
             if (concertNames.isEmpty()) {
                 for (String[] c : concerts) {
                     if (c[1].equals(selectedDate)) {
@@ -307,26 +308,72 @@ class DashboardPanel extends JPanel {
             }
         });
 
-        JButton nextButton = new JButton("See Available Seats");
-        topPanel.add(nextButton);
-
-        add(topPanel, BorderLayout.NORTH);
-
         nextButton.addActionListener(e -> {
             String selectedDate = (String)dateBox.getSelectedItem();
             String selectedTime = (String)timeBox.getSelectedItem();
             String selectedConcert = (String)concertBox.getSelectedItem();
-            gui.reservationPanel.setReservationInfo(selectedDate, selectedTime, selectedConcert);
+            
+            // Find the showID for the selected concert
+            String showID = null;
+            for (String[] c : concerts) {
+                if (c[0].equals(selectedConcert) && c[1].equals(selectedDate) && c[2].equals(selectedTime)) {
+                    showID = c[3]; // ID is the 4th field
+                    break;
+                }
+            }
+            
+            if (showID == null) {
+                JOptionPane.showMessageDialog(this, "Could not find concert information.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            gui.reservationPanel.setReservationInfo(selectedDate, selectedTime, selectedConcert, showID);
             gui.showPanel("Reservation");
         });
-        // Initialize time and concert boxes
         if (dateBox.getItemCount() > 0) {
             dateBox.setSelectedIndex(0);
-            // Trigger action to populate time and concert boxes
             for (ActionListener al : dateBox.getActionListeners()) {
                 al.actionPerformed(new java.awt.event.ActionEvent(dateBox, ActionEvent.ACTION_PERFORMED, null));
             }
         }
+
+        // Delete Account button logic
+        deleteAccountButton.addActionListener(e -> {
+            JPanel delPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+            JTextField usernameField = new JTextField();
+            JPasswordField passwordField = new JPasswordField();
+            delPanel.add(new JLabel("Username:"));
+            delPanel.add(usernameField);
+            delPanel.add(new JLabel("Password:"));
+            delPanel.add(passwordField);
+            int result = JOptionPane.showConfirmDialog(this, delPanel, "Delete Account - WARNING: This cannot be undone!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword());
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                try {
+                    // Use deleteAccountByCredentials - server will fetch the account ID automatically
+                    client.writer.write("deleteAccountByCredentials\n");
+                    client.writer.write(username + "\n");
+                    client.writer.write(password + "\n");
+                    client.writer.flush();
+                    String response = client.reader.readLine();
+                    if (response != null && response.trim().equals("success")) {
+                        JOptionPane.showMessageDialog(this, "Account deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        client.account = null; // Log out
+                        gui.showPanel("Login");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Account deletion failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error communicating with server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 }
 
@@ -335,46 +382,175 @@ class ReservationPanel extends JPanel {
     private String selectedDate = null;
     private String selectedTime = null;
     private String selectedConcert = null;
+    private String selectedShowID = null;
+    private JPanel seatGridPanel;
+    private java.util.List<JToggleButton> seatButtons;
+    private JLabel infoLabel;
+    private JButton bookButton;
+    private ReservationManagerGUI gui;
+    private Client client;
 
     public ReservationPanel(ReservationManagerGUI gui, Client client) {
+        this.gui = gui;
+        this.client = client;
         setLayout(new BorderLayout());
-        JLabel infoLabel = new JLabel("Select seats for your reservation:");
+        
+        infoLabel = new JLabel("Select seats for your reservation:");
         add(infoLabel, BorderLayout.NORTH);
 
-        // TODO: Use backend SeatingChart for selectedConcert
-        JPanel seatGridPanel = new JPanel(new GridLayout(5, 10, 5, 5)); // Example: 5 rows x 10 seats
-        java.util.List<JToggleButton> seatButtons = new java.util.ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            JToggleButton seatBtn = new JToggleButton("Seat " + (i+1));
-            seatGridPanel.add(seatBtn);
-            seatButtons.add(seatBtn);
-        }
+        seatGridPanel = new JPanel();
         add(seatGridPanel, BorderLayout.CENTER);
 
-        JButton bookButton = new JButton("Book Selected Seats");
+        bookButton = new JButton("Book Selected Seats");
         add(bookButton, BorderLayout.SOUTH);
 
-        bookButton.addActionListener(e -> {
-            java.util.List<String> selectedSeats = new java.util.ArrayList<>();
-            for (JToggleButton btn : seatButtons) {
-                if (btn.isSelected()) {
-                    selectedSeats.add(btn.getText());
-                }
-            }
-            if (selectedSeats.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please select at least one seat.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            // TODO: Use backend methods to create reservation and update seat availability
-            JOptionPane.showMessageDialog(this, "Reservation booked for " + selectedDate + " at " + selectedTime + " for concert: " + selectedConcert + " seats: " + selectedSeats);
-            gui.showPanel("Dashboard");
-        });
+        seatButtons = new java.util.ArrayList<>();
+
+        bookButton.addActionListener(e -> bookSeats());
     }
 
-    public void setReservationInfo(String date, String time, String concert) {
+    public void setReservationInfo(String date, String time, String concertName, String showID) {
         this.selectedDate = date;
         this.selectedTime = time;
-        this.selectedConcert = concert;
+        this.selectedConcert = concertName;
+        this.selectedShowID = showID;
+        loadSeats();
+    }
+
+    private void loadSeats() {
+        // Clear previous seats
+        seatGridPanel.removeAll();
+        seatButtons.clear();
+
+        infoLabel.setText("Select seats for " + selectedConcert + " on " + selectedDate + " at " + selectedTime);
+
+        try {
+            // Use getAvailableSeats to get available seats
+            client.writer.write("getAvailableSeats\n");
+            client.writer.write(selectedShowID + "\n");
+            client.writer.write(selectedDate + "\n");
+            client.writer.flush();
+            
+            String countStr = client.reader.readLine();
+            int numOfSeats = Integer.parseInt(countStr);
+
+            // Handle case where there are no seats
+            if (numOfSeats == 0) {
+                JLabel noSeatsLabel = new JLabel("No available seats for this concert.");
+                noSeatsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                seatGridPanel.setLayout(new BorderLayout());
+                seatGridPanel.add(noSeatsLabel, BorderLayout.CENTER);
+                seatGridPanel.revalidate();
+                seatGridPanel.repaint();
+                return;
+            }
+
+            // Dynamically determine grid size based on number of seats
+            int cols = Math.min(10, numOfSeats);
+            int rows = (int) Math.ceil((double) numOfSeats / cols);
+            seatGridPanel.setLayout(new GridLayout(rows, cols, 5, 5));
+
+            for (int i = 0; i < numOfSeats; i++) {
+                String seatLine = client.reader.readLine();
+                // Parse seat line: seatID,row,isAvailable,number,price
+                String[] seatParts = seatLine.split(",");
+                String seatID = seatParts[0];
+                double price = Double.parseDouble(seatParts[4]);
+                
+                JToggleButton seatBtn = new JToggleButton(seatID + " ($" + price + ")");
+                seatGridPanel.add(seatBtn);
+                seatButtons.add(seatBtn);
+            }
+
+            seatGridPanel.revalidate();
+            seatGridPanel.repaint();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading seats: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void bookSeats() {
+        java.util.List<String> selectedSeats = new java.util.ArrayList<>();
+        for (JToggleButton btn : seatButtons) {
+            if (btn.isSelected()) {
+                // Extract just the seat ID (before the " ($")
+                String btnText = btn.getText();
+                String seatID = btnText.substring(0, btnText.indexOf(" ("));
+                selectedSeats.add(seatID);
+            }
+        }
+        
+        if (selectedSeats.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select at least one seat.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Get user's password for reservation
+        JPasswordField passwordField = new JPasswordField();
+        int result = JOptionPane.showConfirmDialog(this, passwordField, "Enter your password to confirm booking:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String password = new String(passwordField.getPassword());
+        if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            client.writer.write("makeReservation\n");
+            client.writer.write(client.account + "\n");
+            client.writer.write(password + "\n");
+            client.writer.write(selectedShowID + "\n");
+            client.writer.write(selectedSeats.size() + "\n");
+            for (String seatID : selectedSeats) {
+                client.writer.write(seatID + "\n");
+            }
+            client.writer.write(selectedDate + "\n");
+            client.writer.flush();
+
+            String response = client.reader.readLine();
+            
+            // Check if it's a price or error message
+            if (response.startsWith("Seat ")) {
+                JOptionPane.showMessageDialog(this, response, "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double totalPrice = Double.parseDouble(response);
+            
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Total Price: $" + totalPrice + "\n\nSeats: " + String.join(", ", selectedSeats) + "\n\nProceed with payment?", 
+                "Confirm Booking", 
+                JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                client.writer.write("pay\n");
+                client.writer.flush();
+                
+                String bookingResult = client.reader.readLine();
+                if ("success".equals(bookingResult)) {
+                    String reservationID = client.reader.readLine();
+                    JOptionPane.showMessageDialog(this, 
+                        "Reservation successful!\n\nReservation ID: " + reservationID + "\nTotal: $" + totalPrice + "\nSeats: " + String.join(", ", selectedSeats), 
+                        "Success", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                    gui.showPanel("Dashboard");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Reservation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                client.writer.write("cancel\n");
+                client.writer.flush();
+                JOptionPane.showMessageDialog(this, "Booking cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error booking reservation: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
 

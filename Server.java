@@ -157,6 +157,28 @@ public class Server implements ServerInterface, Runnable {
                     } else {
                         writer.println("fail");
                     }
+                } else if (command.equals("deleteAccountByCredentials")) {
+                    //Deleting account using username and password only
+                    String username = reader.readLine();
+                    String password = reader.readLine();
+                    // First, fetch the account using getAccountByUsername
+                    Account account = database.getAccountByUsername(username, password);
+                    if (account != null) {
+                        // Get the userID from the account
+                        String userID = account.getID();
+                        // Now delete the account using the userID
+                        boolean deleted = database.deleteAccount(userID, username, password);
+                        if (deleted) {
+                            writer.println("success");
+                            writer.flush();
+                        } else {
+                            writer.println("fail");
+                            writer.flush();
+                        }
+                    } else {
+                        writer.println("fail");
+                        writer.flush();
+                    }
                 } else if (command.equals("getALlConcerts")) {
                     //Getting all concerts
                     ArrayList<String> concerts = getAllConcerts();
