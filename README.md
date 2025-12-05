@@ -1,4 +1,4 @@
-# Concert Reservation System - Phase 1 and 2
+# Concert Reservation System
 ## L30-Team 4
 ## Team Members
 - Saanvi Verma
@@ -69,6 +69,12 @@ java ConcertTest
 ## Additional Information
 - The Client currently communicates with the user through the command line. The user will be able to communicate to the Client after Phase 3 when the GUI is addded.
 
+## Submission Information (Phase 3)
+- Saanvi Verma submitted Phase 3 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Client, the presentation, and the Report.
+- Arav Nair worked on ClientTest and the Report.
+- Kunj Arora worked on Client and the Report.
+- Shalini Murthula worked on the Report and the presentation.
+- 
 ## Submission Information (Phase 2)
 - Saanvi Verma submitted Phase 2 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Concert, ConcertInterface, Database, DatabaseInterface, DatabaseTest, Client, ClientInterface, seats.txt, Reservations, Seat, Account, Server, ServerTest, and ServerInterface.
 - Arav Nair worked on Payment, PaymentManager, PaymentManagerInterface, PaymentInterface, PaymentTest, PaymentManagerTest, Database, and Reservations.
@@ -136,9 +142,10 @@ Main database manager that handles all the data storage and retrieval (in text f
 
 ---
 
+## WILL CHANGE LATER
 ### Client.java
 **Purpose:** 
-Client class that communicates with a user (through the command line) and handles all the different commands per menu. Ensures that the user enters an appropriate answer per question and communicates with the Server class for confirmation on actions taken by the user. 
+Client class that communicates with a user (through the GUI) and handles all the different commands per menu. Ensures that the user enters an appropriate answer per question and communicates with the Server class for confirmation on actions taken by the user. 
 
 ### Fields
 - 'boolean run' - To confirm if the Client is running
