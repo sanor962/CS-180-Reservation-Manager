@@ -10,7 +10,6 @@ public class ReservationManagerGUI extends JFrame {
     LoginPanel loginPanel;
     DashboardPanel dashboardPanel;
     public ReservationPanel reservationPanel;
-    PaymentPanel paymentPanel;
 
     // Client connection
     public Client client;
@@ -35,13 +34,11 @@ public class ReservationManagerGUI extends JFrame {
         loginPanel = new LoginPanel(this, client);
         dashboardPanel = new DashboardPanel(this, client);
         reservationPanel = new ReservationPanel(this, client);
-        paymentPanel = new PaymentPanel(this, client);
 
         // Add panels to mainPanel
         mainPanel.add(loginPanel, "Login");
         mainPanel.add(dashboardPanel, "Dashboard");
         mainPanel.add(reservationPanel, "Reservation");
-        mainPanel.add(paymentPanel, "Payment");
 
         add(mainPanel);
         showPanel("Login");
@@ -554,12 +551,4 @@ class ReservationPanel extends JPanel {
     }
 }
 
-// --- Payment Panel ---
-class PaymentPanel extends JPanel {
-    public PaymentPanel(ReservationManagerGUI gui, Client client) {
-        setLayout(new BorderLayout());
-        JLabel label = new JLabel("Payment Panel (Stub)");
-        add(label, BorderLayout.CENTER);
-        // TODO: Add payment summary and processing
-    }
-}
+
