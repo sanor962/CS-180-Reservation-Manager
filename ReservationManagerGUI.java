@@ -2,6 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * The ReservationManagerGUI class visualizes al the backend code
+ * 
+ *
+ * @author Kunj Arora (arora271)
+ * @version December 5, 2025
+ */
+
 public class ReservationManagerGUI extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
