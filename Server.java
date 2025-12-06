@@ -49,9 +49,11 @@ public class Server implements ServerInterface, Runnable {
                     //Logs the user in
                     String username = reader.readLine();
                     String password = reader.readLine();
+                    Account account = database.getAccountByUsername(username, password);
                     if (login(username, password)) {
-                        accountID = username;
+                        //accountID = username;
                         writer.println("success");
+                        writer.println(account.getID());
                     } else {
                         writer.println("fail");
                     }
