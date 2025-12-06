@@ -66,8 +66,8 @@ java ConcertTest
 - Different test cases have their own imports however they all have been written using JUnit 5.
 - All test cases were verified locally using JUnit 5, even though Vocareum’s compilation logs show missing symbol errors due to its arrangement.
 
-## Additional Information
-- The Client currently communicates with the user through the command line. The user will be able to communicate to the Client after Phase 3 when the GUI is addded.
+## Running Information
+- To run the program, you must first run the Server and then the Client.
 
 ## Submission Information (Phase 3)
 - Saanvi Verma submitted Phase 3 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, fixed Phase 2 errors, worked on Client, Account, Server, the presentation, and the Report.
