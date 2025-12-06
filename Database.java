@@ -590,7 +590,7 @@ public class Database implements DatabaseInterface {
 
             ArrayList<String> seats = new ArrayList<>();
             try (BufferedWriter bC = new BufferedWriter(new FileWriter(file))) {
-                bC.write(concert.getID());
+                bC.write(num);
                 bC.newLine();
                 try (BufferedReader bwS = new BufferedReader(new FileReader(fileS))) {
                     while (true) {

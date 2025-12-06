@@ -1,4 +1,4 @@
-# Concert Reservation System - Phase 1 and 2
+# Concert Reservation System
 ## L30-Team 4
 ## Team Members
 - Saanvi Verma
@@ -41,6 +41,7 @@ javac PaymentTest.java
 javac PaymentManagerTest.java
 javac ClientTest.java
 javac ServerTest.java
+javac Concert.java
 javac seats.txt
 ```
 
@@ -55,23 +56,30 @@ java PaymentManagerTest
 java PaymentTest
 java ClientTest
 java ServerTest
+java ConcertTest
 ```
 
 ## GTA and Submission Information
 - When trying to submit on Vocareum, cloning the Github was not working as I was not able to sign in properly so I (Saanvi Verma) uploaded the files instead. One of the TA's told me to add our GTA to our Github repository to ensure that they could see our files.
 
 ## Testing Information
-- This project's test cases have been written using JUnit 5.
+- Different test cases have their own imports however they all have been written using JUnit 5.
 - All test cases were verified locally using JUnit 5, even though Vocareum’s compilation logs show missing symbol errors due to its arrangement.
 
 ## Additional Information
 - The Client currently communicates with the user through the command line. The user will be able to communicate to the Client after Phase 3 when the GUI is addded.
 
+## Submission Information (Phase 3)
+- Saanvi Verma submitted Phase 3 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Client, the presentation, and the Report.
+- Arav Nair worked on ClientTest and the Report.
+- Kunj Arora worked on Client and the Report.
+- Shalini Murthula worked on the Report and the presentation.
+- 
 ## Submission Information (Phase 2)
-- Saanvi Verma submitted Phase 2 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Concert, ConcertInterface, Database, DatabaseInterface, Client, ClientInterface, seats.txt, Server and ServerInterface.
-- Arav Nair worked on Payment, PaymentManager, PaymentManagerInterface, PaymentInterface, PaymentTest, and PaymentManagerTest.
-- Kunj Arora worked on Server, ServerInterface, and Database.
-- Shalini Murthula worked on ClientTest, Client, ServerTest, DatabaseTest, ConcertTest, and Database.
+- Saanvi Verma submitted Phase 2 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Concert, ConcertInterface, Database, DatabaseInterface, DatabaseTest, Client, ClientInterface, seats.txt, Reservations, Seat, Account, Server, ServerTest, and ServerInterface.
+- Arav Nair worked on Payment, PaymentManager, PaymentManagerInterface, PaymentInterface, PaymentTest, PaymentManagerTest, Database, and Reservations.
+- Kunj Arora worked on Server, ServerInterface, DatabaseTest, Reservations, ReservationsTest, and Database.
+- Shalini Murthula worked on ClientTest, Client, Concert, Server, ServerTest, DatabaseTest, AccountTest, ReservationsTest, ConcertTest, and Database.
 
 ## Submission Information (Phase 1)
 - Saanvi Verma submitted Phase 1 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Account, AccountInterface, AccountTest, Database, DatabaseInterface, and DatabaseTest.
@@ -134,9 +142,10 @@ Main database manager that handles all the data storage and retrieval (in text f
 
 ---
 
+## WILL CHANGE LATER
 ### Client.java
 **Purpose:** 
-Client class that communicates with a user (through the command line) and handles all the different commands per menu. Ensures that the user enters an appropriate answer per question and communicates with the Server class for confirmation on actions taken by the user. 
+Client class that communicates with a user (through the GUI) and handles all the different commands per menu. Ensures that the user enters an appropriate answer per question and communicates with the Server class for confirmation on actions taken by the user. 
 
 ### Fields
 - 'boolean run' - To confirm if the Client is running
@@ -742,6 +751,7 @@ java org.junit.runner.JUnitCore ServerTest
 java org.junit.runner.JUnitCore ClientTest
 java org.junit.runner.JUnitCore PaymentTest
 java org.junit.runner.JUnitCore PaymentManagerTest
+java org.junit.runner.JUnitCore SeatingChartTest
 ```
 
 ---
