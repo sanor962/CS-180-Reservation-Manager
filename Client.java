@@ -182,6 +182,12 @@ public class Client implements ClientInterface {
                 String confirmPassword = new String(confirmPasswordField.getPassword());
 
                 //Checks all variables
+                if (firstName == null || lastName == null || age == null || email == null
+                        || phone == null || username == null || password == null || confirmPassword == null) {
+                    JOptionPane.showMessageDialog(loginPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+
                 if (firstName.isEmpty() || lastName.isEmpty() || age.isEmpty() || email.isEmpty()
                         || phone.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     JOptionPane.showMessageDialog(loginPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -465,7 +471,7 @@ public class Client implements ClientInterface {
                     String[] parts = reservationDetails.split(",");
                     //System.out.println(parts.length);
                     for (int j = 0; j < parts.length; j++) {
-                        System.out.println("  Part " + j + ": '" + parts[j] + "'");
+                        //System.out.println("  Part " + j + ": '" + parts[j] + "'");
                     }
 
                     if (parts.length >= 7) {
@@ -1191,20 +1197,24 @@ public class Client implements ClientInterface {
 
     //Helper method to confirm date
     private boolean confirmDate(String date) {
-        String d = "";
-        String m = "";
-        String y = "";
+        try {
+            String d = "";
+            String m = "";
+            String y = "";
 
-        d = date.substring(0, date.indexOf("/"));
-        m = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
-        y = date.substring(date.lastIndexOf("/") + 1);
+            d = date.substring(0, date.indexOf("/"));
+            m = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
+            y = date.substring(date.lastIndexOf("/") + 1);
 
-        int day = Integer.parseInt(d);
-        int month = Integer.parseInt(m);
+            int day = Integer.parseInt(d);
+            int month = Integer.parseInt(m);
 
-        if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && y.length() == 4) {
-            return true;
-        } else {
+            if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && y.length() == 4) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
     }
