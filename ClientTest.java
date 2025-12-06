@@ -10,8 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit test cases for the Client class
  * Tests verify functionality of the class, which represents a client
  * in a concert reservation system, using simulations of server interactions
+ * Includes testing for GUI components in Client
  *
- * @author Shalini Murthula (smurthul)
+ * @author Shalini Murthula (smurthul), Arav Nair (nair234)
  * @version November 22, 2025
  */
 public class ClientTest {
