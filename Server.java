@@ -84,8 +84,17 @@ public class Server implements ServerInterface, Runnable {
                     }
                 } else if (command.equals("makeReservation")) {
                     //Make reservation
-                    String user = reader.readLine();
+                    String username = reader.readLine();
                     String password = reader.readLine();
+                    Account currentUser = database.getAccountByUsername(username, password);
+                    if (currentUser == null || !currentUser.getPassword().equals(password)) {
+                        writer.println("invalid");
+                        writer.flush();
+                        continue;
+                    }
+                    writer.println("valid");
+                    writer.flush();
+
                     String showID = reader.readLine();
                     int numSeats = Integer.parseInt(reader.readLine());
                     List<String> seatIDs = new ArrayList<>();
@@ -114,7 +123,7 @@ public class Server implements ServerInterface, Runnable {
 
                     String time = getTime(showID);
 
-                    int reservationID = createReservation(user, password, showID, seatIDs, date, time, totalPrice);
+                    int reservationID = createReservation(username, password, showID, seatIDs, date, time, totalPrice);
                     boolean success = paymentManager.processPayment(reservationID, totalPrice);
 
                     if (!success) {
