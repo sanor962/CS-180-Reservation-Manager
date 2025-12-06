@@ -43,6 +43,24 @@ javac ClientTest.java
 javac ServerTest.java
 javac Concert.java
 javac seats.txt
+javac concert.txt
+javac accounts.txt
+javac reservations.txt
+javac Concert1.txt
+javac Concert2.txt
+javac Concert3.txt
+javac Concert4.txt
+javac Concert5.txt
+javac Concert6.txt
+javac Concert7.txt
+javac Concert8.txt
+javac Concert9.txt
+javac Concert10.txt
+javac Concert11.txt
+javac Concert12.txt
+javac Concert13.txt
+javac Concert14.txt
+javac Concert15.txt
 ```
 
 ### To run all tests:
@@ -70,7 +88,7 @@ java ConcertTest
 - To run the program, you must first run the Server and then the Client.
 
 ## Submission Information (Phase 3)
-- Saanvi Verma submitted Phase 3 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, fixed Phase 2 errors, worked on Client, Account, Server, the presentation, and the Report.
+- Saanvi Verma submitted Phase 3 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, fixed Phase 2 errors, worked on Client, Account, Concert, Server, the presentation, and the Report.
 - Arav Nair worked on ClientTest and the Report.
 - Kunj Arora worked on Client and the Report.
 - Shalini Murthula worked on the Report, made the script, and the presentation.
@@ -703,7 +721,7 @@ Billie,13/06/2030,18:00,7
 - Works alongside Server
 
 **Client Class:**
-- Uses command line to talk with the user
+- Uses GUI to talk with the user
 - Provides information to the server for every operation
 - Works alongside Server
 
@@ -743,7 +761,7 @@ Billie,13/06/2030,18:00,7
 - **Seat operations:** Availability checking and updating
 - **Reservation operations:** Create, cancel, retrieve by user, retrieve by ID
 - **Concert operations:** Create, retrieve all concerts, retrieve ID
-- **Client operations:** Communicate with user, connect with Server, performs proper tasks per command
+- **Client operations:** Communicate with user, connect with Server, performs proper tasks per command from GUI
 - **Server operations:** Connect with Client, performs proper tasks per command, utlizes Database
 - **Edge cases:** Duplicate usernames, non-existent accounts, unavailable seats (will be handled in Phase 2).
 - **Data persistence:** Verify data survives program restarts
@@ -764,14 +782,8 @@ java org.junit.runner.JUnitCore SeatingChartTest
 
 ---
 
-## Known Issues / Future Improvements
-- Phase 3 will add: GUI
-- Phase 3 will allow the user to communicate with the Client through GUI
-
----
-
 ## Notes
 - All data is stored in plain text files.
 - Database uses file I/O for all operations to access data.
 - All classes have to have an interface.
-- Client is currently communicating with the user through the command line.
+- Client is communicates with the user through the GUI.
