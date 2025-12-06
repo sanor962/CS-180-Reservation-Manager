@@ -12,12 +12,14 @@ public interface DatabaseInterface {
     boolean loginIntoAccount(String username, String password);
     boolean deleteAccount(String accountID, String userName, String password);
     Account getAccount(String accountID, String password);
-    String createReservation(String accountID, String showID, List<String> seatIDs, String date, String time, double totalPrice);
-    boolean cancelReservation(String reservationID);
+    int createReservation(Account account, String showID, List<String> seatIDs, String date, String time, double totalPrice);
+    boolean cancelReservation(int reservationID);
     ArrayList<Reservations> getReservationsByAccount(String accountID);
-    Reservations getReservationByID(String reservationID);
-    public Seat getSeat(String seatID);
+    Reservations getReservationByID(int reservationID);
+    Seat getSeat(String show, String seatID);
     boolean createConcert(String name, String date, String time);
     ArrayList<String> getAllConcerts();
     String getTime(String concertID);
+    boolean updateSeatAvailability(String show, String seatID, boolean available);
+    Account getAccountByUsername(String username, String password);
 }

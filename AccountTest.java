@@ -1,8 +1,5 @@
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 /**
  * JUnit test cases for the Account class
  * Tests cover all constructors, getters, setters, toString(), and the createID() logic
@@ -29,25 +26,25 @@ public class AccountTest {
     // test the main constructor and all getter methods
     public void testConstructorAndGetters() {
         Account account = new Account(firstName, lastName, age, username, password, email, phoneNumber);
-        assertEquals("First name should match input.", firstName, account.getFirstName());
-        assertEquals("Last name should match input.", lastName, account.getLastName());
-        assertEquals("Age should match input.", age, account.getAge());
-        assertEquals("User name should match input.", username, account.getUserName());
-        assertEquals("Password should match input.", password, account.getPassword());
-        assertEquals("Email should match input.", email, account.getEmail());
-        assertEquals("Phone number should match input.", phoneNumber, account.getPhoneNumber());
-        assertNull("Initial UserID should be null before calling createID.", account.getID());
+        assertEquals(firstName, account.getFirstName(), "First name should match input.");
+        assertEquals(lastName, account.getLastName(), "Last name should match input.");
+        assertEquals(age, account.getAge(), "Age should match input.");
+        assertEquals(username, account.getUserName(), "User name should match input.");
+        assertEquals(password, account.getPassword(), "Password should match input.");
+        assertEquals(email, account.getEmail(), "Email should match input.");
+        assertEquals(phoneNumber, account.getPhoneNumber(), "Phone number should match input.");
+        assertNull(account.getID(), "Initial UserID should be null before calling createID.");
     }
 
     @Test
     // test the constructor that takes a string line (for file reading)
     public void testStringConstructor() {
         Account account = new Account(expectedId);
-        assertEquals("First name should be parsed correctly.", firstName, account.getFirstName());
-        assertEquals("Last name should be parsed correctly.", lastName, account.getLastName());
-        assertEquals("Age should be parsed correctly.", age, account.getAge());
-        assertEquals("Phone number should be parsed correctly.", phoneNumber, account.getPhoneNumber());
-        assertEquals("UserID should be parsed correctly.", expectedGeneratedId, account.getID());
+        assertEquals(firstName, account.getFirstName(), "First name should be parsed correctly.");
+        assertEquals(lastName, account.getLastName(), "Last name should be parsed correctly.");
+        assertEquals(age, account.getAge(), "Age should be parsed correctly.");
+        assertEquals(phoneNumber, account.getPhoneNumber(), "Phone number should be parsed correctly.");
+        assertEquals(expectedGeneratedId, account.getID(), "UserID should be parsed correctly.");
     }
 
     @Test
@@ -66,11 +63,11 @@ public class AccountTest {
         account.setUserName(newUserName);
         account.setID(newID);
 
-        assertEquals("Email should be updated.", newEmail, account.getEmail());
-        assertEquals("Phone number should be updated.", newPhone, account.getPhoneNumber());
-        assertEquals("Password should be updated.", newPassword, account.getPassword());
-        assertEquals("Username should be updated.", newUserName, account.getUserName());
-        assertEquals("ID should be updated.", newID, account.getID());
+        assertEquals(newEmail, account.getEmail(), "Email should be updated.");
+        assertEquals(newPhone, account.getPhoneNumber(), "Phone number should be updated.");
+        assertEquals(newPassword, account.getPassword(), "Password should be updated.");
+        assertEquals(newUserName, account.getUserName(), "Username should be updated.");
+        assertEquals(newID, account.getID(), "ID should be updated.");
     }
 
     @Test
@@ -78,8 +75,8 @@ public class AccountTest {
     public void testCreateID() {
         Account account = new Account(firstName, lastName, age, username, password, email, phoneNumber);
         String id = account.createID();
-        assertEquals("The generated ID should match the logic after filtering.", expectedGeneratedId, id);
-        assertEquals("The stored ID should match the returned ID.", expectedGeneratedId, account.getID());
+        assertEquals(expectedGeneratedId, id, "The generated ID should match the logic after filtering.");
+        assertEquals(expectedGeneratedId, account.getID(), "The stored ID should match the returned ID.");
 
     }
 
@@ -89,7 +86,7 @@ public class AccountTest {
         Account account = new Account("Six", "Seven", 30, "s", "p", "s@s.com", "1234567676");
         String id = account.createID();
 
-        assertEquals("The ID should be 'SVII-' after removing all 6's and 7's.", "SVII-", id);
+        assertEquals("SVII-", id, "The ID should be 'SVII-' after removing all 6's and 7's.");
     }
 
     @Test
@@ -98,7 +95,7 @@ public class AccountTest {
         Account account = new Account("An", "Xyz", 40, "ax", "p", "a@x.com", "1234567890");
         String id = account.createID();
 
-        assertEquals("The ID should be 'XZNA-890' for minimum length inputs.", "XZNA-890", id);
+        assertEquals("XZNA-890", id, "The ID should be 'XZNA-890' for minimum length inputs.");
     }
 
     @Test
@@ -108,11 +105,11 @@ public class AccountTest {
                 username + "," + password + "," + email + "," + phoneNumber + "," + "null";
         Account account = new Account(firstName, lastName, age, username, password, email, phoneNumber);
         System.out.println(account.writingInFile());
-        assertEquals("toString should match the expected format with 'null' ID before generation.", 
-                expectedIdNull, account.writingInFile());
+        assertEquals(expectedIdNull, account.writingInFile(),
+                "toString should match the expected format with 'null' ID before generation.");
 
         account.createID();
-        assertEquals("toString should match the expected format with the generated ID.", 
-                expectedId, account.writingInFile());
+        assertEquals(expectedId, account.writingInFile(),
+                "toString should match the expected format with the generated ID.");
     }
 }

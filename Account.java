@@ -30,7 +30,13 @@ public class Account implements AccountInterface {
 
     //Constructor that takes in from the line from the file
     public Account(String line) {
+        if (line == null) {
+            throw new IllegalArgumentException();
+        }
         String[] partOfAccount = line.split(",");
+        if (partOfAccount.length < 8) {
+            throw new IllegalArgumentException();
+        }
         this.firstName = partOfAccount[0];
         this.lastName = partOfAccount[1];
         this.age = Integer.parseInt(partOfAccount[2]);
@@ -106,14 +112,16 @@ public class Account implements AccountInterface {
             result = firstName1.charAt(0) + "";
         }
         String lastName1 = lastName.toUpperCase();
-        if (lastName1.length() >= 2) {
+        if (lastName1.length() >= 3) {
             result = (lastName1.charAt(0) + "" + lastName1.charAt(2)).concat(result);
         } else {
-            result = lastName1.charAt(0) + "";
+            result = lastName1.charAt(0) + "".concat(result);
         }
-        result = result.concat("-" + phoneNumber.substring(6, 10));
-        result = result.replaceAll("6", "");
-        result = result.replaceAll("7", "");
+        if (phoneNumber.length() == 10) {
+            result = result.concat("-" + phoneNumber.substring(6, 10));
+            result = result.replaceAll("6", "");
+            result = result.replaceAll("7", "");
+        }
         setID(result);
         return result;
     }
@@ -127,9 +135,9 @@ public class Account implements AccountInterface {
 
     //To String method
     public String toString() {
-        return "First Name: " + getFirstName() + "\nLast Name: " + getLastName() + 
-                "\nAge: " + getAge() + "\nUsername: " + getUserName() + "\nPassword: " + 
-                getPassword() + "\nID: " + getID() + "\nEmail: " + getEmail() + 
+        return "First Name: " + getFirstName() + "\nLast Name: " + getLastName() +
+                "\nAge: " + getAge() + "\nUsername: " + getUserName() + "\nPassword: " +
+                getPassword() + "\nID: " + getID() + "\nEmail: " + getEmail() +
                 "\nPhone Number: " + getPhoneNumber();
     }
 }

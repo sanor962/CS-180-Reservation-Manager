@@ -1,26 +1,32 @@
+import javax.swing.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * The Server class handles all client connections
- *
  * Port Number: 6767
  *
- * @author Kunj Arora (arora271) and Saanvi Verma (verma279)
+ * @author Kunj Arora (arora271), Saanvi Verma (verma279), Shalini Murthula (smurthul)
  * @version November 21, 2025
  */
-
-
-public class Server implements ServerInterface {
-    private Database database;
+public class Server implements ServerInterface, Runnable {
+    private static final Database database = new Database();
+    private Socket socket;
     private PaymentManager paymentManager = new PaymentManager();
 
     public Server() {
-        database = new Database();
+        //database = new Database();
     }
+
+    //Sets it to a given socket
+    public Server(Socket socket) {
+        this.socket = socket;
+        //this.database = new Database();
+        this.paymentManager = new PaymentManager();
+    }
+
 
     private void handleClient(Socket socket) {
         BufferedReader reader = null;
@@ -40,15 +46,19 @@ public class Server implements ServerInterface {
                 }
 
                 if (command.equals("login")) {
+                    //Logs the user in
                     String username = reader.readLine();
                     String password = reader.readLine();
+                    Account account = database.getAccountByUsername(username, password);
                     if (login(username, password)) {
-                        accountID = username;
+                        //accountID = username;
                         writer.println("success");
+                        writer.println(account.getID());
                     } else {
                         writer.println("fail");
                     }
                 } else if (command.equals("createAccount")) {
+                    //Creates the account
                     String firstName = reader.readLine();
                     String lastName = reader.readLine();
                     int age = Integer.parseInt(reader.readLine());
@@ -63,7 +73,7 @@ public class Server implements ServerInterface {
                         writer.println("Account could not be created because username has already been taken.");
                     }
                 } else if (command.equals("getAvailableSeats")) {
-                    //Need to figure out what tf we are doing for this
+                    //Gets avaliable seats
                     String showID = reader.readLine();
                     String date = reader.readLine();
                     ArrayList<Seat> seats = getAvailableSeats(showID, date);
@@ -73,6 +83,7 @@ public class Server implements ServerInterface {
                         writer.println(seats.get(i).writingInFile());
                     }
                 } else if (command.equals("makeReservation")) {
+                    //Make reservation
                     String user = reader.readLine();
                     String password = reader.readLine();
                     String showID = reader.readLine();
@@ -86,7 +97,7 @@ public class Server implements ServerInterface {
                     String date = reader.readLine();
                     double totalPrice = 0;
                     for (int i = 0; i < seatIDs.size(); i++) {
-                        Seat s = database.getSeat(seatIDs.get(i));
+                        Seat s = database.getSeat(showID, seatIDs.get(i));
                         if (s == null || !s.isAvailable()) {
                             writer.println("Seat " + seatIDs.get(i) + " is unavailable.");
                             return;
@@ -119,9 +130,10 @@ public class Server implements ServerInterface {
                     }
 
                     for (String seatID : seatIDs) {
-                        database.updateSeatAvailability(seatID, false);
+                        database.updateSeatAvailability(showID, seatID, false);
                     }
                 } else if (command.equals("cancelReservation")) {
+                    //Canceling reservation
                     int reservationID = Integer.parseInt(reader.readLine());
                     if (cancelReservation(reservationID)) {
                         writer.println("success");
@@ -129,6 +141,7 @@ public class Server implements ServerInterface {
                         writer.println("fail");
                     }
                 } else if (command.equals("getReservations")) {
+                    //Getting users reservation
                     String user = reader.readLine();
                     ArrayList<Reservations> reservations = getReservationsByAccount(user);
                     writer.println(reservations.size());
@@ -137,6 +150,7 @@ public class Server implements ServerInterface {
                         writer.println(reservations.get(i).toString());
                     }
                 } else if (command.equals("deleteAccount")) {
+                    //Deleting account
                     String id = reader.readLine();
                     String password = reader.readLine();
                     String user = reader.readLine();
@@ -145,7 +159,30 @@ public class Server implements ServerInterface {
                     } else {
                         writer.println("fail");
                     }
+                } else if (command.equals("deleteAccountByCredentials")) {
+                    //Deleting account using username and password only
+                    String username = reader.readLine();
+                    String password = reader.readLine();
+                    // First, fetch the account using getAccountByUsername
+                    Account account = database.getAccountByUsername(username, password);
+                    if (account != null) {
+                        // Get the userID from the account
+                        String userID = account.getID();
+                        // Now delete the account using the userID
+                        boolean deleted = database.deleteAccount(userID, username, password);
+                        if (deleted) {
+                            writer.println("success");
+                            writer.flush();
+                        } else {
+                            writer.println("fail");
+                            writer.flush();
+                        }
+                    } else {
+                        writer.println("fail");
+                        writer.flush();
+                    }
                 } else if (command.equals("getALlConcerts")) {
+                    //Getting all concerts
                     ArrayList<String> concerts = getAllConcerts();
                     writer.println(concerts.size());
 
@@ -153,6 +190,7 @@ public class Server implements ServerInterface {
                         writer.println(concerts.get(i));
                     }
                 } else if (command.equals("createConcert")) {
+                    //Creating a concert
                     String name = reader.readLine();
                     String date = reader.readLine();
                     String time = reader.readLine();
@@ -187,46 +225,54 @@ public class Server implements ServerInterface {
         }
     }
 
+    //Calls the database
     @Override
     public boolean login(String username, String password) {
         return database.loginIntoAccount(username, password);
     }
 
+    //Calls the database
     @Override
     public String getTime(String concertID) {
         return database.getTime(concertID);
     }
 
+    //Calls the database
     @Override
     public ArrayList<String> getAllConcerts() {
         return database.getAllConcerts();
     }
 
+    //Calls the database
     @Override
     public boolean createConcert(String name, String date, String time) {
         return database.createConcert(name, date, time);
     }
 
+    //Calls the database
     @Override
     public boolean createAccount(String firstName, String lastName, int age, String username,
                                  String password, String email, String phoneNumber) {
         return database.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
     }
 
+    //Calls the database
     @Override
     public boolean deleteAccount(String accountID, String username, String password) {
         return database.deleteAccount(accountID, username, password);
     }
 
+    //Calls the database
     @Override
     public Account getAccount(String accountID, String password) {
         return database.getAccount(accountID, password);
     }
 
+    //Calls the database
     @Override
-    public int createReservation(String accountID, String password, String showID, List<String> seatIDs,
+    public int createReservation(String username, String password, String showID, List<String> seatIDs,
                                  String date, String time, double totalPrice) {
-        Account account = database.getAccount(accountID, password);
+        Account account = database.getAccountByUsername(username, password);
 
         if (account == null) {
             return -1;
@@ -235,50 +281,63 @@ public class Server implements ServerInterface {
         return database.createReservation(account, showID, seatIDs, date, time, totalPrice);
     }
 
+    //Calls the database
+    @Override
+    public Account getAccountByUsername(String username, String password) {
+        return database.getAccountByUsername(username, password);
+    }
+
+    //Calls the database
     @Override
     public boolean cancelReservation(int reservationID) {
         return database.cancelReservation(reservationID);
     }
 
+    //Calls the database
     @Override
     public ArrayList<Reservations> getReservationsByAccount(String accountID) {
         return database.getReservationsByAccount(accountID);
     }
 
+    //Calls the database
     @Override
     public Reservations getReservationByID(int reservationID) {
         return database.getReservationByID(reservationID);
     }
 
+    //Calls the database
     @Override
-    public Seat getSeat(String seatID) {
-        return database.getSeat(seatID);
+    public Seat getSeat(String show, String seatID) {
+        return database.getSeat(show, seatID);
     }
 
+    //Calls the database
     @Override
-    public boolean reserveSeat(String seatID) {
-        Seat seat = database.getSeat(seatID);
+    public boolean reserveSeat(String show, String seatID) {
+        Seat seat = database.getSeat(show, seatID);
 
         if (seat != null && seat.isAvailable()) {
-            database.updateSeatAvailability(seatID, false);
+            database.updateSeatAvailability(show, seatID, false);
             return true;
         }
 
         return false;
     }
 
+    //Calls the database
     @Override
-    public boolean cancelSeat(String seatID) {
-        Seat seat = database.getSeat(seatID);
+    public boolean cancelSeat(String show, String seatID) {
+        Seat seat = database.getSeat(show, seatID);
 
         if (seat != null && !seat.isAvailable()) {
-            database.updateSeatAvailability(seatID, true);
+            database.updateSeatAvailability(show, seatID, true);
             return true;
         }
 
         return false;
     }
 
+    //Calls the database
     @Override
     public ArrayList<Seat> getAvailableSeats(String showID, String date) {
         ArrayList<Seat> allSeats = new ArrayList<>();
@@ -286,6 +345,10 @@ public class Server implements ServerInterface {
         String name = "Concert" + showID;
         try {
             br = new BufferedReader(new FileReader(name));
+            String firstLine = br.readLine();
+            if (firstLine == null) {
+                return allSeats;
+            }
             String line;
             while ((line = br.readLine()) != null) {
                 Seat seat = new Seat(line);
@@ -308,29 +371,27 @@ public class Server implements ServerInterface {
         return allSeats;
     }
 
+    //Run method
+    public void run() {
+        handleClient(socket);
+    }
+
+    //Starts server
     public static void main(String[] args) {
         Server server = new Server();
         try {
             ServerSocket serverSocket = new ServerSocket(6767);
-            System.out.println("Server running on port 6767...");
+            System.out.println("Server running on port 6767");
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected");
 
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        server.handleClient(clientSocket);
-                    }
-                });
-
+                Thread thread = new Thread(new Server(clientSocket));
                 thread.start();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

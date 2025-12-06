@@ -1,20 +1,24 @@
 import java.io.*;
 import java.util.*;
-
+import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Database class
  *
- * @author Saanvi Verma (verma279), Kunj Arora (arora271), Arav Nair (nair234)
+ * @author Saanvi Verma (verma279), Kunj Arora (arora271),
+ * Arav Nair (nair234), and Shalini Murthula (smurthul)
  * @version November 6, 2025
  */
-
-public class Database {
+public class Database implements DatabaseInterface {
     //Files to store data in
     private static final String ACCOUNTFILE = "accounts.txt";
     private static final String SEATSFILE = "seats.txt";
     private static final String RESERVATIONSFILE = "reservations.txt";
     private static final String CONCERTFILE = "concert.txt";
 
+    //Atomic Integer for number of reservations
+    private final AtomicInteger nextID = new AtomicInteger(1);
+
+    //Files
     private File fileA;
     private File fileS;
     private File fileR;
@@ -51,6 +55,27 @@ public class Database {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        int id = 0;
+        ArrayList<String> res = new ArrayList<>();
+        try (BufferedReader brR = new BufferedReader(new FileReader(fileR))) {
+            while (true) {
+                String line = brR.readLine();
+                if (line == null) {
+                    break;
+                }
+                res.add(line);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        for (int i = 0; i < res.size(); i++) {
+            Reservations reservations = new Reservations(res.get(i));
+            if (reservations.getReservationID() > id) {
+                id = reservations.getReservationID();
+            }
+        }
+        nextID.set(id + 1);
     }
 
     // ACCOUNT METHODS
@@ -59,6 +84,13 @@ public class Database {
     public boolean createAccount(String firstName, String lastName, int age, String userName,
                                  String password, String email, String phoneNumber) {
         synchronized (accountO) {
+            // input validation
+            if (firstName == null || firstName.trim().isEmpty() ||
+                    lastName == null || lastName.trim().isEmpty() ||
+                    userName == null || userName.trim().isEmpty() ||
+                    age < 0) { // assuming age validation is also needed
+                return false;
+            }
             //Making sure the username doesn't exist
             ArrayList<String> lines = new ArrayList<>();
             try (BufferedReader bwA = new BufferedReader(new FileReader(fileA))) {
@@ -152,7 +184,13 @@ public class Database {
                 if (!(passWord.equals(password)) || !(userName1.equals(userName)) || !(id.equals(accountID))) {
                     newLines.add(lines.get(i));
                 } else {
-                    found = true;
+                    boolean isAccountToDelete = userName1.equals(userName) && passWord.equals(password) && id.equals(accountID);
+
+                    if (isAccountToDelete) {
+                        found = true;
+                    } else {
+                        newLines.add(lines.get(i));
+                    }
                 }
             }
 
@@ -169,7 +207,6 @@ public class Database {
             }
             return false;
         }
-
     }
 
     //Getting your Account using ID and Password
@@ -191,11 +228,45 @@ public class Database {
 
             //Returning the account
             for (int i = 0; i < lines.size(); i++) {
-                Account account = new Account(lines.get(i));
-                if (account.getID().equals(accountID) && account.getPassword().equals(password)) {
-                    return account;
+                try {
+                    Account account = new Account(lines.get(i));
+                    if (account.getID().equals(accountID) && account.getPassword().equals(password)) {
+                        return account;
+                    }
+                } catch (IllegalArgumentException e) {
+
+                }
+
+            }
+            return null;
+        }
+    }
+
+    //Getting account by username
+    public Account getAccountByUsername(String username, String password) {
+        synchronized (accountO) {
+            // read all account entries from the file
+            ArrayList<String> lines = new ArrayList<>();
+            try (BufferedReader brA = new BufferedReader(new FileReader(fileA))) {
+                String line;
+                while ((line = brA.readLine()) != null) {
+                    if (!line.trim().isEmpty()) {
+                        lines.add(line);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            for (String line : lines) {
+                Account account = new Account(line);
+                // check if both username and password match
+                if (account.getUserName().equals(username) &&
+                        account.getPassword().equals(password)) {
+                    return account; // return the matching account
                 }
             }
+
             return null;
         }
     }
@@ -233,13 +304,23 @@ public class Database {
     //Creating a reservation using Account object
     public int createReservation(Account account, String showID, List<String> seatIDs,
                                  String date, String time, double totalPrice) {
+
         synchronized (reservationO) {
             if (account == null) {
                 throw new IllegalArgumentException("Account cannot be null when creating a reservation.");
             }
 
+            synchronized (seatO) {
+                for (int i = 0; i < seatIDs.size(); i++) {
+                    if (!updateSeatAvailability(showID, seatIDs.get(i), false)) {
+                        return -1;
+                    }
+                }
+            }
+
             // Create the reservation object
-            Reservations reservation = new Reservations(account, showID, seatIDs, date, time, totalPrice);
+            int id = nextID.getAndIncrement();
+            Reservations reservation = new Reservations(id, account, showID, seatIDs, date, time, totalPrice);
 
             // Append the reservation to the file
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileR, true))) {
@@ -291,7 +372,7 @@ public class Database {
             if (cancelledReservation != null) {
                 for (int i = 0; i < cancelledReservation.getSeatIDs().size(); i++) {
                     //This can cause a deadlock so make sure to always have reservationO then seatO
-                    updateSeatAvailability(cancelledReservation.getSeatIDs().get(i), true);
+                    updateSeatAvailability(cancelledReservation.getShowID(), cancelledReservation.getSeatIDs().get(i), true);
                 }
                 try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR))) {
                     for (int i = 0; i < newLines.size(); i++) {
@@ -308,11 +389,16 @@ public class Database {
     }
 
     //Updates the availability seat with the seatID to the boolean
-    public void updateSeatAvailability(String seatID, boolean available) {
+    public boolean updateSeatAvailability(String show, String seatID, boolean available) {
         synchronized (seatO) {
+            String f = "Concert" + show;
+            File file = new File(f);
+            if (!file.exists()) {
+                file = fileS;
+            }
             ArrayList<String> lines = new ArrayList<>();
 
-            try (BufferedReader br = new BufferedReader(new FileReader(fileS))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line = br.readLine();
                 while (line != null) {
                     lines.add(line);
@@ -321,8 +407,8 @@ public class Database {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
-            for (int i = 0; i < lines.size(); i++) {
+            boolean seatFound = false;
+            for (int i = 1; i < lines.size(); i++) {
                 //String[] parts = lines.get(i).split(",");
                 Seat seat = new Seat(lines.get(i));
             /*if (parts[0].equals(seatID)) {
@@ -331,23 +417,31 @@ public class Database {
                 break;
             }*/
                 if (seat.getSeatID().equals(seatID)) {
+                    if (!seat.isAvailable() && !available) {
+                        return false;
+                    }
+                    if (seat.isAvailable() && available) {
+                        return false;
+                    }
                     seat.setAvailable(available);
                     lines.set(i, seat.writingInFile());
+                    seatFound = true;
                     break;
                 }
             }
-
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileS))) {
+            if (!seatFound) {
+                return false;
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
                 for (int i = 0; i < lines.size(); i++) {
                     bw.write(lines.get(i) + "\n");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            return true;
         }
-
     }
-
 
     //Getting the reservations by the user account
     public ArrayList<Reservations> getReservationsByAccount(String accountID) {
@@ -421,10 +515,20 @@ public class Database {
     }
 
     //Getting the users seat by their ID
-    public Seat getSeat(String seatID) {
+    public Seat getSeat(String show, String seatID) {
         synchronized (seatO) {
+            String name = "Concert" + show;
+            File file = new File(name);
+            if (!file.exists()) {
+                return null;
+            }
+
             ArrayList<String> lines = new ArrayList<>();
-            try (BufferedReader brS = new BufferedReader(new FileReader(fileS))) {
+            try (BufferedReader brS = new BufferedReader(new FileReader(file))) {
+                String header = brS.readLine();
+                if (header == null) {
+                    return null;
+                }
                 String line;
                 while (true) {
                     line = brS.readLine();
@@ -442,9 +546,13 @@ public class Database {
             }
 
             for (int i = 0; i < lines.size(); i++) {
-                Seat seat = new Seat(lines.get(i));
-                if (seat.getSeatID().equals(seatID)) {
-                    return seat;
+                try {
+                    Seat seat = new Seat(lines.get(i));
+                    if (seat.getSeatID().equals(seatID)) {
+                        return seat;
+                    }
+                } catch (IllegalArgumentException e) {
+
                 }
             }
             return null;
@@ -452,6 +560,7 @@ public class Database {
 
     }
 
+    //Creating a concert
     public boolean createConcert(String name, String date, String time) {
         synchronized (concertO) {
             ArrayList<String> lines = new ArrayList<>();
@@ -481,7 +590,7 @@ public class Database {
 
             ArrayList<String> seats = new ArrayList<>();
             try (BufferedWriter bC = new BufferedWriter(new FileWriter(file))) {
-                bC.write(concert.getID());
+                bC.write(num);
                 bC.newLine();
                 try (BufferedReader bwS = new BufferedReader(new FileReader(fileS))) {
                     while (true) {
@@ -513,6 +622,7 @@ public class Database {
         }
     }
 
+    //Getting all the concerts in the file
     public ArrayList<String> getAllConcerts() {
         synchronized (concertO) {
             ArrayList<String> concerts = new ArrayList<>();
@@ -532,6 +642,7 @@ public class Database {
         }
     }
 
+    //Getting time of concert
     public String getTime(String concertID) {
         synchronized (concertO) {
             ArrayList<String> concerts = new ArrayList<>();
@@ -560,8 +671,4 @@ public class Database {
             return time;
         }
     }
-
 }
-
-
-

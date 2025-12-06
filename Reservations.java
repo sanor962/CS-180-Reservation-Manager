@@ -2,18 +2,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Reservations - Implements a reservation with user, show, seat, and pricing details.
  *
- * @author Arav Nair (nair234)
+ * @author Arav Nair (nair234), Saanvi Verma (verma279), Kunj Arora (arora271)
  * @version November 6, 2025
  */
 
 public class Reservations implements ReservationsInterface, Serializable {
     // Reservation fields
-    private static AtomicInteger nextID = new AtomicInteger(1); // Thread-safe counter for unique reservation IDs
+    private static int nextID = 1;
     private int reservationID;
     private String userID;
     private String showID;
@@ -25,9 +24,8 @@ public class Reservations implements ReservationsInterface, Serializable {
 
 
     // Main Constructor using Account object to sync userID
-    public Reservations(Account account, String showID, List<String> seatIDs, String date, 
-                        String time, double totalPrice) {
-        this.reservationID = nextID.getAndIncrement(); //Auto generate thread-safe unique ID
+    public Reservations(int num, Account account, String showID, List<String> seatIDs, String date, String time, double totalPrice) {
+        this.reservationID = num; //Auto generate unique ID
         //Assigns fields with null-checking
         this.userID = account != null ? account.getID() : "";
         this.showID = showID  != null ? showID : "";
@@ -43,7 +41,7 @@ public class Reservations implements ReservationsInterface, Serializable {
 
         //empty/null line handling
         if (line == null || line.isBlank()) {
-            this.reservationID = nextID.getAndIncrement();
+            this.reservationID = nextID++;
             this.userID = "";
             this.showID = "";
             this.seatIDs = new ArrayList<>();
@@ -54,16 +52,16 @@ public class Reservations implements ReservationsInterface, Serializable {
             return;
         }
 
-        String[] parts = line.split(",", -1); // -1 keeps empty trailing fields
+        String[] parts= line.split(",", -1); // -1 keeps empty trailing fields
 
         //Assign fields if parts exist
 
         //reservationID handling
         try {
             this.reservationID = Integer.parseInt(parts[0]);
-            if (this.reservationID >= nextID.get()) nextID.set(this.reservationID + 1); // keeps ID sequence consistent
+            //if (this.reservationID >= nextID) nextID = this.reservationID + 1; // keeps ID sequence consistent
         } catch (Exception e) {
-            this.reservationID = nextID.getAndIncrement();
+            //this.reservationID = nextID++;
         }
 
         this.userID = parts.length > 1 && parts[1] != null ? parts[1] : "";
@@ -127,11 +125,9 @@ public class Reservations implements ReservationsInterface, Serializable {
     }
 
     //Setter Methods
-
-    //Thread-safe method to manually set reservationID if needed
     public void setReservationID(int reservationID) {
         this.reservationID = reservationID;
-        if (reservationID >= nextID.get()) nextID.set(reservationID + 1); // keep auto-increment consistent
+        //if (reservationID >= nextID) nextID = reservationID + 1; // keep auto-increment consistent
     }
 
     public void setUserID(String userID) {

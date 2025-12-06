@@ -1,16 +1,16 @@
 /**
  * Concert class - basic information for each concert
  *
- * @author Saanvi Verma (verma279)
+ * @author Saanvi Verma (verma279) and Shalini Murthula (smurthul)
  * @version November 21, 2025
  */
-
 public class Concert implements ConcertInterface {
     private String name;
     private String date;
     private String time;
     private int ID;
 
+    //Constructor
     public Concert(String name, String date, String time, int num) {
         this.name = name;
         this.date = date;
@@ -18,14 +18,19 @@ public class Concert implements ConcertInterface {
         this.ID = num;
     }
 
+    //Constructor with line
     public Concert(String line) {
         String[] partOfConcert = line.split(",");
-        this.name = partOfConcert[0];
-        this.date = partOfConcert[1];
-        this.time = partOfConcert[2];
-        this.ID = Integer.parseInt(partOfConcert[3]);
+        if (partOfConcert.length < 5) {
+            throw new IllegalArgumentException();
+        }
+        this.name = partOfConcert[1];
+        this.date = partOfConcert[2];
+        this.time = partOfConcert[3];
+        this.ID = Integer.parseInt(partOfConcert[4]);
     }
 
+    //Getter methods
     public String getName() {
         return name;
     }
@@ -42,6 +47,7 @@ public class Concert implements ConcertInterface {
         return ID;
     }
 
+    //Setter methods
     public void setName(String name) {
         this.name = name;
     }
@@ -58,12 +64,13 @@ public class Concert implements ConcertInterface {
         this.ID = ID;
     }
 
+    //To String
     public String toString() {
         return "Name: " + getName() + "\nDate: " + getDate() + "\nTime: " + getTime() + "\nID: " + getID();
     }
 
+    //Writing in the file
     public String writingInFile() {
         return getName() + "," + getDate() + "," + getTime() + "," + getID();
     }
-
 }

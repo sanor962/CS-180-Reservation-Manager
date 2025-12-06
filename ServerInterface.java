@@ -19,11 +19,12 @@ public interface ServerInterface {
     boolean cancelReservation(int reservationID);
     ArrayList<Reservations> getReservationsByAccount(String accountID);
     Reservations getReservationByID(int reservationID);
-    Seat getSeat(String seatID);
-    boolean reserveSeat(String seatID);
-    boolean cancelSeat(String seatID);
+    Seat getSeat(String showID, String seatID);
+    boolean reserveSeat(String showID, String seatID);
+    boolean cancelSeat(String showID, String seatID);
     ArrayList<Seat> getAvailableSeats(String showID, String date);
     ArrayList<String> getAllConcerts();
     boolean createConcert(String name, String date, String time);
     String getTime(String concertID);
+    Account getAccountByUsername(String username, String password);
 }

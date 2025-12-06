@@ -1,17 +1,14 @@
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import java.util.*;
-import static org.junit.Assert.*;
-
+import static org.junit.jupiter.api.Assertions.*;
 /**
  * JUnit tests for the Reservations class, verifying constructors,
  * getters/setters, file parsing, and string formatting.
  *
- * @author Arav Nair (nair234)
+ * @author Arav Nair (nair234), Kunj Arora (arora271), Shalini Murthula (smurthul)
  * @version November 8, 2025
  */
-
 public class ReservationsTest {
-
     // Helper to create a test Account
     private Account createTestAccount(String firstName, String lastName, String phone) {
         Account acc = new Account(firstName, lastName, 25, firstName.toLowerCase(), "pass123",
@@ -21,11 +18,11 @@ public class ReservationsTest {
     }
 
     //Testing Reservations constructors and getter methods
-    @Test(timeout = 1000)
+    @Test
     public void testConstructorAndGetters() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         List<String> seats = Arrays.asList("A1", "A2");
-        Reservations r = new Reservations(acc, "S001", seats, "2025-11-10", "19:00", 40.0);
+        Reservations r = new Reservations(1, acc, "S001", seats, "2025-11-10", "19:00", 40.0);
 
         assertTrue(r.getReservationID() > 0);
         assertEquals(acc.getID(), r.getUserID());
@@ -38,9 +35,9 @@ public class ReservationsTest {
     }
 
     //Testing constructor null input handling
-    @Test(timeout = 1000)
+    @Test
     public void testConstructorHandlesNullInputs() {
-        Reservations r = new Reservations((Account) null, null, null, null, null, 0.0);
+        Reservations r = new Reservations(1, (Account) null, null, null, null, null, 0.0);
 
         assertTrue(r.getReservationID() > 0);
         assertEquals("", r.getUserID());
@@ -53,10 +50,10 @@ public class ReservationsTest {
     }
 
     //Testing Reservations setter methods
-    @Test(timeout = 1000)
+    @Test
     public void testSetterUpdateValues() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
-        Reservations r = new Reservations(acc, "S002", Arrays.asList("B1"), "2025-12-01", "18:30", 15.0);
+        Reservations r = new Reservations(1, acc, "S002", Arrays.asList("B1"), "2025-12-01", "18:30", 15.0);
 
         r.setUserID("U010"); //manually overrides userID
         r.setShowID("S010");
@@ -75,7 +72,7 @@ public class ReservationsTest {
     }
 
     //Testing Constructor that takes from reservations.txt File
-    @Test(timeout = 1000)
+    @Test
     public void testFileLineConstructor() {
         //Create a sample line as it would appear in reservations.txt
         String line = "3,U003,S003,A1|A2|A3,2025-11-15,21:00,60.0";
@@ -92,7 +89,7 @@ public class ReservationsTest {
     }
 
     //Testing parsing when the line is blank, null, or missing fields
-    @Test(timeout = 1000)
+    @Test
     public void testLineConstructorEdgeCases() {
         Reservations blank = new Reservations("");
         Reservations nullLine = new Reservations(null);
@@ -109,7 +106,7 @@ public class ReservationsTest {
     }
 
     //Testing invalid numeric totalPrice (should default to 0.0)
-    @Test(timeout = 1000)
+    @Test
     public void testInvalidPriceParsing() {
         String line = "11,U011,S011,A1|A2,2025-11-20,18:00,INVALID";
         Reservations r = new Reservations(line);
@@ -117,19 +114,19 @@ public class ReservationsTest {
     }
 
     //Testing toString formatting
-    @Test(timeout = 1000)
+    @Test
     public void testToStringFormat() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
-        Reservations r = new Reservations(acc, "S004", Arrays.asList("C1", "C2"), "2025-12-10", "17:00", 25.0);
+        Reservations r = new Reservations(1, acc, "S004", Arrays.asList("C1", "C2"), "2025-12-10", "17:00", 25.0);
         String expected = r.getReservationID() + "," + acc.getID() + ",S004,C1|C2,2025-12-10,17:00,25.0";
         assertEquals(expected, r.toString());
     }
 
     //Testing numSeats consistency
-    @Test(timeout = 1000)
+    @Test
     public void testNumSeatsConsistency() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
-        Reservations r = new Reservations(acc, "S007", Arrays.asList("E1"), "2025-12-25", "20:00", 20.0);
+        Reservations r = new Reservations(1, acc, "S007", Arrays.asList("E1"), "2025-12-25", "20:00", 20.0);
         assertEquals(1, r.getNumSeats());
 
         r.setSeatIDs(Arrays.asList("E1", "E2", "E3", "E4"));
@@ -140,7 +137,7 @@ public class ReservationsTest {
     }
 
     //Testing empty seat list from constructor
-    @Test(timeout = 1000)
+    @Test
     public void testEmptySeatsFromLine() {
         String line = "9,U009,S009,,2025-12-31,20:00,50.0";
         Reservations r = new Reservations(line);
@@ -155,10 +152,10 @@ public class ReservationsTest {
     }
 
     //Testing totalPrice edge cases
-    @Test(timeout = 1000)
+    @Test
     public void testTotalPriceEdgeCases() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
-        Reservations r = new Reservations(acc, "S009", Arrays.asList("F1"), "2025-12-15", "19:00", -50.0);
+        Reservations r = new Reservations(1, acc, "S009", Arrays.asList("F1"), "2025-12-15", "19:00", -50.0);
         assertEquals(-50.0, r.getTotalPrice(), 0.001);
 
         r.setTotalPrice(0);
@@ -169,11 +166,11 @@ public class ReservationsTest {
     }
 
     //Testing if Reservations properly saves and reloads data
-    @Test(timeout = 1000)
+    @Test
     public void testPersistentDataStringMatch() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         //First create a reservation object
-        Reservations original = new Reservations(acc, "S006", Arrays.asList("D1", "D2"), "2025-12-20", "19:30", 30.0);
+        Reservations original = new Reservations(1, acc, "S006", Arrays.asList("D1", "D2"), "2025-12-20", "19:30", 30.0);
 
         //Second convert reservation to string (simulates saving to a file)
         String savedLine = original.toString();
@@ -185,7 +182,5 @@ public class ReservationsTest {
         assertEquals(original.getReservationID(), loaded.getReservationID());
         assertEquals(original.getSeatIDs(), loaded.getSeatIDs());
         assertEquals(original.getTotalPrice(), loaded.getTotalPrice(), 0.001);
-
     }
-
 }

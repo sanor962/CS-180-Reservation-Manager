@@ -1,5 +1,10 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -11,7 +16,7 @@ import java.util.Scanner;
  * Port Number: 6767
  * Host Name: localhost
  *
- * @author Saanvi Verma (verma279), Shalini Murthula (smurthul)
+ * @author Saanvi Verma (verma279), Shalini Murthula (smurthul), Kunj Arora (arora271)
  * @version November 17, 2025
  */
 
@@ -23,8 +28,27 @@ public class Client implements ClientInterface {
     protected PrintWriter writer;
     protected Scanner scanner = new Scanner(System.in);
     protected String account;
+    protected String accountID;
     private String host;
     private int port;
+
+    private JFrame mainFrame;
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+    private JPanel loginPanel;
+    private JPanel menuPanel;
+    private JPanel reservationListPanel;
+    private JPanel makeReservationPanel;
+    private JPanel reservationPanel;
+    private JPanel addConcertPanel;
+
+    private String selectedDate;
+    private String selectedTime;
+    private String selectedConcert;
+    private String selectedShowID;
+    private JPanel seatGridPanel;
+    private java.util.ArrayList<JToggleButton> seatButtons;
+    private JPanel viewConcertsPanel;
 
     //Constructor
     public Client(String host, int port) {
@@ -32,6 +56,1043 @@ public class Client implements ClientInterface {
         this.port = port;
         this.run = false;
         this.account = null;
+        this.seatButtons = new ArrayList<>();
+        this.accountID = null;
+    }
+
+    public void showPanel(String name) {
+        cardLayout.show(mainPanel, name);
+    }
+
+    private void createLoginPanel() {
+        loginPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        JLabel titleLabel = new JLabel("Welcome to Concert Reservation System");
+        titleLabel.setFont(new Font("Times", Font.BOLD, 22));
+        loginPanel.add(titleLabel, gbc);
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        loginPanel.add(new JLabel("Username:"), gbc);
+        gbc.gridx = 1;
+        JTextField usernameField = new JTextField(15);
+        loginPanel.add(usernameField, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        loginPanel.add(new JLabel("Password:"), gbc);
+        gbc.gridx = 1;
+        JPasswordField passwordField = new JPasswordField(15);
+        loginPanel.add(passwordField, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        JButton loginButton = new JButton("Login");
+        loginPanel.add(loginButton, gbc);
+        gbc.gridx = 1;
+        JButton registerButton = new JButton("Make an Account");
+        loginPanel.add(registerButton, gbc);
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword());
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(loginPanel, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try {
+                writer.write("login\n");
+                writer.write(username + "\n");
+                writer.write(password + "\n");
+                writer.flush();
+                String response = reader.readLine();
+                if ("success".equals(response)) {
+                    String userID = reader.readLine();
+                    account = username;
+                    accountID = userID;
+                    usernameField.setText("");
+                    passwordField.setText("");
+                    //System.out.println(username + " (ID: " + userID + ")");
+                    JOptionPane.showMessageDialog(loginPanel, "Login successful!");
+                    //refreshDashboardPanel();
+                    //showPanel("Menu");
+                    showPanel("Menu");
+                } else {
+                    JOptionPane.showMessageDialog(loginPanel, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(loginPanel, "Error communicating with server.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        registerButton.addActionListener(e -> {
+            JTextField firstNameField = new JTextField();
+            JTextField lastNameField = new JTextField();
+            JTextField ageField = new JTextField();
+            JTextField emailField = new JTextField();
+            JTextField phoneField = new JTextField();
+            JTextField regularUsernameField = new JTextField();
+            JPasswordField regularPasswordField = new JPasswordField();
+            JPasswordField confirmPasswordField = new JPasswordField();
+
+            boolean done = false;
+
+            while (!done) {
+                JPanel regPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+                regPanel.add(new JLabel("First Name:"));
+                regPanel.add(firstNameField);
+                regPanel.add(new JLabel("Last Name:"));
+                regPanel.add(lastNameField);
+                regPanel.add(new JLabel("Age:"));
+                regPanel.add(ageField);
+                regPanel.add(new JLabel("Email:"));
+                regPanel.add(emailField);
+                regPanel.add(new JLabel("Phone Number:"));
+                regPanel.add(phoneField);
+                regPanel.add(new JLabel("Username:"));
+                regPanel.add(regularUsernameField);
+                regPanel.add(new JLabel("Password:"));
+                regPanel.add(regularPasswordField);
+                regPanel.add(new JLabel("Confirm Password:"));
+                regPanel.add(confirmPasswordField);
+
+                int result = JOptionPane.showConfirmDialog(
+                        loginPanel,
+                        regPanel,
+                        "Create Account",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE
+                );
+
+                if (result != JOptionPane.OK_OPTION) {
+                    return;
+                }
+
+                String firstName = firstNameField.getText().trim();
+                String lastName = lastNameField.getText().trim();
+                String age = ageField.getText().trim();
+                String email = emailField.getText().trim();
+                String phone = phoneField.getText().trim();
+                String username = regularUsernameField.getText().trim();
+                String password = new String(regularPasswordField.getPassword());
+                String confirmPassword = new String(confirmPasswordField.getPassword());
+
+                if (firstName.isEmpty() || lastName.isEmpty() || age.isEmpty() || email.isEmpty()
+                        || phone.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                    JOptionPane.showMessageDialog(loginPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (!email.contains("@") || !email.contains(".com")) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid email.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (username.length() <= 5) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid username.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                } else if (username.contains(",")) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid username.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (password.length() <= 8) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                } else if (password.contains(",")) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                try {
+                    int p = Integer.parseInt(phone);
+                } catch (NumberFormatException f) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                try {
+                    int a = Integer.parseInt(age);
+                } catch (NumberFormatException f) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid age.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (phone.length() != 10) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (!password.equals(confirmPassword)) {
+                    JOptionPane.showMessageDialog(loginPanel, "Passwords do not match.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+
+                try {
+                    writer.write("createAccount\n");
+                    writer.write(firstName + "\n");
+                    writer.write(lastName + "\n");
+                    writer.write(age + "\n");
+                    writer.write(username + "\n");
+                    writer.write(password + "\n");
+                    writer.write(email + "\n");
+                    writer.write(phone + "\n");
+                    writer.flush();
+
+                    String response = reader.readLine();
+                    if ("success".equals(response)) {
+                        JOptionPane.showMessageDialog(loginPanel, "Account created successfully! You can now log in.");
+                        done = true;
+                    } else {
+                        String error = reader.readLine();
+                        JOptionPane.showMessageDialog(loginPanel, error, "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(loginPanel, "Error communicating with server.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+    }
+
+    private void bookSeats() {
+        java.util.List<String> selectedSeats = new java.util.ArrayList<>();
+        for (JToggleButton btn : seatButtons) {
+            if (btn.isSelected()) {
+                String btnText = btn.getText();
+                String seatID = btnText.substring(0, btnText.indexOf(" ("));
+                selectedSeats.add(seatID);
+            }
+        }
+
+        if (selectedSeats.isEmpty()) {
+            JOptionPane.showMessageDialog(reservationPanel, "Please select at least one seat.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JPasswordField passwordField = new JPasswordField();
+        int result = JOptionPane.showConfirmDialog(reservationPanel, passwordField, "Enter your password to confirm booking:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String password = new String(passwordField.getPassword());
+        if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(reservationPanel, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            writer.write("makeReservation\n");
+            writer.write(account + "\n");
+            writer.write(password + "\n");
+            writer.write(selectedShowID + "\n");
+            writer.write(selectedSeats.size() + "\n");
+            for (String seatID : selectedSeats) {
+                writer.write(seatID + "\n");
+            }
+            writer.write(selectedDate + "\n");
+            writer.flush();
+
+            String response = reader.readLine();
+            if (response.startsWith("Seat ")) {
+                JOptionPane.showMessageDialog(reservationPanel, response, "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            double totalPrice = Double.parseDouble(response);
+            int confirm = JOptionPane.showConfirmDialog(reservationPanel,
+                    "Total Price: $" + totalPrice + "\n\nSeats: " + String.join(", ", selectedSeats) + "\n\nProceed with payment?",
+                    "Confirm Booking",
+                    JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                writer.write("pay\n");
+                writer.flush();
+                String bookingResult = reader.readLine();
+                if ("success".equals(bookingResult)) {
+                    String reservationID = reader.readLine();
+                    JOptionPane.showMessageDialog(reservationPanel,
+                            "Reservation successful!\n\nReservation ID: " + reservationID + "\nTotal: $" + totalPrice + "\nSeats: " + String.join(", ", selectedSeats),
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    showPanel("Menu");
+                } else {
+                    JOptionPane.showMessageDialog(reservationPanel, "Reservation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                writer.write("cancel\n");
+                writer.flush();
+                JOptionPane.showMessageDialog(reservationPanel, "Booking cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(reservationPanel, "Error booking reservation: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadSeats() {
+        seatGridPanel.removeAll();
+        seatButtons.clear();
+
+        JLabel infoLabel = (JLabel)reservationPanel.getClientProperty("infoLabel");
+        infoLabel.setText("Select seats for " + selectedConcert + " on " + selectedDate + " at " + selectedTime);
+        try {
+            writer.write("getAvailableSeats\n");
+            writer.write(selectedShowID + "\n");
+            writer.write(selectedDate + "\n");
+            writer.flush();
+            String countStr = reader.readLine();
+            int numOfSeats = Integer.parseInt(countStr);
+            if (numOfSeats == 0) {
+                JLabel noSeatsLabel = new JLabel("No available seats for this concert.");
+                noSeatsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                seatGridPanel.setLayout(new BorderLayout());
+                seatGridPanel.add(noSeatsLabel, BorderLayout.CENTER);
+                seatGridPanel.revalidate();
+                seatGridPanel.repaint();
+                return;
+            }
+            int cols = Math.min(10, numOfSeats);
+            int rows = (int) Math.ceil((double) numOfSeats / cols);
+            seatGridPanel.setLayout(new GridLayout(rows, cols, 5, 5));
+            for (int i = 0; i < numOfSeats; i++) {
+                String seatLine = reader.readLine();
+                String[] seatParts = seatLine.split(",");
+                String seatID = seatParts[0];
+                double price = Double.parseDouble(seatParts[4]);
+                JToggleButton seatBtn = new JToggleButton(seatID + " ($" + price + ")");
+                seatGridPanel.add(seatBtn);
+                seatButtons.add(seatBtn);
+            }
+            seatGridPanel.revalidate();
+            seatGridPanel.repaint();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(reservationPanel, "Error loading seats: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void createReservationListPanel() {
+        reservationListPanel = new JPanel(new BorderLayout());
+        JLabel title = new JLabel("Your Reservations:");
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
+        reservationListPanel.add(title, BorderLayout.NORTH);
+        JTextArea reservationArea = new JTextArea();
+        reservationArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(reservationArea);
+        reservationListPanel.add(scrollPane, BorderLayout.CENTER);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton cancelReservationButton = new JButton("Cancel Reservation");
+        JButton backButton = new JButton("Back to Main Menu");
+        buttonPanel.add(cancelReservationButton);
+        buttonPanel.add(backButton);
+        reservationListPanel.add(buttonPanel, BorderLayout.SOUTH);
+        backButton.addActionListener(e -> showPanel("Menu"));
+        cancelReservationButton.addActionListener(e -> {
+            String reservationID = JOptionPane.showInputDialog(reservationListPanel, "Enter Reservation ID to cancel:");
+            if (reservationID != null && !reservationID.trim().isEmpty()) {
+                int confirm = JOptionPane.showConfirmDialog(reservationListPanel,
+                        "Are you sure you want to cancel reservation " + reservationID + "?",
+                        "Confirm Cancellation",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        writer.write("cancelReservation\n");
+                        writer.write(reservationID.trim() + "\n");
+                        writer.flush();
+                        String response = reader.readLine();
+
+                        if ("success".equals(response)) {
+                            JOptionPane.showMessageDialog(reservationListPanel, "Your reservation has been cancelled.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            refreshReservationListPanel();
+                        } else {
+                            JOptionPane.showMessageDialog(reservationListPanel, "Cancellation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(reservationListPanel, "Error cancelling reservation: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        reservationListPanel.putClientProperty("reservationArea", reservationArea);
+    }
+
+    private void refreshReservationListPanel() {
+        JTextArea reservationArea = (JTextArea)reservationListPanel.getClientProperty("reservationArea");
+
+        if (reservationArea == null) {
+            //System.out.println("null");
+            JOptionPane.showMessageDialog(reservationListPanel, "Error: Reservation area not initialized.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        reservationArea.setText("Loading reservations...");
+        //System.out.println(account + " (ID: " + accountID + ")");
+
+        try {
+            writer.write("getReservations\n");
+            writer.write(accountID + "\n");
+            writer.flush();
+
+            String count = reader.readLine();
+            //System.out.println(count);
+
+            if (count == null || count.trim().isEmpty()) {
+                reservationArea.setText("Error: No response from server.");
+                return;
+            }
+
+            int num = Integer.parseInt(count.trim());
+            //System.out.println(num);
+            if (num == 0) {
+                reservationArea.setText("You have no reservations.");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                if (num > 1) {
+                    sb.append("You have ").append(num).append(" reservations:\n\n");
+                } else {
+                    sb.append("You have ").append(num).append(" reservation:\n\n");
+                }
+                for (int i = 0; i < num; i++) {
+                    String reservationDetails = reader.readLine();
+                    //System.out.println((i+1) + ": " + reservationDetails);
+
+                    if (reservationDetails == null) {
+                        sb.append("Error reading reservation ").append(i+1).append("\n\n");
+                        continue;
+                    }
+                    String[] parts = reservationDetails.split(",");
+                    //System.out.println(parts.length);
+                    for (int j = 0; j < parts.length; j++) {
+                        System.out.println("  Part " + j + ": '" + parts[j] + "'");
+                    }
+
+                    if (parts.length >= 7) {
+                        String reservationID = parts[0];
+                        String showID = parts[2];
+                        String seatIDs = parts[3].replace("|", ", ");
+                        String date = parts[4];
+                        String time = parts[5];
+                        String totalPrice = parts[6];
+
+                        sb.append("+++++++++++++++++++++++++++++++++++++++++\n");
+                        sb.append("Reservation ID: ").append(reservationID).append("\n");
+                        sb.append("Show ID: ").append(showID).append("\n");
+                        sb.append("Date: ").append(date).append(" at ").append(time).append("\n");
+                        sb.append("Seats: ").append(seatIDs).append("\n");
+                        sb.append("Total Price: $").append(totalPrice).append("\n");
+                        sb.append("+++++++++++++++++++++++++++++++++++++++++\n\n");
+                    } else {
+                        sb.append("Reservation ").append(i+1).append(":\n");
+                        sb.append(reservationDetails).append("\n\n");
+                    }
+                }
+                String finalText = sb.toString();
+                //System.out.println(finalText.length());
+                reservationArea.setText(finalText);
+                reservationArea.revalidate();
+                reservationArea.repaint();
+            }
+        } catch (Exception ex) {
+            String error = "Error loading reservations: " + ex.getMessage();
+            //System.out.println(error);
+            ex.printStackTrace();
+            reservationArea.setText(error);
+        }
+    }
+
+    private void createMenuPanel() {
+        menuPanel = new JPanel(new BorderLayout());
+        JLabel title = new JLabel("Concert Reservation System - Main Menu");
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 20f));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setBorder(BorderFactory.createEmptyBorder(50, 0, 5, 0));
+        menuPanel.add(title, BorderLayout.NORTH);
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        JButton makeReservationBtn = new JButton("1) Make Reservation");
+        makeReservationBtn.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(makeReservationBtn, gbc);
+        gbc.gridy++;
+        JButton cancelReservationBtn = new JButton("2) Cancel Reservation");
+        cancelReservationBtn.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(cancelReservationBtn, gbc);
+        gbc.gridy++;
+        JButton viewReservationsBtn = new JButton("3) View My Reservations");
+        viewReservationsBtn.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(viewReservationsBtn, gbc);
+        gbc.gridy++;
+        JButton viewConcertsBtn = new JButton("4) View All Concerts");
+        viewConcertsBtn.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(viewConcertsBtn, gbc);
+        gbc.gridy++;
+        JButton addConcertBtn = new JButton("5) Add a Concert");
+        addConcertBtn.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(addConcertBtn, gbc);
+        gbc.gridy++;
+        JButton deleteAccountBtn = new JButton("6) Delete Account");
+        deleteAccountBtn.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(deleteAccountBtn, gbc);
+        gbc.gridy++;
+        JButton logoutBtn = new JButton("7) Logout");
+        logoutBtn.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(logoutBtn, gbc);
+        menuPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        makeReservationBtn.addActionListener(e -> {
+            refreshMakeReservationPanel();
+            showPanel("MakeReservation");
+        });
+
+        cancelReservationBtn.addActionListener(e -> {
+            String reservationID = JOptionPane.showInputDialog(menuPanel, "Enter Reservation ID to cancel:");
+            if (reservationID != null && !reservationID.trim().isEmpty()) {
+                int confirm = JOptionPane.showConfirmDialog(menuPanel,
+                        "Are you sure you want to cancel reservation " + reservationID + "?",
+                        "Confirm Cancellation",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        writer.write("cancelReservation\n");
+                        writer.write(reservationID.trim() + "\n");
+                        writer.flush();
+                        String response = reader.readLine();
+
+                        if ("success".equals(response)) {
+                            JOptionPane.showMessageDialog(menuPanel, "Your reservation has been cancelled.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(menuPanel, "Cancellation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(menuPanel, "Error cancelling reservation: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        viewReservationsBtn.addActionListener(e -> {
+            refreshReservationListPanel();
+            showPanel("ReservationList");
+        });
+
+        viewConcertsBtn.addActionListener(e -> {
+            refreshViewConcertsPanel();
+            showPanel("ViewConcerts");
+        });
+
+        addConcertBtn.addActionListener(e -> {
+            showPanel("AddConcert");
+        });
+
+        deleteAccountBtn.addActionListener(e -> {
+            JPanel delPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+            JTextField usernameField = new JTextField();
+            JPasswordField passwordField = new JPasswordField();
+            delPanel.add(new JLabel("Username:"));
+            delPanel.add(usernameField);
+            delPanel.add(new JLabel("Password:"));
+            delPanel.add(passwordField);
+            int result = JOptionPane.showConfirmDialog(menuPanel, delPanel, "Delete Account - WARNING: This cannot be undone!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword());
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(menuPanel, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int finalConfirm = JOptionPane.showConfirmDialog(menuPanel,
+                        "Are you absolutely sure? This action cannot be undone!",
+                        "Final Confirmation",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+
+                if (finalConfirm != JOptionPane.YES_OPTION) {
+                    return;
+                }
+
+                try {
+                    writer.write("deleteAccount\n");
+                    writer.write(account + "\n");
+                    writer.write(password + "\n");
+                    writer.write(username + "\n");
+                    writer.flush();
+                    String response = reader.readLine();
+                    if (response != null && response.trim().equals("success")) {
+                        JOptionPane.showMessageDialog(menuPanel, "Account deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        account = null;
+                        accountID = null;
+                        showPanel("Login");
+                    } else {
+                        JOptionPane.showMessageDialog(menuPanel, "Account deletion failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(menuPanel, "Error communicating with server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        logoutBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(menuPanel,
+                    "Are you sure you want to logout?",
+                    "Confirm Logout",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                account = null;
+                accountID = null;
+                JOptionPane.showMessageDialog(menuPanel, "Logged out successfully.", "Logout", JOptionPane.INFORMATION_MESSAGE);
+                showPanel("Login");
+            }
+        });
+    }
+
+    private void createViewConcertsPanel() {
+        viewConcertsPanel = new JPanel(new BorderLayout());
+        JLabel title = new JLabel("All Concerts:");
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
+        viewConcertsPanel.add(title, BorderLayout.NORTH);
+        JTextArea concertsArea = new JTextArea();
+        concertsArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(concertsArea);
+        viewConcertsPanel.add(scrollPane, BorderLayout.CENTER);
+        JButton backButton = new JButton("Back to Main Menu");
+        viewConcertsPanel.add(backButton, BorderLayout.SOUTH);
+        backButton.addActionListener(e -> showPanel("Menu"));
+        viewConcertsPanel.putClientProperty("concertsArea", concertsArea);
+    }
+
+    private void refreshViewConcertsPanel() {
+        JTextArea concertsArea = (JTextArea)viewConcertsPanel.getClientProperty("concertsArea");
+
+        if (concertsArea == null) {
+            //System.out.println("Dnull");
+            return;
+        }
+
+        concertsArea.setText("Loading concerts...");
+
+        try {
+            writer.write("getALlConcerts\n");
+            writer.flush();
+            int count = Integer.parseInt(reader.readLine());
+
+            if (count == 0) {
+                concertsArea.setText("No concerts available.");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Available Concerts:\n\n");
+
+                for (int i = 0; i < count; i++) {
+                    String line = reader.readLine();
+                    String[] parts = line.split(",");
+                    if (parts.length >= 4) {
+                        String name = parts[0];
+                        String date = parts[1];
+                        String time = parts[2];
+                        String concertID = parts[3];
+                        sb.append(concertID).append(". ").append(name)
+                                .append(" on ").append(date).append(" at ").append(time).append("\n");
+                    }
+                }
+                concertsArea.setText(sb.toString());
+            }
+        } catch (Exception ex) {
+            concertsArea.setText("Error loading concerts: " + ex.getMessage());
+        }
+    }
+
+    private void createAddConcertPanel() {
+        addConcertPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JLabel title = new JLabel("Add New Concert");
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        addConcertPanel.add(title, gbc);
+        gbc.gridwidth = 1;
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        addConcertPanel.add(new JLabel("Concert Name:"), gbc);
+        gbc.gridx = 1;
+        JTextField nameField = new JTextField(20);
+        addConcertPanel.add(nameField, gbc);
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        addConcertPanel.add(new JLabel("Date (DD/MM/YYYY):"), gbc);
+        gbc.gridx = 1;
+        JTextField dateField = new JTextField(20);
+        addConcertPanel.add(dateField, gbc);
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        addConcertPanel.add(new JLabel("Time (HH:MM):"), gbc);
+        gbc.gridx = 1;
+        JTextField timeField = new JTextField(20);
+        addConcertPanel.add(timeField, gbc);
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        JButton createButton = new JButton("Create Concert");
+        addConcertPanel.add(createButton, gbc);
+        gbc.gridx = 1;
+        JButton backButton = new JButton("Back to Main Menu");
+        addConcertPanel.add(backButton, gbc);
+        backButton.addActionListener(e -> showPanel("Menu"));
+
+        createButton.addActionListener(e -> {
+            JTextField nameFieldLocal = nameField;
+            JTextField dateFieldLocal = dateField;
+            JTextField timeFieldLocal = timeField;
+
+            boolean done = false;
+            while (!done) {
+                JPanel form = new JPanel(new GridLayout(0, 2, 5, 5));
+                form.add(new JLabel("Concert Name:"));
+                form.add(nameFieldLocal);
+                form.add(new JLabel("Date (DD/MM/YYYY):"));
+                form.add(dateFieldLocal);
+                form.add(new JLabel("Time (HH:MM):"));
+                form.add(timeFieldLocal);
+
+                int result = JOptionPane.showConfirmDialog(
+                        addConcertPanel,
+                        form,
+                        "Create Concert",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE
+                );
+
+                if (result != JOptionPane.OK_OPTION) {
+                    return;
+                }
+                String name = nameFieldLocal.getText().trim();
+                String date = dateFieldLocal.getText().trim();
+                String time = timeFieldLocal.getText().trim();
+
+                if (name.isEmpty() || date.isEmpty() || time.isEmpty()) {
+                    JOptionPane.showMessageDialog(addConcertPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (name.contains(" ")) {
+                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid name.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (!confirmDate(date)) {
+                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid date format. Use DD/MM/YYYY.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (!time.contains(":")) {
+                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid time format. Use HH:MM.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                String[] parts = time.split(":");
+                if (parts.length != 2) {
+                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid time format. Use HH:MM.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                int h = 0;
+                int m = 0;
+                try {
+                    h = Integer.parseInt(parts[0]);
+                    m = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid time format. Use numbers only.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (h < 0 || h > 23 || m < 0 || m > 59) {
+                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid time. Hours 0-23, minutes 0-59.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+
+                try {
+                    writer.write("createConcert\n");
+                    writer.write(name + "\n");
+                    writer.write(date + "\n");
+                    writer.write(time + "\n");
+                    writer.flush();
+
+                    String r = reader.readLine();
+                    if (r.equals("success")) {
+                        JOptionPane.showMessageDialog(addConcertPanel, "Concert Created Successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        nameFieldLocal.setText("");
+                        dateFieldLocal.setText("");
+                        timeFieldLocal.setText("");
+                        showPanel("Menu");
+                        done = true;
+
+                    } else {
+                        JOptionPane.showMessageDialog(addConcertPanel, "Concert creation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(addConcertPanel, "Error communicating with server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+            }
+        });
+    }
+
+    private void createReservationPanel() {
+        reservationPanel = new JPanel(new BorderLayout());
+        JLabel infoLabel = new JLabel("Select seats for your reservation:");
+        reservationPanel.add(infoLabel, BorderLayout.NORTH);
+        seatGridPanel = new JPanel();
+        reservationPanel.add(seatGridPanel, BorderLayout.CENTER);
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton bookButton = new JButton("Book Selected Seats");
+        JButton backButton = new JButton("Back to Main Menu");
+        bottomPanel.add(bookButton);
+        bottomPanel.add(backButton);
+        reservationPanel.add(bottomPanel, BorderLayout.SOUTH);
+        reservationPanel.putClientProperty("infoLabel", infoLabel);
+        bookButton.addActionListener(e -> bookSeats());
+        backButton.addActionListener(e -> showPanel("Menu"));
+    }
+
+    private void createMakeReservationPanel() {
+        makeReservationPanel = new JPanel(new BorderLayout());
+        JPanel mainVBox = new JPanel();
+        mainVBox.setLayout(new BoxLayout(mainVBox, BoxLayout.Y_AXIS));
+        mainVBox.add(Box.createVerticalStrut(100));
+        JLabel titleLabel = new JLabel("Select a Date, Time, and Concert");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 18f));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainVBox.add(titleLabel);
+        mainVBox.add(Box.createVerticalStrut(20));
+        JPanel datePanel = new JPanel();
+        datePanel.add(new JLabel("Date:"));
+        JComboBox<String> dateBox = new JComboBox<>();
+        datePanel.add(dateBox);
+        datePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainVBox.add(datePanel);
+        mainVBox.add(Box.createVerticalStrut(15));
+        JPanel timePanel = new JPanel();
+        timePanel.add(new JLabel("Time:"));
+        JComboBox<String> timeBox = new JComboBox<>();
+        timePanel.add(timeBox);
+        timePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainVBox.add(timePanel);
+        mainVBox.add(Box.createVerticalStrut(15));
+        JPanel concertPanel = new JPanel();
+        concertPanel.add(new JLabel("Concert:"));
+        JComboBox<String> concertBox = new JComboBox<>();
+        concertPanel.add(concertBox);
+        concertPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainVBox.add(concertPanel);
+        mainVBox.add(Box.createVerticalStrut(15));
+        JButton nextButton = new JButton("See Available Seats");
+        nextButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainVBox.add(nextButton);
+        mainVBox.add(Box.createVerticalStrut(25));
+
+        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        wrapper.add(mainVBox);
+        makeReservationPanel.add(wrapper, BorderLayout.CENTER);
+
+        makeReservationPanel.putClientProperty("dateBox", dateBox);
+        makeReservationPanel.putClientProperty("timeBox", timeBox);
+        makeReservationPanel.putClientProperty("concertBox", concertBox);
+
+        /*JButton logoutBtn = new JButton("Logout");
+        logoutBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(dashboardPanel,
+                    "Are you sure you want to logout?",
+                    "Confirm Logout",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                account = null;
+                accountID = null;
+                JOptionPane.showMessageDialog(dashboardPanel, "Logged out successfully.", "Logout", JOptionPane.INFORMATION_MESSAGE);
+                showPanel("Login");
+            }
+        });
+
+        JButton deleteAccountBtn = new JButton("Delete Account");
+        deleteAccountBtn.addActionListener(e -> {
+            JPanel delPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+            JTextField usernameField = new JTextField();
+            JPasswordField passwordField = new JPasswordField();
+            delPanel.add(new JLabel("Username:"));
+            delPanel.add(usernameField);
+            delPanel.add(new JLabel("Password:"));
+            delPanel.add(passwordField);
+            int result = JOptionPane.showConfirmDialog(dashboardPanel, delPanel, "Delete Account - WARNING: This cannot be undone!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword());
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(dashboardPanel, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int finalConfirm = JOptionPane.showConfirmDialog(dashboardPanel,
+                        "Are you absolutely sure? This action cannot be undone!",
+                        "Final Confirmation",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+
+                if (finalConfirm != JOptionPane.YES_OPTION) {
+                    return;
+                }
+
+                try {
+                    writer.write("deleteAccount\n");
+                    writer.write(account + "\n");
+                    writer.write(password + "\n");
+                    writer.write(username + "\n");
+                    writer.flush();
+                    String response = reader.readLine();
+                    if (response != null && response.trim().equals("success")) {
+                        JOptionPane.showMessageDialog(dashboardPanel, "Account deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        account = null;
+                        showPanel("Login");
+                    } else {
+                        JOptionPane.showMessageDialog(dashboardPanel, "Account deletion failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(dashboardPanel, "Error communicating with server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });*/
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        //JButton viewReservationsButton = new JButton("My Reservations");
+        JButton viewMenuButton = new JButton("Back to Main Menu");
+        //JButton addConcertButton = new JButton("Add Concert");
+
+        //buttonPanel.add(viewReservationsButton);
+        buttonPanel.add(viewMenuButton, BorderLayout.CENTER);
+        //buttonPanel.add(addConcertButton);
+
+        mainVBox.add(buttonPanel);
+        mainVBox.add(Box.createVerticalStrut(15));
+
+        /*viewReservationsButton.addActionListener(e -> {
+            refreshReservationListPanel();
+            showPanel("ReservationList");
+        });*/
+
+        viewMenuButton.addActionListener(e -> {
+            //refreshMenuPanel();
+            showPanel("Menu");
+        });
+
+        /*addConcertButton.addActionListener(e -> {
+            showPanel("AddConcert");
+        });*/
+
+        nextButton.addActionListener(e -> {
+            String selectedDate = (String)dateBox.getSelectedItem();
+            String selectedTime = (String)timeBox.getSelectedItem();
+            String selectedConcert = (String)concertBox.getSelectedItem();
+
+            java.util.List<String[]> concerts = (java.util.List<String[]>) makeReservationPanel.getClientProperty("concerts");
+            String showID = null;
+            for (String[] c : concerts) {
+                if (c[0].equals(selectedConcert) && c[1].equals(selectedDate) && c[2].equals(selectedTime)) {
+                    showID = c[3];
+                    break;
+                }
+            }
+            if (showID == null) {
+                JOptionPane.showMessageDialog(makeReservationPanel, "Could not find concert information.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            this.selectedDate = selectedDate;
+            this.selectedTime = selectedTime;
+            this.selectedConcert = selectedConcert;
+            this.selectedShowID = showID;
+            loadSeats();
+            showPanel("Reservation");
+        });
+    }
+
+    private void refreshMakeReservationPanel() {
+        JComboBox<String> dateBox = (JComboBox<String>) makeReservationPanel.getClientProperty("dateBox");
+        JComboBox<String> timeBox = (JComboBox<String>) makeReservationPanel.getClientProperty("timeBox");
+        JComboBox<String> concertBox = (JComboBox<String>) makeReservationPanel.getClientProperty("concertBox");
+        java.util.List<String[]> concerts = new java.util.ArrayList<>();
+        java.util.Set<String> dates = new java.util.LinkedHashSet<>();
+        try {
+            writer.write("getALlConcerts\n");
+            writer.flush();
+            int count = Integer.parseInt(reader.readLine());
+            for (int i = 0; i < count; i++) {
+                String line = reader.readLine();
+                String[] parts = line.split(",");
+                if (parts.length >= 4) {
+                    concerts.add(parts);
+                    dates.add(parts[1]);
+                }
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(makeReservationPanel, "Error loading concerts from server.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        makeReservationPanel.putClientProperty("concerts", concerts);
+        dateBox.setModel(new DefaultComboBoxModel<>(dates.toArray(new String[0])));
+        dateBox.addActionListener(e -> {
+            String selectedDate = (String)dateBox.getSelectedItem();
+            java.util.Set<String> times = new java.util.LinkedHashSet<>();
+            for (String[] c : concerts) {
+                if (c[1].equals(selectedDate)) {
+                    times.add(c[2]);
+                }
+            }
+            timeBox.setModel(new DefaultComboBoxModel<>(times.toArray(new String[0])));
+            if (timeBox.getItemCount() > 0) {
+                timeBox.setSelectedIndex(0);
+            }
+            String selectedTime = (String)timeBox.getSelectedItem();
+            java.util.List<String> concertNames = new java.util.ArrayList<>();
+            for (String[] c : concerts) {
+                if (c[1].equals(selectedDate) && c[2].equals(selectedTime)) {
+                    concertNames.add(c[0]);
+                }
+            }
+            if (concertNames.isEmpty()) {
+                for (String[] c : concerts) {
+                    if (c[1].equals(selectedDate)) {
+                        concertNames.add(c[0]);
+                    }
+                }
+            }
+            concertBox.setModel(new DefaultComboBoxModel<>(concertNames.toArray(new String[0])));
+            if (concertBox.getItemCount() > 0) {
+                concertBox.setSelectedIndex(0);
+            }
+        });
+
+        timeBox.addActionListener(e -> {
+            String selectedDate = (String)dateBox.getSelectedItem();
+            String selectedTime = (String)timeBox.getSelectedItem();
+            java.util.List<String> concertNames = new java.util.ArrayList<>();
+            for (String[] c : concerts) {
+                if (c[1].equals(selectedDate) && c[2].equals(selectedTime)) {
+                    concertNames.add(c[0]);
+                }
+            }
+            if (concertNames.isEmpty()) {
+                for (String[] c : concerts) {
+                    if (c[1].equals(selectedDate)) {
+                        concertNames.add(c[0]);
+                    }
+                }
+            }
+            concertBox.setModel(new DefaultComboBoxModel<>(concertNames.toArray(new String[0])));
+            if (concertBox.getItemCount() > 0) {
+                concertBox.setSelectedIndex(0);
+            }
+        });
+
+        if (dateBox.getItemCount() > 0) {
+            dateBox.setSelectedIndex(0);
+            for (ActionListener al : dateBox.getActionListeners()) {
+                al.actionPerformed(new ActionEvent(dateBox, ActionEvent.ACTION_PERFORMED, null));
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -62,612 +1123,76 @@ public class Client implements ClientInterface {
 
     //Starts the program
     public void start() {
-        run = true;
-        System.out.println("Concert System");
-        System.out.println();
+        mainFrame = new JFrame("Concert Reservation System");
+        mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        mainFrame.setSize(800, 600);
+        mainFrame.setLocationRelativeTo(null);
 
-        while (run && scanner.hasNextLine()) {
-            if (account == null) {
-                //Menu #1
-                System.out.println("1) Login");
-                System.out.println("2) Create Account");
-                System.out.println("3) Exit");
-
-                //Making sure they are choosing an option that is valid
-                String choice = "";
-                while (true) {
-                    System.out.println("Choose an option: ");
-                    choice = scanner.nextLine().trim();
-                    if (choice.equals("1") || choice.equals("2") || choice.equals("3")) {
-                        break;
-                    } else {
-                        System.out.println("Please enter 1, 2, or 3.");
-                    }
-                }
-
-                //Logs the user in
-                if (choice.equals("1")) {
-                    System.out.println("Username: ");
-                    String username = scanner.nextLine().trim();
-                    System.out.println("Password: ");
-                    String password = scanner.nextLine().trim();
-
-                    try {
-                        writer.write("login\n");
-                        writer.write(username + "\n");
-                        writer.write(password + "\n");
-                        writer.flush();
-                        String response = reader.readLine();
-                        if ("success".equals(response)) {
-                            System.out.println("Login successful. Welcome, " + username + "!");
-                            account = username;
-                        } else {
-                            System.out.println("Login failed. Invalid username or password.");
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                } else if (choice.equals("2")) {
-                    //Makes an account
-                    System.out.println("First Name: ");
-                    if (!scanner.hasNextLine()) {
-                        run = false;
-                        break;
-                    }
-                    String firstName = scanner.nextLine().trim();
-                    System.out.println("Last Name: ");
-                    if (!scanner.hasNextLine()) {
-                        run = false;
-                        break;
-                    }
-                    String lastName = scanner.nextLine().trim();
-
-                    //Making sure they are inputting a correct age
-                    String age = "";
-                    while (true) {
-                        System.out.println("Age: ");
-                        if (!scanner.hasNextLine()) {
-                            run = false;
-                            break;
-                        }
-                        age = scanner.nextLine().trim();
-                        try {
-                            int ageNum = Integer.parseInt(age);
-                            if (ageNum > 0 && ageNum < 100) {
-                                break;
-                            } else {
-                                System.out.println("Please enter a valid age.");
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Please enter a valid age.");
-                        }
-                    }
-
-                    //Making sure they are inputting a correct username
-                    String username = "";
-                    while (true) {
-                        System.out.println("Username: ");
-                        if (!scanner.hasNextLine()) {
-                            run = false;
-                            break;
-                        }
-                        username = scanner.nextLine().trim();
-                        if (username.length() <= 5) {
-                            System.out.println("Please enter a valid username.");
-                        } else if (username.contains(",")) {
-                            System.out.println("Please enter a valid username.");
-                        } else if (username.isEmpty() || username == null) {
-                            System.out.println("Please enter a valid username.");
-                        } else {
-                            break;
-                        }
-                    }
-
-                    //Making sure they are inputting a correct password
-                    String password = "";
-                    while (true) {
-                        System.out.println("Password: ");
-                        if (!scanner.hasNextLine()) {
-                            run = false;
-                            break;
-                        }
-                        password = scanner.nextLine().trim();
-                        if (password.length() <= 8) {
-                            System.out.println("Please enter a valid password.");
-                        } else if (password.contains(",")) {
-                            System.out.println("Please enter a valid password.");
-                        } else if (password.isEmpty() || password == null) {
-                            System.out.println("Please enter a valid password.");
-                        } else {
-                            break;
-                        }
-                    }
-
-                    //Making sure they are inputting a correct email
-                    String email = "";
-                    while (true) {
-                        System.out.println("Email: ");
-                        if (!scanner.hasNextLine()) {
-                            run = false;
-                            break;
-                        }
-                        email = scanner.nextLine().trim();
-                        if (!email.contains("@")) {
-                            System.out.println("Please enter a valid email.");
-                        } else {
-                            break;
-                        }
-                    }
-
-                    //Making sure they are inputting a correct phone number
-                    String phone = "";
-                    while (true) {
-                        System.out.println("Phone Number: ");
-                        if (!scanner.hasNextLine()) {
-                            run = false;
-                            break;
-                        }
-                        phone = scanner.nextLine().trim();
-                        if (phone.length() != 10) {
-                            System.out.println("Please enter a valid phone number.");
-                        } else {
-                            break;
-                        }
-                    }
-
-                    //Creates the account
-                    try {
-                        writer.write("createAccount\n");
-                        writer.write(firstName + "\n");
-                        writer.write(lastName + "\n");
-                        writer.write(age + "\n");
-                        writer.write(username + "\n");
-                        writer.write(password + "\n");
-                        writer.write(email + "\n");
-                        writer.write(phone + "\n");
-                        writer.flush();
-
-                        String response = reader.readLine();
-                        if (response.equals("success")) {
-                            System.out.println("Account created! You can now login.");
-                        } else {
-                            String couldNotCreate = reader.readLine();
-                            System.out.println(couldNotCreate);
-                        }
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                } else if (choice.equals("3")) {
-                    run = false;
-                    System.out.println("Bye bye");
-                }
-
-            } else {
-                //Menu 2
-                System.out.println("1) View Available Seats for a Concert");
-                System.out.println("2) Make Reservation");
-                System.out.println("3) Cancel Reservation");
-                System.out.println("4) View My Reservations");
-                System.out.println("5) View all Concerts");
-                System.out.println("6) Add a concert");
-                System.out.println("7) Delete Account");
-                System.out.println("8) Logout");
-
-                //Making sure they are choosing an option that is valid
-                String choice = "";
-                while (true) {
-                    System.out.println("Choose an option: ");
-                    choice = scanner.nextLine().trim();
-
-                    if (choice.matches("[1-8]")) {
-                        break;
-                    } else {
-                        System.out.println("Invalid option. Please enter a number from 1-8.");
-                    }
-                }
-
-                //Gets available seats in a concert by the ID
-                if (choice.equals("1")) {
-                    System.out.println("Concert ID: ");
-                    String showID = scanner.nextLine().trim();
-
-                    String date = "";
-                    int num = 0;
-                    String d = "";
-                    String m = "";
-                    String y = "";
-                    while (true) {
-                        //Checking to make sure that the date is valid
-                        num = 0;
-                        System.out.println("Date (DD/MM/YYYY) (For example March 3, 2025 will be 03/03/2025): ");
-                        date = scanner.nextLine().trim();
-                        for (int i = 0; i < date.length(); i++) {
-                            if (date.charAt(i) == '/') {
-                                num++;
-                            }
-                        }
-                        if (num != 2) {
-                            System.out.println("Please enter a valid date.");
-                            try {
-                                d = date.substring(0);
-                                m = d.substring(d.indexOf("/") + 1);
-                                d = d.substring(0, d.indexOf("/"));
-                                y = m.substring(m.indexOf("/") + 1);
-                                m = m.substring(0, m.indexOf("/"));
-                                if (Integer.parseInt(d) > 31 || d.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (Integer.parseInt(m) > 12 || m.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (y.length() > 4) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                            } catch (Exception e) {
-                                System.out.println(e.getMessage());
-                            }
-                        } else {
-                            break;
-                        }
-
-                    }
-
-                    //Gets the available seats in the concert
-                    try {
-                        writer.write("getAvailableSeats\n");
-                        writer.write(showID + "\n");
-                        writer.write(date + "\n");
-                        writer.flush();
-
-                        String count = reader.readLine();
-                        int numOfSeats = Integer.parseInt(count);
-
-                        if (numOfSeats == 0) {
-                            System.out.println("No available seats.");
-                        } else {
-                            System.out.println("Available Seats (" + numOfSeats + " total):");
-                            for (int i = 0; i < numOfSeats; i++) {
-                                String seat = reader.readLine();
-                                System.out.println(seat);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                } else if (choice.equals("2")) {
-                    //Books a reservation
-                    System.out.println("Password: ");
-                    String password = scanner.nextLine().trim();
-                    System.out.println("Show ID: ");
-                    String showID = scanner.nextLine().trim();
-                    String date = "";
-                    int num = 0;
-                    String d = "";
-                    String m = "";
-                    String y = "";
-
-                    //Checks to make sure the date is correct
-                    while (true) {
-                        num = 0;
-                        System.out.println("Date (DD/MM/YYYY) (For example March 3, 2025 will be 03/03/2025): ");
-                        date = scanner.nextLine().trim();
-                        for (int i = 0; i < date.length(); i++) {
-                            if (date.charAt(i) == '/') {
-                                num++;
-                            }
-                        }
-                        if (num != 2) {
-                            System.out.println("Please enter a valid date.");
-                            try {
-                                d = date.substring(0);
-                                m = d.substring(d.indexOf("/") + 1);
-                                d = d.substring(0, d.indexOf("/"));
-                                y = m.substring(m.indexOf("/") + 1);
-                                m = m.substring(0, m.indexOf("/"));
-                                if (Integer.parseInt(d) > 31 || d.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (Integer.parseInt(m) > 12 || m.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (y.length() > 4) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                            } catch (Exception e) {
-                                System.out.println(e.getMessage());
-                            }
-                        } else {
-                            break;
-                        }
-
-                    }
-
-                    int numOfSeats = 0;
-                    while (true) {
-                        System.out.println("How many seats? ");
-                        String num1 = scanner.nextLine().trim();
-                        try {
-                            numOfSeats = Integer.parseInt(num1);
-                            if (numOfSeats > 0) {
-                                break;
-                            } else {
-                                System.out.println("Please enter a number bigger than 0.");
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Please enter a valid number.");
-                        }
-                    }
-
-                    ArrayList<String> seatIDs = new ArrayList<>();
-                    for (int i = 0; i < numOfSeats; i++) {
-                        int a = i + 1;
-                        System.out.println("Seat ID #" + a + ": ");
-                        seatIDs.add(scanner.nextLine().trim());
-                    }
-
-                    try {
-                        writer.write("makeReservation\n");
-                        writer.write(account + "\n");
-                        writer.write(password + "\n");
-                        writer.write(showID + "\n");
-                        writer.write(numOfSeats + "\n");
-                        for (int i = 0; i < seatIDs.size(); i++) {
-                            writer.write(seatIDs.get(i) + "\n");
-                        }
-                        writer.write(date + "\n");
-                        writer.flush();
-
-                        double price = Double.parseDouble(reader.readLine());
-                        System.out.println("Total Price: " + price);
-
-                        System.out.println("Proceed with payment? (y/n): ");
-                        String confirm = scanner.nextLine().trim();
-                        confirm = confirm.toLowerCase();
-
-                        if (!confirm.equals("y")) {
-                            writer.println("cancel");
-                            System.out.println("Reservation cancelled.");
-                            return;
-                        }
-
-                        writer.write("pay\n");
-                        writer.flush();
-
-                        String r = reader.readLine();
-                        if (r.equals("success")) {
-                            String reservationID = reader.readLine();
-                            System.out.println("Reservation was successful. Your reservation ID is: " + reservationID);
-                        } else {
-                            System.out.println("Reservation was not successful.");
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                } else if (choice.equals("3")) {
-                    //Cancels reservation by ID
-                    System.out.println("Reservation ID: ");
-                    String reservationID = scanner.nextLine().trim();
-                    String confirm = "";
-                    while (true) {
-                        System.out.println("Confirm? (y/n): ");
-                        confirm = scanner.nextLine().trim();
-                        confirm = confirm.toLowerCase();
-                        if (confirm.equals("y") || confirm.equals("n")) {
-                            break;
-                        } else {
-                            System.out.println("Please enter 'y' for yes or 'n' for no.");
-                        }
-                    }
-
-                    //Confirms the cancellation
-                    if (confirm.equals("y")) {
-                        try {
-                            writer.write("cancelReservation\n");
-                            writer.write(reservationID + "\n");
-                            writer.flush();
-                            String response = reader.readLine();
-
-                            if (response.equals("success")) {
-                                System.out.println("Your reservation has been cancelled.");
-                            } else {
-                                System.out.println("Cancellation failed. Please try again.");
-                            }
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
-                    }
-                } else if (choice.equals("4")) {
-                    //Gets all the reservations by the account
-                    try {
-                        writer.write("getReservations\n");
-                        writer.write(account + "\n");
-                        writer.flush();
-
-                        String count = reader.readLine();
-                        int num = Integer.parseInt(count);
-
-                        if (num == 0) {
-                            System.out.println("You have no reservations.");
-                        } else {
-                            if (num > 1) {
-                                System.out.println("You have " + num + " reservations:");
-                            } else {
-                                System.out.println("You have " + num + " reservation:");
-                            }
-                            for (int i = 0; i < num; i++) {
-                                String reservationDetails = reader.readLine();
-                                System.out.println(reservationDetails);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                } else if (choice.equals("5")) {
-                    try {
-                        writer.write("getALlConcerts\n");
-                        writer.flush();
-                        int count = Integer.parseInt(reader.readLine());
-
-                        for (int i = 0; i < count; i++) {
-                            String line = reader.readLine();
-                            String[] parts = line.split(",");
-                            String name = parts[0];
-                            String date = parts[1];
-                            String time = parts[2];
-                            String concertD = parts[3];
-                            System.out.println(concertD + ". " + name + " on " + date + " at " + time);
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
-
-                } else if (choice.equals("6")) {
-                    System.out.println("Name of Concert: ");
-                    String name = scanner.nextLine();
-                    String date = "";
-                    int num = 0;
-                    String d = "";
-                    String m = "";
-                    String y = "";
-
-                    //Checks to make sure the date is correct
-                    while (true) {
-                        num = 0;
-                        System.out.println("Date (DD/MM/YYYY) (For example March 3, 2025 will be 03/03/2025): ");
-                        date = scanner.nextLine().trim();
-                        for (int i = 0; i < date.length(); i++) {
-                            if (date.charAt(i) == '/') {
-                                num++;
-                            }
-                        }
-                        if (num != 2) {
-                            System.out.println("Please enter a valid date.");
-                            try {
-                                d = date.substring(0);
-                                m = d.substring(d.indexOf("/") + 1);
-                                d = d.substring(0, d.indexOf("/"));
-                                y = m.substring(m.indexOf("/") + 1);
-                                m = m.substring(0, m.indexOf("/"));
-                                if (Integer.parseInt(d) > 31 || d.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (Integer.parseInt(m) > 12 || m.length() > 2) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                                if (y.length() > 4) {
-                                    System.out.println("Please enter a valid date.");
-                                }
-                            } catch (Exception e) {
-                                System.out.println(e.getMessage());
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    String time = "";
-                    String h = "";
-                    String min = "";
-                    while (true) {
-                        System.out.println("Time: ");
-                        time = scanner.nextLine();
-
-                        try {
-                            h = time.substring(0, time.indexOf(":"));
-                            min = time.substring(time.indexOf(":") + 1);
-                            if (time.contains(":") && Integer.parseInt(h) <= 23 && Integer.parseInt(min) <= 60) {
-                                break;
-                            }
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
-                    }
-
-
-
-                    try {
-                        writer.write("createConcert\n");
-                        writer.write(name + "\n");
-                        writer.write(date + "\n");
-                        writer.write(time + "\n");
-                        writer.flush();
-                        String r = reader.readLine();
-                        if (r.equals("success")) {
-                            System.out.println("Concert Created.");
-                        } else {
-                            System.out.println("Concert Creation failed. Please try again.");
-                        }
-
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                } else if (choice.equals("7")) {
-                    //Deletes account by password and accountID
-                    System.out.println("Confirm username: ");
-                    String username = scanner.nextLine().trim();
-                    System.out.println("Confirm password: ");
-                    String password = scanner.nextLine().trim();
-
-                    String confirm = "";
-                    while (true) {
-                        System.out.println("Are you sure? (y/n): ");
-                        confirm = scanner.nextLine().trim().toLowerCase();
-
-                        if (confirm.equals("y") || confirm.equals("n")) {
-                            break;
-                        } else {
-                            System.out.println("Please enter 'y' or 'n'.");
-                        }
-                    }
-
-                    //Confirms cancellation
-                    if (confirm.equals("y")) {
-                        try {
-                            writer.write("deleteAccount\n");
-                            writer.write(account + "\n");
-                            writer.write(password + "\n");
-                            writer.write(username + "\n");
-                            writer.flush();
-                            String r = reader.readLine();
-                            if (r.equals("success")) {
-                                System.out.println("Account deleted.");
-                                account = null;
-                            } else {
-                                System.out.println("Account deletion failed. Please try again.");
-                            }
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
-                    }
-
-                } else if (choice.equals("8")) {
-                    //Logs the user out
-                    account = null;
-                    System.out.println("Logged-out");
-                }
+        mainFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                disconnect();
+                System.exit(0);
             }
-        }
+        });
 
-        disconnect();
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
+
+        createLoginPanel();
+        createMakeReservationPanel();
+        createReservationPanel();
+        createReservationListPanel();
+        createMenuPanel();
+        createAddConcertPanel();
+        createViewConcertsPanel();
+
+        mainPanel.add(loginPanel, "Login");
+        mainPanel.add(makeReservationPanel, "MakeReservation");
+        mainPanel.add(reservationPanel, "Reservation");
+        mainPanel.add(reservationListPanel, "ReservationList");
+        mainPanel.add(menuPanel, "Menu");
+        mainPanel.add(addConcertPanel, "AddConcert");
+        mainPanel.add(viewConcertsPanel, "ViewConcerts");
+
+        mainFrame.add(mainPanel);
+        showPanel("Login");
+        mainFrame.setVisible(true);
     }
 
     public void disconnect() {
         //Disconnects from the server
         try {
-            if (socket != null && !socket.isClosed()) {
+            if (writer != null) {
                 writer.write("disconnect\n");
                 writer.flush();
-                socket.close();
-                System.out.println("Disconnected.");
             }
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+            System.out.println("Disconnected.");
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    //Helper method to confirm date
+    private boolean confirmDate(String date) {
+        String d = "";
+        String m = "";
+        String y = "";
+
+        d = date.substring(0, date.indexOf("/"));
+        m = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
+        y = date.substring(date.lastIndexOf("/") + 1);
+
+        int day = Integer.parseInt(d);
+        int month = Integer.parseInt(m);
+
+        if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && y.length() == 4) {
+            return true;
+        } else {
+            return false;
         }
     }
 
