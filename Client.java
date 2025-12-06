@@ -31,7 +31,10 @@ public class Client implements ClientInterface {
     protected String accountID;
     private String host;
     private int port;
+    private ArrayList<String> selectedSections = new ArrayList<>();
+    private ArrayList<String> availableSections = new ArrayList<>();
 
+    //GUI Variables
     private JFrame mainFrame;
     private CardLayout cardLayout;
     private JPanel mainPanel;
@@ -61,10 +64,12 @@ public class Client implements ClientInterface {
         this.accountID = null;
     }
 
+    //Shows certain panel when called
     public void showPanel(String name) {
         cardLayout.show(mainPanel, name);
     }
 
+    //Creates Login Panel
     private void createLoginPanel() {
         loginPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -95,6 +100,12 @@ public class Client implements ClientInterface {
         gbc.gridx = 1;
         JButton registerButton = new JButton("Make an Account");
         loginPanel.add(registerButton, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        JLabel hoursLabel = new JLabel("Hours of Operation: Mon–Fri 9AM–11PM, Sat–Sun 10AM–2AM");
+        hoursLabel.setFont(new Font("Times", Font.PLAIN, 14));
+        loginPanel.add(hoursLabel, gbc);
         loginButton.addActionListener(e -> {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
@@ -179,6 +190,13 @@ public class Client implements ClientInterface {
                 String password = new String(regularPasswordField.getPassword());
                 String confirmPassword = new String(confirmPasswordField.getPassword());
 
+                //Checks all variables
+                if (firstName == null || lastName == null || age == null || email == null
+                        || phone == null || username == null || password == null || confirmPassword == null) {
+                    JOptionPane.showMessageDialog(loginPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+
                 if (firstName.isEmpty() || lastName.isEmpty() || age.isEmpty() || email.isEmpty()
                         || phone.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     JOptionPane.showMessageDialog(loginPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -251,6 +269,7 @@ public class Client implements ClientInterface {
 
     }
 
+    //Books the seats that the user picked
     private void bookSeats() {
         java.util.List<String> selectedSeats = new java.util.ArrayList<>();
         for (JToggleButton btn : seatButtons) {
@@ -282,6 +301,12 @@ public class Client implements ClientInterface {
             writer.write("makeReservation\n");
             writer.write(account + "\n");
             writer.write(password + "\n");
+            writer.flush();
+            String passwordCheck = reader.readLine();
+            if (passwordCheck.equals("invalid")) {
+                JOptionPane.showMessageDialog(reservationPanel, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             writer.write(selectedShowID + "\n");
             writer.write(selectedSeats.size() + "\n");
             for (String seatID : selectedSeats) {
@@ -324,6 +349,7 @@ public class Client implements ClientInterface {
         }
     }
 
+    //Loads all seats that are avaliable for the concert
     private void loadSeats() {
         seatGridPanel.removeAll();
         seatButtons.clear();
@@ -365,6 +391,7 @@ public class Client implements ClientInterface {
         }
     }
 
+    //Creates reservation user list panel
     private void createReservationListPanel() {
         reservationListPanel = new JPanel(new BorderLayout());
         JLabel title = new JLabel("Your Reservations:");
@@ -408,10 +435,10 @@ public class Client implements ClientInterface {
                 }
             }
         });
-
         reservationListPanel.putClientProperty("reservationArea", reservationArea);
     }
 
+    //Gets the latest data for reservations
     private void refreshReservationListPanel() {
         JTextArea reservationArea = (JTextArea)reservationListPanel.getClientProperty("reservationArea");
 
@@ -459,7 +486,7 @@ public class Client implements ClientInterface {
                     String[] parts = reservationDetails.split(",");
                     //System.out.println(parts.length);
                     for (int j = 0; j < parts.length; j++) {
-                        System.out.println("  Part " + j + ": '" + parts[j] + "'");
+                        //System.out.println("  Part " + j + ": '" + parts[j] + "'");
                     }
 
                     if (parts.length >= 7) {
@@ -496,6 +523,7 @@ public class Client implements ClientInterface {
         }
     }
 
+    //Creates main menu panel
     private void createMenuPanel() {
         menuPanel = new JPanel(new BorderLayout());
         JLabel title = new JLabel("Concert Reservation System - Main Menu");
@@ -503,8 +531,16 @@ public class Client implements ClientInterface {
         title.setHorizontalAlignment(SwingConstants.CENTER);
         title.setBorder(BorderFactory.createEmptyBorder(50, 0, 5, 0));
         menuPanel.add(title, BorderLayout.NORTH);
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        JLabel hoursLabel = new JLabel("Hours of Operation: Mon–Fri 9AM–11PM, Sat–Sun 10AM–2AM");
+        hoursLabel.setFont(new Font("Times", Font.PLAIN, 14));
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.add(hoursLabel);
+        menuPanel.add(bottomPanel, BorderLayout.SOUTH);
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
@@ -647,6 +683,7 @@ public class Client implements ClientInterface {
         });
     }
 
+    //Allows user to view all concerts
     private void createViewConcertsPanel() {
         viewConcertsPanel = new JPanel(new BorderLayout());
         JLabel title = new JLabel("All Concerts:");
@@ -662,6 +699,7 @@ public class Client implements ClientInterface {
         viewConcertsPanel.putClientProperty("concertsArea", concertsArea);
     }
 
+    //Gets latest concert data
     private void refreshViewConcertsPanel() {
         JTextArea concertsArea = (JTextArea)viewConcertsPanel.getClientProperty("concertsArea");
 
@@ -702,6 +740,7 @@ public class Client implements ClientInterface {
         }
     }
 
+    //Creates add concert panel
     private void createAddConcertPanel() {
         addConcertPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -838,6 +877,82 @@ public class Client implements ClientInterface {
         });
     }
 
+    //Allows multiple sections to get booked at once
+    private void selectSectionsToBook() {
+        availableSections.clear();
+        for (JToggleButton btn : seatButtons) {
+            if (btn.isEnabled()) {
+                String seatID = btn.getText().substring(0, btn.getText().indexOf(" ("));
+                String section = "";
+                if (seatID != null && seatID.length() > 0) {
+                    section = seatID.substring(0, 1);
+                } else {
+                    section = "";
+                }
+
+                boolean found = false;
+                for (int i = 0; i < availableSections.size(); i++) {
+                    if (availableSections.get(i).equals(section)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    availableSections.add(section);
+                }
+            }
+        }
+
+        JPanel sectionPanel = new JPanel(new GridLayout(0, 1));
+        java.util.ArrayList<JCheckBox> checkBoxes = new java.util.ArrayList<>();
+        for (int i = 0; i < availableSections.size(); i++) {
+            JCheckBox cb = new JCheckBox("Section " + availableSections.get(i));
+            checkBoxes.add(cb);
+            sectionPanel.add(cb);
+        }
+
+        int result = JOptionPane.showConfirmDialog(
+                reservationPanel,
+                sectionPanel,
+                "Select Sections to Book All Seats",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            selectedSections.clear();
+            for (int i = 0; i < checkBoxes.size(); i++) {
+                if (checkBoxes.get(i).isSelected()) {
+                    selectedSections.add(availableSections.get(i));
+                }
+            }
+            if (selectedSections.isEmpty()) {
+                JOptionPane.showMessageDialog(reservationPanel, "Please select at least one section.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            for (JToggleButton btn : seatButtons) {
+                if (btn.isEnabled()) {
+                    String seatID = btn.getText().substring(0, btn.getText().indexOf(" ("));
+                    String section = "";
+                    if (seatID != null && seatID.length() > 0) {
+                        section = seatID.substring(0, 1);
+                    } else {
+                        section = "";
+                    }
+                    for (int i = 0; i < selectedSections.size(); i++) {
+                        if (selectedSections.get(i).equals(section)) {
+                            btn.setSelected(true);
+                            break;
+                        }
+                    }
+                }
+            }
+            bookSeats();
+        }
+    }
+
+    //Creates creates reservation panel
     private void createReservationPanel() {
         reservationPanel = new JPanel(new BorderLayout());
         JLabel infoLabel = new JLabel("Select seats for your reservation:");
@@ -845,6 +960,8 @@ public class Client implements ClientInterface {
         seatGridPanel = new JPanel();
         reservationPanel.add(seatGridPanel, BorderLayout.CENTER);
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton selectSectionsButton = new JButton("Select Sections to Book");
+        bottomPanel.add(selectSectionsButton);
         JButton bookButton = new JButton("Book Selected Seats");
         JButton backButton = new JButton("Back to Main Menu");
         bottomPanel.add(bookButton);
@@ -853,8 +970,10 @@ public class Client implements ClientInterface {
         reservationPanel.putClientProperty("infoLabel", infoLabel);
         bookButton.addActionListener(e -> bookSeats());
         backButton.addActionListener(e -> showPanel("Menu"));
+        selectSectionsButton.addActionListener(e -> selectSectionsToBook());
     }
 
+    //Creates the Make reservation panel
     private void createMakeReservationPanel() {
         makeReservationPanel = new JPanel(new BorderLayout());
         JPanel mainVBox = new JPanel();
@@ -1015,6 +1134,7 @@ public class Client implements ClientInterface {
         });
     }
 
+    //Gets latest data for make reservation panel
     private void refreshMakeReservationPanel() {
         JComboBox<String> dateBox = (JComboBox<String>) makeReservationPanel.getClientProperty("dateBox");
         JComboBox<String> timeBox = (JComboBox<String>) makeReservationPanel.getClientProperty("timeBox");
@@ -1183,20 +1303,24 @@ public class Client implements ClientInterface {
 
     //Helper method to confirm date
     private boolean confirmDate(String date) {
-        String d = "";
-        String m = "";
-        String y = "";
+        try {
+            String d = "";
+            String m = "";
+            String y = "";
 
-        d = date.substring(0, date.indexOf("/"));
-        m = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
-        y = date.substring(date.lastIndexOf("/") + 1);
+            d = date.substring(0, date.indexOf("/"));
+            m = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
+            y = date.substring(date.lastIndexOf("/") + 1);
 
-        int day = Integer.parseInt(d);
-        int month = Integer.parseInt(m);
+            int day = Integer.parseInt(d);
+            int month = Integer.parseInt(m);
 
-        if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && y.length() == 4) {
-            return true;
-        } else {
+            if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && y.length() == 4) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
     }

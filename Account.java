@@ -115,7 +115,7 @@ public class Account implements AccountInterface {
         if (lastName1.length() >= 3) {
             result = (lastName1.charAt(0) + "" + lastName1.charAt(2)).concat(result);
         } else {
-            result = lastName1.charAt(0) + "".concat(result);
+            result = (lastName1.charAt(0) + "").concat(result);
         }
         if (phoneNumber.length() == 10) {
             result = result.concat("-" + phoneNumber.substring(6, 10));
