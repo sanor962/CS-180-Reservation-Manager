@@ -31,6 +31,8 @@ public class Client implements ClientInterface {
     protected String accountID;
     private String host;
     private int port;
+    private ArrayList<String> selectedSections = new ArrayList<>();
+    private ArrayList<String> availableSections = new ArrayList<>();
 
     //GUI Variables
     private JFrame mainFrame;
@@ -97,6 +99,12 @@ public class Client implements ClientInterface {
         gbc.gridx = 1;
         JButton registerButton = new JButton("Make an Account");
         loginPanel.add(registerButton, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        JLabel hoursLabel = new JLabel("Hours of Operation: Mon–Fri 9AM–11PM, Sat–Sun 10AM–2AM");
+        hoursLabel.setFont(new Font("Times", Font.PLAIN, 14));
+        loginPanel.add(hoursLabel, gbc);
         loginButton.addActionListener(e -> {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
@@ -292,6 +300,12 @@ public class Client implements ClientInterface {
             writer.write("makeReservation\n");
             writer.write(account + "\n");
             writer.write(password + "\n");
+            writer.flush();
+            String passwordCheck = reader.readLine();
+            if (passwordCheck.equals("invalid")) {
+                JOptionPane.showMessageDialog(reservationPanel, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             writer.write(selectedShowID + "\n");
             writer.write(selectedSeats.size() + "\n");
             for (String seatID : selectedSeats) {
@@ -516,8 +530,16 @@ public class Client implements ClientInterface {
         title.setHorizontalAlignment(SwingConstants.CENTER);
         title.setBorder(BorderFactory.createEmptyBorder(50, 0, 5, 0));
         menuPanel.add(title, BorderLayout.NORTH);
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        JLabel hoursLabel = new JLabel("Hours of Operation: Mon–Fri 9AM–11PM, Sat–Sun 10AM–2AM");
+        hoursLabel.setFont(new Font("Times", Font.PLAIN, 14));
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.add(hoursLabel);
+        menuPanel.add(bottomPanel, BorderLayout.SOUTH);
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
@@ -850,6 +872,81 @@ public class Client implements ClientInterface {
         });
     }
 
+    //Allows multiple sections to get booked at once
+    private void selectSectionsToBook() {
+        availableSections.clear();
+        for (JToggleButton btn : seatButtons) {
+            if (btn.isEnabled()) {
+                String seatID = btn.getText().substring(0, btn.getText().indexOf(" ("));
+                String section = "";
+                if (seatID != null && seatID.length() > 0) {
+                    section = seatID.substring(0, 1);
+                } else {
+                    section = "";
+                }
+
+                boolean found = false;
+                for (int i = 0; i < availableSections.size(); i++) {
+                    if (availableSections.get(i).equals(section)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    availableSections.add(section);
+                }
+            }
+        }
+
+        JPanel sectionPanel = new JPanel(new GridLayout(0, 1));
+        java.util.ArrayList<JCheckBox> checkBoxes = new java.util.ArrayList<>();
+        for (int i = 0; i < availableSections.size(); i++) {
+            JCheckBox cb = new JCheckBox("Section " + availableSections.get(i));
+            checkBoxes.add(cb);
+            sectionPanel.add(cb);
+        }
+
+        int result = JOptionPane.showConfirmDialog(
+                reservationPanel,
+                sectionPanel,
+                "Select Sections to Book All Seats",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            selectedSections.clear();
+            for (int i = 0; i < checkBoxes.size(); i++) {
+                if (checkBoxes.get(i).isSelected()) {
+                    selectedSections.add(availableSections.get(i));
+                }
+            }
+            if (selectedSections.isEmpty()) {
+                JOptionPane.showMessageDialog(reservationPanel, "Please select at least one section.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            for (JToggleButton btn : seatButtons) {
+                if (btn.isEnabled()) {
+                    String seatID = btn.getText().substring(0, btn.getText().indexOf(" ("));
+                    String section = "";
+                    if (seatID != null && seatID.length() > 0) {
+                        section = seatID.substring(0, 1);
+                    } else {
+                        section = "";
+                    }
+                    for (int i = 0; i < selectedSections.size(); i++) {
+                        if (selectedSections.get(i).equals(section)) {
+                            btn.setSelected(true);
+                            break;
+                        }
+                    }
+                }
+            }
+            bookSeats();
+        }
+    }
+
     //Creates creates reservation panel
     private void createReservationPanel() {
         reservationPanel = new JPanel(new BorderLayout());
@@ -858,6 +955,8 @@ public class Client implements ClientInterface {
         seatGridPanel = new JPanel();
         reservationPanel.add(seatGridPanel, BorderLayout.CENTER);
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton selectSectionsButton = new JButton("Select Sections to Book");
+        bottomPanel.add(selectSectionsButton);
         JButton bookButton = new JButton("Book Selected Seats");
         JButton backButton = new JButton("Back to Main Menu");
         bottomPanel.add(bookButton);
@@ -866,8 +965,10 @@ public class Client implements ClientInterface {
         reservationPanel.putClientProperty("infoLabel", infoLabel);
         bookButton.addActionListener(e -> bookSeats());
         backButton.addActionListener(e -> showPanel("Menu"));
+        selectSectionsButton.addActionListener(e -> selectSectionsToBook());
     }
 
+    //Creates the Make reservation panel
     private void createMakeReservationPanel() {
         makeReservationPanel = new JPanel(new BorderLayout());
         JPanel mainVBox = new JPanel();
