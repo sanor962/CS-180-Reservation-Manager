@@ -32,6 +32,7 @@ public class Client implements ClientInterface {
     private String host;
     private int port;
 
+    //GUI Variables
     private JFrame mainFrame;
     private CardLayout cardLayout;
     private JPanel mainPanel;
@@ -60,10 +61,12 @@ public class Client implements ClientInterface {
         this.accountID = null;
     }
 
+    //Shows certain panel when called
     public void showPanel(String name) {
         cardLayout.show(mainPanel, name);
     }
 
+    //Creates Login Panel
     private void createLoginPanel() {
         loginPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -178,6 +181,7 @@ public class Client implements ClientInterface {
                 String password = new String(regularPasswordField.getPassword());
                 String confirmPassword = new String(confirmPasswordField.getPassword());
 
+                //Checks all variables
                 if (firstName.isEmpty() || lastName.isEmpty() || age.isEmpty() || email.isEmpty()
                         || phone.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     JOptionPane.showMessageDialog(loginPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -250,6 +254,7 @@ public class Client implements ClientInterface {
 
     }
 
+    //Books the seats that the user picked
     private void bookSeats() {
         java.util.List<String> selectedSeats = new java.util.ArrayList<>();
         for (JToggleButton btn : seatButtons) {
@@ -323,6 +328,7 @@ public class Client implements ClientInterface {
         }
     }
 
+    //Loads all seats that are avaliable for the concert
     private void loadSeats() {
         seatGridPanel.removeAll();
         seatButtons.clear();
@@ -364,6 +370,7 @@ public class Client implements ClientInterface {
         }
     }
 
+    //Creates reservation user list panel
     private void createReservationListPanel() {
         reservationListPanel = new JPanel(new BorderLayout());
         JLabel title = new JLabel("Your Reservations:");
@@ -407,10 +414,10 @@ public class Client implements ClientInterface {
                 }
             }
         });
-
         reservationListPanel.putClientProperty("reservationArea", reservationArea);
     }
 
+    //Gets the latest data for reservations
     private void refreshReservationListPanel() {
         JTextArea reservationArea = (JTextArea)reservationListPanel.getClientProperty("reservationArea");
 
@@ -495,6 +502,7 @@ public class Client implements ClientInterface {
         }
     }
 
+    //Creates main menu panel
     private void createMenuPanel() {
         menuPanel = new JPanel(new BorderLayout());
         JLabel title = new JLabel("Concert Reservation System - Main Menu");
@@ -646,6 +654,7 @@ public class Client implements ClientInterface {
         });
     }
 
+    //Allows user to view all concerts
     private void createViewConcertsPanel() {
         viewConcertsPanel = new JPanel(new BorderLayout());
         JLabel title = new JLabel("All Concerts:");
@@ -661,6 +670,7 @@ public class Client implements ClientInterface {
         viewConcertsPanel.putClientProperty("concertsArea", concertsArea);
     }
 
+    //Gets latest concert data
     private void refreshViewConcertsPanel() {
         JTextArea concertsArea = (JTextArea)viewConcertsPanel.getClientProperty("concertsArea");
 
@@ -701,6 +711,7 @@ public class Client implements ClientInterface {
         }
     }
 
+    //Creates add concert panel
     private void createAddConcertPanel() {
         addConcertPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -833,6 +844,7 @@ public class Client implements ClientInterface {
         });
     }
 
+    //Creates creates reservation panel
     private void createReservationPanel() {
         reservationPanel = new JPanel(new BorderLayout());
         JLabel infoLabel = new JLabel("Select seats for your reservation:");
@@ -1010,6 +1022,7 @@ public class Client implements ClientInterface {
         });
     }
 
+    //Gets latest data for make reservation panel
     private void refreshMakeReservationPanel() {
         JComboBox<String> dateBox = (JComboBox<String>) makeReservationPanel.getClientProperty("dateBox");
         JComboBox<String> timeBox = (JComboBox<String>) makeReservationPanel.getClientProperty("timeBox");
