@@ -13,6 +13,3 @@ DreamPulseTour,01/02/2026,20:00,12
 ElectricSkyTour,02/02/2026,22:00,13
 MoonlitPathsTour,14/02/2026,19:30,14
 TwilightVibesTour,15/02/2026,21:00,15
-SaanvConcert,05/05/1992,15:25,16
-SaanviConcert,05/05/2005,15:25,17
-HelloAs,6/12/2007,15:25,18
