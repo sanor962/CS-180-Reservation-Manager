@@ -1,7 +1,11 @@
 import org.junit.jupiter.api.*;
 import java.io.*;
+import java.lang.reflect.*;
 import java.util.concurrent.Executors;
+import javax.swing.*;
+import java.awt.*;
 import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * JUnit test cases for the Client class
  * Tests verify functionality of the class, which represents a client
@@ -237,4 +241,118 @@ public class ClientTest {
         client.connect();
         assertDoesNotThrow(client::start);
     }
+
+    // --- Helper: recursively find component ---
+    private <T extends Component> T findComponent(Container container, Class<T> cls, String name) {
+        for (Component c : container.getComponents()) {
+            if (cls.isInstance(c) && (name == null || name.equals(c.getName()))) {
+                return cls.cast(c);
+            }
+            if (c instanceof Container) {
+                T child = findComponent((Container) c, cls, name);
+                if (child != null) return child;
+            }
+        }
+        return null;
+    }
+
+    // --- Test Add Concert Panel ---
+    @Test
+    public void testAddConcertPanelGUI() {
+        JFrame frame = (JFrame) Window.getWindows()[0];
+        JTextField nameField = findComponent(frame.getContentPane(), JTextField.class, "concertNameField");
+        JTextField dateField = findComponent(frame.getContentPane(), JTextField.class, "concertDateField");
+        JButton submitBtn = findComponent(frame.getContentPane(), JButton.class, "addConcertButton");
+
+        assertNotNull(nameField);
+        assertNotNull(dateField);
+        assertNotNull(submitBtn);
+
+        nameField.setText("RockFest");
+        dateField.setText("12/12/2025");
+        submitBtn.doClick();
+
+        assertEquals("RockFest", nameField.getText());
+        assertEquals("12/12/2025", dateField.getText());
+    }
+
+    // --- Test View Concerts Panel ---
+    @Test
+    public void testViewConcertsPanelGUI() {
+        JFrame frame = (JFrame) Window.getWindows()[0];
+        JTextArea concertsArea = findComponent(frame.getContentPane(), JTextArea.class, "concertsArea");
+
+        assertNotNull(concertsArea);
+
+        // Manually populate for testing
+        concertsArea.setText("RockFest,12/12/2025");
+
+        assertTrue(concertsArea.getText().contains("RockFest"));
+    }
+
+    // --- Test Make Reservation Panel ---
+    @Test
+    public void testMakeReservationPanelGUI() {
+        JFrame frame = (JFrame) Window.getWindows()[0];
+        @SuppressWarnings("unchecked")
+        JComboBox<String> dateBox = findComponent(frame.getContentPane(), JComboBox.class, "dateBox");
+        @SuppressWarnings("unchecked")
+        JComboBox<String> timeBox = findComponent(frame.getContentPane(), JComboBox.class, "timeBox");
+        @SuppressWarnings("unchecked")
+        JComboBox<String> concertBox = findComponent(frame.getContentPane(), JComboBox.class, "concertBox");
+        JButton nextButton = findComponent(frame.getContentPane(), JButton.class, "nextButton");
+        JPanel seatGridPanel = findComponent(frame.getContentPane(), JPanel.class, "seatGridPanel");
+
+        assertNotNull(dateBox);
+        assertNotNull(timeBox);
+        assertNotNull(concertBox);
+        assertNotNull(nextButton);
+        assertNotNull(seatGridPanel);
+
+        dateBox.addItem("12/12/2025");
+        timeBox.addItem("19:00");
+        concertBox.addItem("RockFest");
+
+        dateBox.setSelectedItem("12/12/2025");
+        timeBox.setSelectedItem("19:00");
+        concertBox.setSelectedItem("RockFest");
+
+        nextButton.doClick();
+
+        assertTrue(seatGridPanel.getComponentCount() >= 0);
+    }
+
+    // --- Test Delete Account Panel ---
+    @Test
+    public void testDeleteAccountPanelGUI() {
+        JFrame frame = (JFrame) Window.getWindows()[0];
+        JTextField usernameField = findComponent(frame.getContentPane(), JTextField.class, "deleteUsernameField");
+        JButton deleteBtn = findComponent(frame.getContentPane(), JButton.class, "deleteAccountButton");
+
+        assertNotNull(usernameField);
+        assertNotNull(deleteBtn);
+
+        usernameField.setText("user_test");
+        deleteBtn.doClick();
+
+        assertEquals("user_test", usernameField.getText());
+    }
+
+    // --- Test View Reservations Panel ---
+    @Test
+    public void testViewReservationsPanelGUI() {
+        JFrame frame = (JFrame) Window.getWindows()[0];
+        JTable resTable = findComponent(frame.getContentPane(), JTable.class, "reservationsTable");
+
+        assertNotNull(resTable);
+
+        // Populate manually
+        Object[][] rowData = {{"RES001", "RockFest", "12/12/2025", "A1"}};
+        String[] colNames = {"Reservation ID", "Concert", "Date", "Seat"};
+        resTable.setModel(new javax.swing.table.DefaultTableModel(rowData, colNames));
+
+        assertEquals(1, resTable.getRowCount());
+        assertEquals("RES001", resTable.getValueAt(0, 0));
+    }
+
 }

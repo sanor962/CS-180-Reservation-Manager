@@ -7,7 +7,7 @@ A5,A,true,5,50.0
 B1,B,true,1,60.0
 B2,B,true,2,60.0
 B3,B,true,3,60.0
-B4,B,true,4,60.0
+B4,B,false,4,60.0
 B5,B,true,5,60.0
 C1,C,true,1,70.0
 C2,C,true,2,70.0

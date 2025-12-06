@@ -50,6 +50,7 @@ public class Client implements ClientInterface {
     private java.util.ArrayList<JToggleButton> seatButtons;
     private JPanel viewConcertsPanel;
 
+
     //Constructor
     public Client(String host, int port) {
         this.host = host;
@@ -718,22 +719,26 @@ public class Client implements ClientInterface {
         addConcertPanel.add(new JLabel("Concert Name:"), gbc);
         gbc.gridx = 1;
         JTextField nameField = new JTextField(20);
+        nameField.setName("concertNameField");
         addConcertPanel.add(nameField, gbc);
         gbc.gridy = 2;
         gbc.gridx = 0;
         addConcertPanel.add(new JLabel("Date (DD/MM/YYYY):"), gbc);
         gbc.gridx = 1;
         JTextField dateField = new JTextField(20);
+        dateField.setName("concertDateField");
         addConcertPanel.add(dateField, gbc);
         gbc.gridy = 3;
         gbc.gridx = 0;
         addConcertPanel.add(new JLabel("Time (HH:MM):"), gbc);
         gbc.gridx = 1;
         JTextField timeField = new JTextField(20);
+        timeField.setName("concertTimeField");
         addConcertPanel.add(timeField, gbc);
         gbc.gridy = 4;
         gbc.gridx = 0;
         JButton createButton = new JButton("Create Concert");
+        createButton.setName("addConcertButton");
         addConcertPanel.add(createButton, gbc);
         gbc.gridx = 1;
         JButton backButton = new JButton("Back to Main Menu");

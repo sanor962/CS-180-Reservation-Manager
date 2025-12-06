@@ -13,3 +13,5 @@ DreamPulseTour,01/02/2026,20:00,12
 ElectricSkyTour,02/02/2026,22:00,13
 MoonlitPathsTour,14/02/2026,19:30,14
 TwilightVibesTour,15/02/2026,21:00,15
+Sigma,05/12/2005,15:22,16
+Hello,15/12/2005,15:23,17
