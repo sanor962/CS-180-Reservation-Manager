@@ -110,7 +110,9 @@ public class Client implements ClientInterface {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
             if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(loginPanel, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(loginPanel,
+                        "Please enter both username and password.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             try {
@@ -131,10 +133,12 @@ public class Client implements ClientInterface {
                     //showPanel("Menu");
                     showPanel("Menu");
                 } else {
-                    JOptionPane.showMessageDialog(loginPanel, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Invalid username or password.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(loginPanel, "Error communicating with server.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(loginPanel, "Error communicating with server.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -192,51 +196,62 @@ public class Client implements ClientInterface {
                 //Checks all variables
                 if (firstName == null || lastName == null || age == null || email == null
                         || phone == null || username == null || password == null || confirmPassword == null) {
-                    JOptionPane.showMessageDialog(loginPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "All fields are required.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
 
                 if (firstName.isEmpty() || lastName.isEmpty() || age.isEmpty() || email.isEmpty()
                         || phone.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    JOptionPane.showMessageDialog(loginPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "All fields are required.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (!email.contains("@") || !email.contains(".com")) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid email.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid email.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (username.length() <= 5) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid username.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid username.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 } else if (username.contains(",")) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid username.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid username.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (password.length() <= 8) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid password.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 } else if (password.contains(",")) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid password.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (phone.length() != 10) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 try {
                     Long p = Long.parseLong(phone);
                 } catch (NumberFormatException f) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 try {
                     int a = Integer.parseInt(age);
                 } catch (NumberFormatException f) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid age.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid age.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (!password.equals(confirmPassword)) {
-                    JOptionPane.showMessageDialog(loginPanel, "Passwords do not match.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel, "Passwords do not match.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
 
@@ -261,7 +276,9 @@ public class Client implements ClientInterface {
                     }
 
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(loginPanel, "Error communicating with server.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(loginPanel,
+                            "Error communicating with server.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -280,19 +297,23 @@ public class Client implements ClientInterface {
         }
 
         if (selectedSeats.isEmpty()) {
-            JOptionPane.showMessageDialog(reservationPanel, "Please select at least one seat.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(reservationPanel,
+                    "Please select at least one seat.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         JPasswordField passwordField = new JPasswordField();
-        int result = JOptionPane.showConfirmDialog(reservationPanel, passwordField, "Enter your password to confirm booking:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(reservationPanel, passwordField,
+                "Enter your password to confirm booking:", JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
         if (result != JOptionPane.OK_OPTION) {
             return;
         }
 
         String password = new String(passwordField.getPassword());
         if (password.isEmpty()) {
-            JOptionPane.showMessageDialog(reservationPanel, "Password is required.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(reservationPanel, "Password is required.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -303,7 +324,8 @@ public class Client implements ClientInterface {
             writer.flush();
             String passwordCheck = reader.readLine();
             if (passwordCheck.equals("invalid")) {
-                JOptionPane.showMessageDialog(reservationPanel, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(reservationPanel,
+                        "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             writer.write(selectedShowID + "\n");
@@ -321,7 +343,8 @@ public class Client implements ClientInterface {
             }
             double totalPrice = Double.parseDouble(response);
             int confirm = JOptionPane.showConfirmDialog(reservationPanel,
-                    "Total Price: $" + totalPrice + "\n\nSeats: " + String.join(", ", selectedSeats) + "\n\nProceed with payment?",
+                    "Total Price: $" + totalPrice + "\n\nSeats: " +
+                            String.join(", ", selectedSeats) + "\n\nProceed with payment?",
                     "Confirm Booking",
                     JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
@@ -331,22 +354,29 @@ public class Client implements ClientInterface {
                 if ("success".equals(bookingResult)) {
                     String reservationID = reader.readLine();
                     JOptionPane.showMessageDialog(reservationPanel,
-                            "Reservation successful!\n\nReservation ID: " + reservationID + "\nTotal: $" + totalPrice + "\nSeats: " + String.join(", ", selectedSeats),
+                            "Reservation successful!\n\nReservation ID: " + reservationID +
+                                    "\nTotal: $" + totalPrice + "\nSeats: " +
+                                    String.join(", ", selectedSeats),
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                     showPanel("Menu");
                 } else {
-                    JOptionPane.showMessageDialog(reservationPanel, "Reservation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(reservationPanel,
+                            "Reservation failed. Please try again.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 writer.write("cancel\n");
                 writer.flush();
                 String cancelResponse = reader.readLine();
-                JOptionPane.showMessageDialog(reservationPanel, "Booking cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(reservationPanel, "Booking cancelled.",
+                        "Cancelled", JOptionPane.INFORMATION_MESSAGE);
                 //showPanel("Menu");
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(reservationPanel, "Error booking reservation: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(reservationPanel,
+                    "Error booking reservation: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -388,7 +418,9 @@ public class Client implements ClientInterface {
             seatGridPanel.revalidate();
             seatGridPanel.repaint();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(reservationPanel, "Error loading seats: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(reservationPanel,
+                    "Error loading seats: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -425,13 +457,19 @@ public class Client implements ClientInterface {
                         String response = reader.readLine();
 
                         if ("success".equals(response)) {
-                            JOptionPane.showMessageDialog(reservationListPanel, "Your reservation has been cancelled.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(reservationListPanel,
+                                    "Your reservation has been cancelled.", "Success",
+                                    JOptionPane.INFORMATION_MESSAGE);
                             //refreshReservationListPanel();
                         } else {
-                            JOptionPane.showMessageDialog(reservationListPanel, "Cancellation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(reservationListPanel,
+                                    "Cancellation failed. Please try again.", "Error",
+                                    JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(reservationListPanel, "Error cancelling reservation: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(reservationListPanel,
+                                "Error cancelling reservation: " + ex.getMessage(),
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -445,7 +483,8 @@ public class Client implements ClientInterface {
 
         if (reservationArea == null) {
             //System.out.println("null");
-            JOptionPane.showMessageDialog(reservationListPanel, "Error: Reservation area not initialized.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(reservationListPanel,
+            "Error: Reservation area not initialized.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -525,7 +564,9 @@ public class Client implements ClientInterface {
         JTextArea reservationArea = (JTextArea)reservationListPanel.getClientProperty("reservationArea");
 
         if (reservationArea == null) {
-            JOptionPane.showMessageDialog(reservationListPanel, "Error: Reservation area not initialized.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(reservationListPanel,
+                    "Error: Reservation area not initialized.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -559,7 +600,7 @@ public class Client implements ClientInterface {
                     String reservationDetails = reader.readLine();
 
                     if (reservationDetails == null) {
-                        sb.append("Error reading reservation ").append(i+1).append("\n\n");
+                        sb.append("Error reading reservation ").append(i + 1).append("\n\n");
                         continue;
                     }
 
@@ -581,7 +622,7 @@ public class Client implements ClientInterface {
                         sb.append("Total Price: $").append(totalPrice).append("\n");
                         sb.append("+++++++++++++++++++++++++++++++++++++++++\n\n");
                     } else {
-                        sb.append("Reservation ").append(i+1).append(":\n");
+                        sb.append("Reservation ").append(i + 1).append(":\n");
                         sb.append(reservationDetails).append("\n\n");
                     }
                 }
@@ -667,12 +708,18 @@ public class Client implements ClientInterface {
                         String response = reader.readLine();
 
                         if ("success".equals(response)) {
-                            JOptionPane.showMessageDialog(menuPanel, "Your reservation has been cancelled.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(menuPanel,
+                                    "Your reservation has been cancelled.", "Success",
+                                    JOptionPane.INFORMATION_MESSAGE);
                         } else {
-                            JOptionPane.showMessageDialog(menuPanel, "Cancellation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(menuPanel,
+                                    "Cancellation failed. Please try again.", "Error",
+                                    JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(menuPanel, "Error cancelling reservation: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(menuPanel,
+                                "Error cancelling reservation: " + ex.getMessage(), "Error",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -700,12 +747,15 @@ public class Client implements ClientInterface {
             delPanel.add(usernameField);
             delPanel.add(new JLabel("Password:"));
             delPanel.add(passwordField);
-            int result = JOptionPane.showConfirmDialog(menuPanel, delPanel, "Delete Account - WARNING: This cannot be undone!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            int result = JOptionPane.showConfirmDialog(menuPanel, delPanel,
+                    "Delete Account - WARNING: This cannot be undone!", JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
             if (result == JOptionPane.OK_OPTION) {
                 String username = usernameField.getText().trim();
                 String password = new String(passwordField.getPassword());
                 if (username.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(menuPanel, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(menuPanel, "Please enter both username and password.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -727,15 +777,20 @@ public class Client implements ClientInterface {
                     writer.flush();
                     String response = reader.readLine();
                     if (response != null && response.trim().equals("success")) {
-                        JOptionPane.showMessageDialog(menuPanel, "Account deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(menuPanel, "Account deleted successfully.",
+                                "Success", JOptionPane.INFORMATION_MESSAGE);
                         account = null;
                         accountID = null;
                         showPanel("Login");
                     } else {
-                        JOptionPane.showMessageDialog(menuPanel, "Account deletion failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(menuPanel,
+                                "Account deletion failed. Please check your credentials.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(menuPanel, "Error communicating with server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(menuPanel,
+                            "Error communicating with server: " + ex.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -749,7 +804,9 @@ public class Client implements ClientInterface {
             if (confirm == JOptionPane.YES_OPTION) {
                 account = null;
                 accountID = null;
-                JOptionPane.showMessageDialog(menuPanel, "Logged out successfully.", "Logout", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(menuPanel,
+                        "Logged out successfully.", "Logout",
+                        JOptionPane.INFORMATION_MESSAGE);
                 showPanel("Login");
             }
         });
@@ -897,7 +954,9 @@ public class Client implements ClientInterface {
                 String time = timeFieldLocal.getText().trim();
 
                 if (name.isEmpty() || date.isEmpty() || time.isEmpty()) {
-                    JOptionPane.showMessageDialog(addConcertPanel, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(addConcertPanel,
+                            "All fields are required.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (name.contains(" ")) {
@@ -905,16 +964,22 @@ public class Client implements ClientInterface {
                     continue;
                 }
                 if (!confirmDate(date)) {
-                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid date format. Use DD/MM/YYYY.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(addConcertPanel,
+                            "Invalid date format. Use DD/MM/YYYY.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (!time.contains(":")) {
-                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid time format. Use HH:MM.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(addConcertPanel,
+                            "Invalid time format. Use HH:MM.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 String[] parts = time.split(":");
                 if (parts.length != 2) {
-                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid time format. Use HH:MM.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(addConcertPanel,
+                            "Invalid time format. Use HH:MM.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 int h = 0;
@@ -923,11 +988,15 @@ public class Client implements ClientInterface {
                     h = Integer.parseInt(parts[0]);
                     m = Integer.parseInt(parts[1]);
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid time format. Use numbers only.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(addConcertPanel,
+                            "Invalid time format. Use numbers only.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (h < 0 || h > 23 || m < 0 || m > 59) {
-                    JOptionPane.showMessageDialog(addConcertPanel, "Invalid time. Hours 0-23, minutes 0-59.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(addConcertPanel,
+                            "Invalid time. Hours 0-23, minutes 0-59.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
 
@@ -940,7 +1009,9 @@ public class Client implements ClientInterface {
 
                     String r = reader.readLine();
                     if (r.equals("success")) {
-                        JOptionPane.showMessageDialog(addConcertPanel, "Concert Created Successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(addConcertPanel,
+                                "Concert Created Successfully!", "Success",
+                                JOptionPane.INFORMATION_MESSAGE);
                         nameFieldLocal.setText("");
                         dateFieldLocal.setText("");
                         timeFieldLocal.setText("");
@@ -948,11 +1019,15 @@ public class Client implements ClientInterface {
                         done = true;
 
                     } else {
-                        JOptionPane.showMessageDialog(addConcertPanel, "Concert creation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(addConcertPanel,
+                                "Concert creation failed. Please try again.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     }
 
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(addConcertPanel, "Error communicating with server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(addConcertPanel,
+                            "Error communicating with server: " + ex.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
             }
@@ -1009,7 +1084,9 @@ public class Client implements ClientInterface {
                 }
             }
             if (selectedSections.isEmpty()) {
-                JOptionPane.showMessageDialog(reservationPanel, "Please select at least one section.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(reservationPanel,
+                        "Please select at least one section.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -1133,7 +1210,8 @@ public class Client implements ClientInterface {
             if (confirm == JOptionPane.YES_OPTION) {
                 account = null;
                 accountID = null;
-                JOptionPane.showMessageDialog(dashboardPanel, "Logged out successfully.", "Logout", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(dashboardPanel,
+                "Logged out successfully.", "Logout", JOptionPane.INFORMATION_MESSAGE);
                 showPanel("Login");
             }
         });
@@ -1147,12 +1225,15 @@ public class Client implements ClientInterface {
             delPanel.add(usernameField);
             delPanel.add(new JLabel("Password:"));
             delPanel.add(passwordField);
-            int result = JOptionPane.showConfirmDialog(dashboardPanel, delPanel, "Delete Account - WARNING: This cannot be undone!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            int result = JOptionPane.showConfirmDialog(dashboardPanel, delPanel,
+            "Delete Account - WARNING: This cannot be undone!", JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.WARNING_MESSAGE);
             if (result == JOptionPane.OK_OPTION) {
                 String username = usernameField.getText().trim();
                 String password = new String(passwordField.getPassword());
                 if (username.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(dashboardPanel, "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dashboardPanel,
+                    "Please enter both username and password.", "Error", JOptionPane.ERROR_MESSAGE)
                     return;
                 }
 
@@ -1174,14 +1255,18 @@ public class Client implements ClientInterface {
                     writer.flush();
                     String response = reader.readLine();
                     if (response != null && response.trim().equals("success")) {
-                        JOptionPane.showMessageDialog(dashboardPanel, "Account deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(dashboardPanel,
+                        "Account deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                         account = null;
                         showPanel("Login");
                     } else {
-                        JOptionPane.showMessageDialog(dashboardPanel, "Account deletion failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(dashboardPanel,
+                        "Account deletion failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(dashboardPanel, "Error communicating with server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dashboardPanel,
+                    "Error communicating with server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
                 }
             }
         });*/
@@ -1218,7 +1303,8 @@ public class Client implements ClientInterface {
             String selectedTime = (String)timeBox.getSelectedItem();
             String selectedConcert = (String)concertBox.getSelectedItem();
 
-            java.util.List<String[]> concerts = (java.util.List<String[]>) makeReservationPanel.getClientProperty("concerts");
+            java.util.List<String[]> concerts = (java.util.List<String[]>)
+            makeReservationPanel.getClientProperty("concerts");
             String showID = null;
             for (String[] c : concerts) {
                 if (c[0].equals(selectedConcert) && c[1].equals(selectedDate) && c[2].equals(selectedTime)) {
@@ -1227,7 +1313,8 @@ public class Client implements ClientInterface {
                 }
             }
             if (showID == null) {
-                JOptionPane.showMessageDialog(makeReservationPanel, "Could not find concert information.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(makeReservationPanel,
+                "Could not find concert information.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             this.selectedDate = selectedDate;
@@ -1262,7 +1349,8 @@ public class Client implements ClientInterface {
                 }
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(makeReservationPanel, "Error loading concerts from server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(makeReservationPanel,
+                    "Error loading concerts from server.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1419,11 +1507,7 @@ public class Client implements ClientInterface {
             int day = Integer.parseInt(d);
             int month = Integer.parseInt(m);
 
-            if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && y.length() == 4) {
-                return true;
-            } else {
-                return false;
-            }
+            return (day >= 1 && day <= 31 && month >= 1 && month <= 12 && y.length() == 4);
         } catch (Exception e) {
             return false;
         }
