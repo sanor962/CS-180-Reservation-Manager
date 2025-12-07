@@ -170,7 +170,7 @@ public class ReservationsTest {
     public void testPersistentDataStringMatch() {
         Account acc = createTestAccount("John", "Doe", "1234567890");
         //First create a reservation object
-        Reservations original = new Reservations(1, acc, "S006", 
+        Reservations original = new Reservations(1, acc, "S006",
                 Arrays.asList("D1", "D2"), "2025-12-20", "19:30", 30.0);
 
         //Second convert reservation to string (simulates saving to a file)
