@@ -79,6 +79,8 @@ java ConcertTest
 
 ## GTA and Submission Information
 - When trying to submit on Vocareum, cloning the Github was not working as I was not able to sign in properly so I (Saanvi Verma) uploaded the files instead. One of the TA's told me to add our GTA to our Github repository to ensure that they could see our files.
+- Saanvi Verma will submit the video presentation on Brightspace.
+- Shalini Murthula will submit the report on Brightspace.
 
 ## Testing Information
 - Different test cases have their own imports however they all have been written using JUnit 5.
@@ -92,7 +94,7 @@ java ConcertTest
 - Arav Nair worked on ClientTest and the Report.
 - Kunj Arora worked on Client and the Report.
 - Shalini Murthula worked on the Report, made the script, and the presentation.
-- 
+
 ## Submission Information (Phase 2)
 - Saanvi Verma submitted Phase 2 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, worked on Concert, ConcertInterface, Database, DatabaseInterface, DatabaseTest, Client, ClientInterface, seats.txt, Reservations, Seat, Account, Server, ServerTest, and ServerInterface.
 - Arav Nair worked on Payment, PaymentManager, PaymentManagerInterface, PaymentInterface, PaymentTest, PaymentManagerTest, Database, and Reservations.
