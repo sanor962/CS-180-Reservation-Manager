@@ -184,7 +184,7 @@ public class Database implements DatabaseInterface {
                 if (!(passWord.equals(password)) || !(userName1.equals(userName)) || !(id.equals(accountID))) {
                     newLines.add(lines.get(i));
                 } else {
-                    boolean isAccountToDelete = userName1.equals(userName) && 
+                    boolean isAccountToDelete = userName1.equals(userName) &&
                             passWord.equals(password) && id.equals(accountID);
 
                     if (isAccountToDelete) {
