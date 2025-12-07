@@ -16,3 +16,4 @@ public interface SeatInterface {
     String toString();
     String writingInFile();
 }
+
