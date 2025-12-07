@@ -12,7 +12,7 @@ import java.util.List;
  * @version November 21, 2025
  */
 public class Server implements ServerInterface, Runnable {
-    private static final Database database = new Database();
+    private static final Database DATABASE = new Database();
     private Socket socket;
     private PaymentManager paymentManager = new PaymentManager();
 
@@ -28,13 +28,13 @@ public class Server implements ServerInterface, Runnable {
     }
 
 
-    private void handleClient(Socket socket) {
+    private void handleClient(Socket socket1) {
         BufferedReader reader = null;
         PrintWriter writer = null;
 
         try {
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            writer = new PrintWriter(socket.getOutputStream(), true);
+            reader = new BufferedReader(new InputStreamReader(socket1.getInputStream()));
+            writer = new PrintWriter(socket1.getOutputStream(), true);
 
             boolean run = true;
             String accountID = null;
@@ -49,7 +49,7 @@ public class Server implements ServerInterface, Runnable {
                     //Logs the user in
                     String username = reader.readLine();
                     String password = reader.readLine();
-                    Account account = database.getAccountByUsername(username, password);
+                    Account account = DATABASE.getAccountByUsername(username, password);
                     if (login(username, password)) {
                         //accountID = username;
                         writer.println("success");
@@ -86,7 +86,7 @@ public class Server implements ServerInterface, Runnable {
                     //Make reservation
                     String username = reader.readLine();
                     String password = reader.readLine();
-                    Account currentUser = database.getAccountByUsername(username, password);
+                    Account currentUser = DATABASE.getAccountByUsername(username, password);
                     if (currentUser == null || !currentUser.getPassword().equals(password)) {
                         writer.println("invalid");
                         writer.flush();
@@ -106,7 +106,7 @@ public class Server implements ServerInterface, Runnable {
                     String date = reader.readLine();
                     double totalPrice = 0;
                     for (int i = 0; i < seatIDs.size(); i++) {
-                        Seat s = database.getSeat(showID, seatIDs.get(i));
+                        Seat s = DATABASE.getSeat(showID, seatIDs.get(i));
                         if (s == null || !s.isAvailable()) {
                             writer.println("Seat " + seatIDs.get(i) + " is unavailable.");
                             continue;
@@ -139,7 +139,7 @@ public class Server implements ServerInterface, Runnable {
                     }
 
                     for (String seatID : seatIDs) {
-                        database.updateSeatAvailability(showID, seatID, false);
+                        DATABASE.updateSeatAvailability(showID, seatID, false);
                     }
                 } else if (command.equals("cancelReservation")) {
                     //Canceling reservation
@@ -155,7 +155,7 @@ public class Server implements ServerInterface, Runnable {
                     ArrayList<Reservations> reservations = getReservationsByAccount(user);
                     writer.println(reservations.size());
 
-                    for (int i =0; i < reservations.size(); i++) {
+                    for (int i = 0; i < reservations.size(); i++) {
                         writer.println(reservations.get(i).toString());
                     }
                 } else if (command.equals("deleteAccount")) {
@@ -173,12 +173,12 @@ public class Server implements ServerInterface, Runnable {
                     String username = reader.readLine();
                     String password = reader.readLine();
                     // First, fetch the account using getAccountByUsername
-                    Account account = database.getAccountByUsername(username, password);
+                    Account account = DATABASE.getAccountByUsername(username, password);
                     if (account != null) {
                         // Get the userID from the account
                         String userID = account.getID();
                         // Now delete the account using the userID
-                        boolean deleted = database.deleteAccount(userID, username, password);
+                        boolean deleted = DATABASE.deleteAccount(userID, username, password);
                         if (deleted) {
                             writer.println("success");
                             writer.flush();
@@ -226,7 +226,7 @@ public class Server implements ServerInterface, Runnable {
                     writer.close();
                 }
 
-                socket.close();
+                socket1.close();
                 System.out.println("Client disconnected");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -237,96 +237,96 @@ public class Server implements ServerInterface, Runnable {
     //Calls the database
     @Override
     public boolean login(String username, String password) {
-        return database.loginIntoAccount(username, password);
+        return DATABASE.loginIntoAccount(username, password);
     }
 
     //Calls the database
     @Override
     public String getTime(String concertID) {
-        return database.getTime(concertID);
+        return DATABASE.getTime(concertID);
     }
 
     //Calls the database
     @Override
     public ArrayList<String> getAllConcerts() {
-        return database.getAllConcerts();
+        return DATABASE.getAllConcerts();
     }
 
     //Calls the database
     @Override
     public boolean createConcert(String name, String date, String time) {
-        return database.createConcert(name, date, time);
+        return DATABASE.createConcert(name, date, time);
     }
 
     //Calls the database
     @Override
     public boolean createAccount(String firstName, String lastName, int age, String username,
                                  String password, String email, String phoneNumber) {
-        return database.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
+        return DATABASE.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
     }
 
     //Calls the database
     @Override
     public boolean deleteAccount(String accountID, String username, String password) {
-        return database.deleteAccount(accountID, username, password);
+        return DATABASE.deleteAccount(accountID, username, password);
     }
 
     //Calls the database
     @Override
     public Account getAccount(String accountID, String password) {
-        return database.getAccount(accountID, password);
+        return DATABASE.getAccount(accountID, password);
     }
 
     //Calls the database
     @Override
     public int createReservation(String username, String password, String showID, List<String> seatIDs,
                                  String date, String time, double totalPrice) {
-        Account account = database.getAccountByUsername(username, password);
+        Account account = DATABASE.getAccountByUsername(username, password);
 
         if (account == null) {
             return -1;
         }
 
-        return database.createReservation(account, showID, seatIDs, date, time, totalPrice);
+        return DATABASE.createReservation(account, showID, seatIDs, date, time, totalPrice);
     }
 
     //Calls the database
     @Override
     public Account getAccountByUsername(String username, String password) {
-        return database.getAccountByUsername(username, password);
+        return DATABASE.getAccountByUsername(username, password);
     }
 
     //Calls the database
     @Override
     public boolean cancelReservation(int reservationID) {
-        return database.cancelReservation(reservationID);
+        return DATABASE.cancelReservation(reservationID);
     }
 
     //Calls the database
     @Override
     public ArrayList<Reservations> getReservationsByAccount(String accountID) {
-        return database.getReservationsByAccount(accountID);
+        return DATABASE.getReservationsByAccount(accountID);
     }
 
     //Calls the database
     @Override
     public Reservations getReservationByID(int reservationID) {
-        return database.getReservationByID(reservationID);
+        return DATABASE.getReservationByID(reservationID);
     }
 
     //Calls the database
     @Override
     public Seat getSeat(String show, String seatID) {
-        return database.getSeat(show, seatID);
+        return DATABASE.getSeat(show, seatID);
     }
 
     //Calls the database
     @Override
     public boolean reserveSeat(String show, String seatID) {
-        Seat seat = database.getSeat(show, seatID);
+        Seat seat = DATABASE.getSeat(show, seatID);
 
         if (seat != null && seat.isAvailable()) {
-            database.updateSeatAvailability(show, seatID, false);
+            DATABASE.updateSeatAvailability(show, seatID, false);
             return true;
         }
 
@@ -336,10 +336,10 @@ public class Server implements ServerInterface, Runnable {
     //Calls the database
     @Override
     public boolean cancelSeat(String show, String seatID) {
-        Seat seat = database.getSeat(show, seatID);
+        Seat seat = DATABASE.getSeat(show, seatID);
 
         if (seat != null && !seat.isAvailable()) {
-            database.updateSeatAvailability(show, seatID, true);
+            DATABASE.updateSeatAvailability(show, seatID, true);
             return true;
         }
 
