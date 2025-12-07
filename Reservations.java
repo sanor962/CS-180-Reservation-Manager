@@ -24,7 +24,8 @@ public class Reservations implements ReservationsInterface, Serializable {
 
 
     // Main Constructor using Account object to sync userID
-    public Reservations(int num, Account account, String showID, List<String> seatIDs, String date, String time, double totalPrice) {
+    public Reservations(int num, Account account, String showID, List<String> seatIDs,
+                        String date, String time, double totalPrice) {
         this.reservationID = num; //Auto generate unique ID
         //Assigns fields with null-checking
         this.userID = account != null ? account.getID() : "";
@@ -52,7 +53,7 @@ public class Reservations implements ReservationsInterface, Serializable {
             return;
         }
 
-        String[] parts= line.split(",", -1); // -1 keeps empty trailing fields
+        String[] parts = line.split(",", -1); // -1 keeps empty trailing fields
 
         //Assign fields if parts exist
 
