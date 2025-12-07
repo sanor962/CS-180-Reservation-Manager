@@ -234,7 +234,7 @@ public class Database implements DatabaseInterface {
                         return account;
                     }
                 } catch (IllegalArgumentException e) {
-
+                    //Skip bad entries
                 }
 
             }
@@ -552,7 +552,7 @@ public class Database implements DatabaseInterface {
                         return seat;
                     }
                 } catch (IllegalArgumentException e) {
-
+                    //Skip bad entries
                 }
             }
             return null;
@@ -659,12 +659,12 @@ public class Database implements DatabaseInterface {
                 e.printStackTrace();
             }
 
-            String ID = "";
+            String iD = "";
             String time = "";
             for (int i = 0 ; i < concerts.size(); i++) {
                 String[] partsOfConcert = concerts.get(i).split(",");
-                ID = (partsOfConcert[3]);
-                if (concertID.equals(ID)) {
+                iD = (partsOfConcert[3]);
+                if (concertID.equals(iD)) {
                     time = partsOfConcert[2];
                 }
             }
