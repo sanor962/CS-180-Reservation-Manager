@@ -90,7 +90,7 @@ java ConcertTest
 - To run the program, you must first run the Server and then the Client.
 
 ## Submission Information (Phase 3)
-- Saanvi Verma submitted Phase 3 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, fixed Phase 2 errors, worked on Client, Account, Concert, Server, the presentation, and the Report.
+- Saanvi Verma submitted Phase 3 on Vocareum by uploading the files, worked on solving checkstyle errors for every class, fixed Phase 2 errors, worked on Client, Account, Concert, Server, ServerTest, DatabaseTest, the presentation, and the Report.
 - Arav Nair worked on ClientTest and the Report.
 - Kunj Arora worked on Client and the Report.
 - Shalini Murthula worked on the Report, made the script, and the presentation.
