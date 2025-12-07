@@ -71,3 +71,4 @@ public class SeatingChart implements SeatingChartInterface {
         return availableSeats;
     }
 }
+
