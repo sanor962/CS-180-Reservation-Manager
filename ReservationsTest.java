@@ -184,3 +184,4 @@ public class ReservationsTest {
         assertEquals(original.getTotalPrice(), loaded.getTotalPrice(), 0.001);
     }
 }
+
