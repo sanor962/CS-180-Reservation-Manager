@@ -60,8 +60,8 @@ public class Concert implements ConcertInterface {
         this.time = time;
     }
 
-    public void setID(int iD) {
-        this.iD = iD;
+    public void setID(int id) {
+        this.iD = id;
     }
 
     //To String
