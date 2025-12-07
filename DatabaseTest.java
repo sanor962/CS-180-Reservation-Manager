@@ -1,8 +1,9 @@
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
@@ -47,6 +48,43 @@ public class DatabaseTest {
     private final String seatReserved = seatId1 + ",A,false,1,50.00";
 
     String showID = "BillieEilishConcert"; // dummy show ID
+
+    private static String bAccount;
+    private static String bSeats;
+    private static String bReservation;
+    private static String bConcerts;
+
+    @BeforeAll
+    public static void backupFiles() throws IOException {
+        bAccount = readFileIfExists(ACCOUNT_FILE);
+        bSeats = readFileIfExists(SEATS_FILE);
+        bReservation = readFileIfExists(RESERVATIONS_FILE);
+        bConcerts = readFileIfExists(CONCERT_FILE);
+    }
+
+    @AfterAll
+    public static void restoreFiles() throws IOException {
+        writeFileIfBackedUp(ACCOUNT_FILE, bAccount);
+        writeFileIfBackedUp(SEATS_FILE, bSeats);
+        writeFileIfBackedUp(RESERVATIONS_FILE, bReservation);
+        writeFileIfBackedUp(CONCERT_FILE, bConcerts);
+    }
+
+    private static String readFileIfExists(String filename) throws IOException {
+        Path path = Path.of(filename);
+        if (Files.exists(path)) {
+            return Files.readString(path);
+        }
+        return null;
+    }
+
+    private static void writeFileIfBackedUp(String filename, String content) throws IOException {
+        if (content != null) {
+            Files.writeString(Path.of(filename), content);
+        } else {
+            Files.deleteIfExists(Path.of(filename));
+        }
+    }
 
     // setup method to initialize the Database and ensure files are clean before each test
     @BeforeEach
