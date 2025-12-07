@@ -12,3 +12,4 @@ public interface PaymentManagerInterface {
     boolean refundPayment(int reservationID);
     double getPaymentAmount(int reservationID);
 }
+
