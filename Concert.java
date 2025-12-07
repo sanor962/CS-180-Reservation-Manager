@@ -8,14 +8,14 @@ public class Concert implements ConcertInterface {
     private String name;
     private String date;
     private String time;
-    private int ID;
+    private int iD;
 
     //Constructor
     public Concert(String name, String date, String time, int num) {
         this.name = name;
         this.date = date;
         this.time = time;
-        this.ID = num;
+        this.iD = num;
     }
 
     //Constructor with line
@@ -27,7 +27,7 @@ public class Concert implements ConcertInterface {
         this.name = partOfConcert[1];
         this.date = partOfConcert[2];
         this.time = partOfConcert[3];
-        this.ID = Integer.parseInt(partOfConcert[4]);
+        this.iD = Integer.parseInt(partOfConcert[4]);
     }
 
     //Getter methods
@@ -44,7 +44,7 @@ public class Concert implements ConcertInterface {
     }
 
     public int getID() {
-        return ID;
+        return iD;
     }
 
     //Setter methods
@@ -60,8 +60,8 @@ public class Concert implements ConcertInterface {
         this.time = time;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setID(int iD) {
+        this.iD = iD;
     }
 
     //To String
