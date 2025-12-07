@@ -220,8 +220,12 @@ public class Client implements ClientInterface {
                     JOptionPane.showMessageDialog(loginPanel, "Please enter a valid password.", "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
+                if (phone.length() != 10) {
+                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
                 try {
-                    int p = Integer.parseInt(phone);
+                    Long p = Long.parseLong(phone);
                 } catch (NumberFormatException f) {
                     JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.", "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
@@ -230,10 +234,6 @@ public class Client implements ClientInterface {
                     int a = Integer.parseInt(age);
                 } catch (NumberFormatException f) {
                     JOptionPane.showMessageDialog(loginPanel, "Please enter a valid age.", "Error", JOptionPane.ERROR_MESSAGE);
-                    continue;
-                }
-                if (phone.length() != 10) {
-                    JOptionPane.showMessageDialog(loginPanel, "Please enter a valid phone number.", "Error", JOptionPane.ERROR_MESSAGE);
                     continue;
                 }
                 if (!password.equals(confirmPassword)) {
