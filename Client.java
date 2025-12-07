@@ -149,7 +149,6 @@ public class Client implements ClientInterface {
             JPasswordField confirmPasswordField = new JPasswordField();
 
             boolean done = false;
-
             while (!done) {
                 JPanel regPanel = new JPanel(new GridLayout(0, 2, 5, 5));
                 regPanel.add(new JLabel("First Name:"));
@@ -271,7 +270,7 @@ public class Client implements ClientInterface {
 
     //Books the seats that the user picked
     private void bookSeats() {
-        java.util.List<String> selectedSeats = new java.util.ArrayList<>();
+        ArrayList<String> selectedSeats = new ArrayList<>();
         for (JToggleButton btn : seatButtons) {
             if (btn.isSelected()) {
                 String btnText = btn.getText();
@@ -904,7 +903,7 @@ public class Client implements ClientInterface {
         }
 
         JPanel sectionPanel = new JPanel(new GridLayout(0, 1));
-        java.util.ArrayList<JCheckBox> checkBoxes = new java.util.ArrayList<>();
+        ArrayList<JCheckBox> checkBoxes = new ArrayList<>();
         for (int i = 0; i < availableSections.size(); i++) {
             JCheckBox cb = new JCheckBox("Section " + availableSections.get(i));
             checkBoxes.add(cb);
@@ -976,6 +975,29 @@ public class Client implements ClientInterface {
     //Creates the Make reservation panel
     private void createMakeReservationPanel() {
         makeReservationPanel = new JPanel(new BorderLayout());
+
+        JLabel titleLabel = new JLabel("Available Concerts - Select One to Book");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 18f));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        makeReservationPanel.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel concertListPanel = new JPanel();
+        concertListPanel.setLayout(new BoxLayout(concertListPanel, BoxLayout.Y_AXIS));
+
+        JScrollPane scrollPane = new JScrollPane(concertListPanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        makeReservationPanel.add(scrollPane, BorderLayout.CENTER);
+
+        makeReservationPanel.putClientProperty("concertListPanel", concertListPanel);
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton backButton = new JButton("Back to Main Menu");
+        backButton.addActionListener(e -> showPanel("Menu"));
+        bottomPanel.add(backButton);
+        makeReservationPanel.add(bottomPanel, BorderLayout.SOUTH);
+        
+        /*makeReservationPanel = new JPanel(new BorderLayout());
         JPanel mainVBox = new JPanel();
         mainVBox.setLayout(new BoxLayout(mainVBox, BoxLayout.Y_AXIS));
         mainVBox.add(Box.createVerticalStrut(100));
@@ -1081,7 +1103,7 @@ public class Client implements ClientInterface {
             }
         });*/
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        /*JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         //JButton viewReservationsButton = new JButton("My Reservations");
         JButton viewMenuButton = new JButton("Back to Main Menu");
@@ -1099,7 +1121,7 @@ public class Client implements ClientInterface {
             showPanel("ReservationList");
         });*/
 
-        viewMenuButton.addActionListener(e -> {
+        /*viewMenuButton.addActionListener(e -> {
             //refreshMenuPanel();
             showPanel("Menu");
         });
@@ -1108,7 +1130,7 @@ public class Client implements ClientInterface {
             showPanel("AddConcert");
         });*/
 
-        nextButton.addActionListener(e -> {
+        /*nextButton.addActionListener(e -> {
             String selectedDate = (String)dateBox.getSelectedItem();
             String selectedTime = (String)timeBox.getSelectedItem();
             String selectedConcert = (String)concertBox.getSelectedItem();
@@ -1131,93 +1153,92 @@ public class Client implements ClientInterface {
             this.selectedShowID = showID;
             loadSeats();
             showPanel("Reservation");
-        });
+        });*/
     }
 
     //Gets latest data for make reservation panel
     private void refreshMakeReservationPanel() {
-        JComboBox<String> dateBox = (JComboBox<String>) makeReservationPanel.getClientProperty("dateBox");
-        JComboBox<String> timeBox = (JComboBox<String>) makeReservationPanel.getClientProperty("timeBox");
-        JComboBox<String> concertBox = (JComboBox<String>) makeReservationPanel.getClientProperty("concertBox");
-        java.util.List<String[]> concerts = new java.util.ArrayList<>();
-        java.util.Set<String> dates = new java.util.LinkedHashSet<>();
+        JPanel concertListPanel = (JPanel) makeReservationPanel.getClientProperty("concertListPanel");
+
+        if (concertListPanel == null) {
+            return;
+        }
+        concertListPanel.removeAll();
+        ArrayList<String[]> concerts = new ArrayList<>();
+
         try {
             writer.write("getALlConcerts\n");
             writer.flush();
             int count = Integer.parseInt(reader.readLine());
+
             for (int i = 0; i < count; i++) {
                 String line = reader.readLine();
                 String[] parts = line.split(",");
                 if (parts.length >= 4) {
                     concerts.add(parts);
-                    dates.add(parts[1]);
                 }
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(makeReservationPanel, "Error loading concerts from server.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-        makeReservationPanel.putClientProperty("concerts", concerts);
-        dateBox.setModel(new DefaultComboBoxModel<>(dates.toArray(new String[0])));
-        dateBox.addActionListener(e -> {
-            String selectedDate = (String)dateBox.getSelectedItem();
-            java.util.Set<String> times = new java.util.LinkedHashSet<>();
-            for (String[] c : concerts) {
-                if (c[1].equals(selectedDate)) {
-                    times.add(c[2]);
-                }
-            }
-            timeBox.setModel(new DefaultComboBoxModel<>(times.toArray(new String[0])));
-            if (timeBox.getItemCount() > 0) {
-                timeBox.setSelectedIndex(0);
-            }
-            String selectedTime = (String)timeBox.getSelectedItem();
-            java.util.List<String> concertNames = new java.util.ArrayList<>();
-            for (String[] c : concerts) {
-                if (c[1].equals(selectedDate) && c[2].equals(selectedTime)) {
-                    concertNames.add(c[0]);
-                }
-            }
-            if (concertNames.isEmpty()) {
-                for (String[] c : concerts) {
-                    if (c[1].equals(selectedDate)) {
-                        concertNames.add(c[0]);
-                    }
-                }
-            }
-            concertBox.setModel(new DefaultComboBoxModel<>(concertNames.toArray(new String[0])));
-            if (concertBox.getItemCount() > 0) {
-                concertBox.setSelectedIndex(0);
-            }
-        });
 
-        timeBox.addActionListener(e -> {
-            String selectedDate = (String)dateBox.getSelectedItem();
-            String selectedTime = (String)timeBox.getSelectedItem();
-            java.util.List<String> concertNames = new java.util.ArrayList<>();
-            for (String[] c : concerts) {
-                if (c[1].equals(selectedDate) && c[2].equals(selectedTime)) {
-                    concertNames.add(c[0]);
-                }
-            }
-            if (concertNames.isEmpty()) {
-                for (String[] c : concerts) {
-                    if (c[1].equals(selectedDate)) {
-                        concertNames.add(c[0]);
-                    }
-                }
-            }
-            concertBox.setModel(new DefaultComboBoxModel<>(concertNames.toArray(new String[0])));
-            if (concertBox.getItemCount() > 0) {
-                concertBox.setSelectedIndex(0);
-            }
-        });
+        if (concerts.isEmpty()) {
+            JLabel noDataLabel = new JLabel("No concerts available at this time.");
+            noDataLabel.setFont(noDataLabel.getFont().deriveFont(Font.PLAIN, 16f));
+            noDataLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            concertListPanel.add(Box.createVerticalStrut(50));
+            concertListPanel.add(noDataLabel);
+        } else {
+            for (String[] concert : concerts) {
+                String name = concert[0];
+                String date = concert[1];
+                String time = concert[2];
+                String showID = concert[3];
 
-        if (dateBox.getItemCount() > 0) {
-            dateBox.setSelectedIndex(0);
-            for (ActionListener al : dateBox.getActionListeners()) {
-                al.actionPerformed(new ActionEvent(dateBox, ActionEvent.ACTION_PERFORMED, null));
+                JPanel concertPanel = new JPanel(new BorderLayout());
+                concertPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.GRAY, 1),
+                        BorderFactory.createEmptyBorder(15, 15, 15, 15)
+                ));
+                concertPanel.setMaximumSize(new Dimension(700, 80));
+
+                JPanel info = new JPanel();
+                info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+                JLabel nameL = new JLabel(name);
+                nameL.setFont(nameL.getFont().deriveFont(Font.BOLD, 17f));
+                JLabel dateTimeLabel = new JLabel("Date: " + date + "  |  Time: " + time);
+                dateTimeLabel.setFont(dateTimeLabel.getFont().deriveFont(Font.PLAIN, 14f));
+                JLabel idLabel = new JLabel("Concert ID: " + showID);
+                idLabel.setFont(idLabel.getFont().deriveFont(Font.PLAIN, 12f));
+                idLabel.setForeground(Color.GRAY);
+
+                info.add(nameL);
+                info.add(Box.createVerticalStrut(5));
+                info.add(dateTimeLabel);
+                info.add(Box.createVerticalStrut(3));
+                info.add(idLabel);
+                concertPanel.add(info, BorderLayout.CENTER);
+
+                JButton bookButton = new JButton("Book Seats");
+                bookButton.setPreferredSize(new Dimension(120, 40));
+                bookButton.setFont(bookButton.getFont().deriveFont(Font.BOLD, 14f));
+                bookButton.addActionListener(e -> {
+                    this.selectedDate = date;
+                    this.selectedTime = time;
+                    this.selectedConcert = name;
+                    this.selectedShowID = showID;
+                    loadSeats();
+                    showPanel("Reservation");
+                });
+                concertPanel.add(bookButton, BorderLayout.EAST);
+                concertListPanel.add(concertPanel);
+                concertListPanel.add(Box.createVerticalStrut(10));
             }
         }
+
+        concertListPanel.revalidate();
+        concertListPanel.repaint();
     }
 
     public static void main(String[] args) {
