@@ -13,7 +13,7 @@ public interface ConcertInterface {
     void setName(String name);
     void setDate(String date);
     void setTime(String time);
-    void setID(int ID);
+    void setID(int iD);
     String toString();
     String writingInFile();
 }
