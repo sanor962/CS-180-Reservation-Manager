@@ -85,3 +85,4 @@ public class SeatTest {
         assertEquals(expectedUnavailable, seat.toString(), "toString() must match specifcation for unavailable seat.");
     }
 }
+
