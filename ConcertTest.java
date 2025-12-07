@@ -54,7 +54,7 @@ public class ConcertTest {
     public void testToString() {
         Concert c = new Concert("Winter Concert", "2025-12-01", "17:00", 400);
 
-        String expected ="Name: Winter Concert\n" +
+        String expected = "Name: Winter Concert\n" +
                 "Date: 2025-12-01\n" + "Time: 17:00\n" + "ID: 400";
 
         assertEquals(expected, c.toString());
