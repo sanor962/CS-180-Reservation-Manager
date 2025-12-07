@@ -1,169 +1,406 @@
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import javax.swing.*;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 /**
- * JUnit test cases for the SeatingChart class
- * Tests verify the functionality of managing a collection of seats,
- * including adding, retrieving, reserving, and filtering available seats
- * NOTE: assumes the Seat class and its methods work correctly
+ * The Server class handles all client connections
+ * Port Number: 6767
  *
- * @author Shalini Murthula (smurthul)
- * @version November 8, 2025
+ * @author Kunj Arora (arora271), Saanvi Verma (verma279), Shalini Murthula (smurthul)
+ * @version November 21, 2025
  */
-class SeatingChartTest {
+public class Server implements ServerInterface, Runnable {
+    private static final Database database = new Database();
+    private Socket socket;
+    private PaymentManager paymentManager = new PaymentManager();
 
-    private SeatingChart chart;
-    private Seat seatA1;
-    private Seat seatB2;
-    private Seat seatC3;
-
-    // initialize three distinct seat objects
-    @BeforeEach
-    public void setUp() {
-        chart = new SeatingChart();
-        seatA1 = new Seat("A1", "A", 1, 50.00);
-        seatB2 = new Seat("B2", "B", 2, 75.00);
-        seatC3 = new Seat("C3", "C", 3, 100.00);
-
-        // add seats to the chart for tests
-        chart.addSeat(seatA1);
-        chart.addSeat(seatB2);
-        chart.addSeat(seatC3);
+    public Server() {
+        //database = new Database();
     }
 
-    // -- MANAGING SEATING --
-
-    @Test
-    public void testInitialStateAndAddSeat() {
-        // verify initial size of the chart
-        assertEquals(3, chart.getAllSeats().size(), "Chart should contain 3 seats after setup.");
-
-        // add a fourth seat and check size again
-        Seat seatD4 = new Seat("D4", "D", 4, 120.00);
-        chart.addSeat(seatD4);
-        assertEquals(4, chart.getAllSeats().size(), "Chart size should increment after adding a new seat.");
+    //Sets it to a given socket
+    public Server(Socket socket) {
+        this.socket = socket;
+        //this.database = new Database();
+        this.paymentManager = new PaymentManager();
     }
 
-    @Test
-    public void testGetSeatFound() {
-        // retrieve an existing seat
-        Seat retrievedSeat = chart.getSeat("B2");
-        assertNotNull(retrievedSeat, "getSeat should find an existing seat.");
-        assertEquals("B2", retrievedSeat.getSeatID(), "The retrieved seat must have the correct ID.");
-        assertEquals(seatB2, retrievedSeat, "The retrieved object should be the exact same instance.");
+
+    private void handleClient(Socket socket) {
+        BufferedReader reader = null;
+        PrintWriter writer = null;
+
+        try {
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new PrintWriter(socket.getOutputStream(), true);
+
+            boolean run = true;
+            String accountID = null;
+
+            while (run) {
+                String command = reader.readLine();
+                if (command == null) {
+                    break;
+                }
+
+                if (command.equals("login")) {
+                    //Logs the user in
+                    String username = reader.readLine();
+                    String password = reader.readLine();
+                    Account account = database.getAccountByUsername(username, password);
+                    if (login(username, password)) {
+                        //accountID = username;
+                        writer.println("success");
+                        writer.println(account.getID());
+                    } else {
+                        writer.println("fail");
+                    }
+                } else if (command.equals("createAccount")) {
+                    //Creates the account
+                    String firstName = reader.readLine();
+                    String lastName = reader.readLine();
+                    int age = Integer.parseInt(reader.readLine());
+                    String username = reader.readLine();
+                    String password = reader.readLine();
+                    String email = reader.readLine();
+                    String phone = reader.readLine();
+                    if (createAccount(firstName, lastName, age, username, password, email, phone)) {
+                        writer.println("success");
+                    } else {
+                        writer.println("fail");
+                        writer.println("Account could not be created because username has already been taken.");
+                    }
+                } else if (command.equals("getAvailableSeats")) {
+                    //Gets avaliable seats
+                    String showID = reader.readLine();
+                    String date = reader.readLine();
+                    ArrayList<Seat> seats = getAvailableSeats(showID, date);
+                    writer.println(seats.size());
+
+                    for (int i = 0; i < seats.size(); i++) {
+                        writer.println(seats.get(i).writingInFile());
+                    }
+                } else if (command.equals("makeReservation")) {
+                    //Make reservation
+                    String username = reader.readLine();
+                    String password = reader.readLine();
+                    Account currentUser = database.getAccountByUsername(username, password);
+                    if (currentUser == null || !currentUser.getPassword().equals(password)) {
+                        writer.println("invalid");
+                        writer.flush();
+                        continue;
+                    }
+                    writer.println("valid");
+                    writer.flush();
+
+                    String showID = reader.readLine();
+                    int numSeats = Integer.parseInt(reader.readLine());
+                    List<String> seatIDs = new ArrayList<>();
+
+                    for (int i = 0; i < numSeats; i++) {
+                        seatIDs.add(reader.readLine());
+                    }
+
+                    String date = reader.readLine();
+                    double totalPrice = 0;
+                    for (int i = 0; i < seatIDs.size(); i++) {
+                        Seat s = database.getSeat(showID, seatIDs.get(i));
+                        if (s == null || !s.isAvailable()) {
+                            writer.println("Seat " + seatIDs.get(i) + " is unavailable.");
+                            return;
+                        }
+                        totalPrice = totalPrice + s.getPrice();
+                    }
+                    writer.println(totalPrice);
+
+                    String payCommand = reader.readLine();
+                    if (!"pay".equals(payCommand)) {
+                        writer.println("cancelled");
+                        return;
+                    }
+
+                    String time = getTime(showID);
+
+                    int reservationID = createReservation(username, password, showID, seatIDs, date, time, totalPrice);
+                    boolean success = paymentManager.processPayment(reservationID, totalPrice);
+
+                    if (!success) {
+                        writer.println("fail");
+                        return;
+                    }
+
+                    if (reservationID != -1) {
+                        writer.println("success");
+                        writer.println(reservationID);
+                    } else {
+                        writer.println("fail");
+                    }
+
+                    for (String seatID : seatIDs) {
+                        database.updateSeatAvailability(showID, seatID, false);
+                    }
+                } else if (command.equals("cancelReservation")) {
+                    //Canceling reservation
+                    int reservationID = Integer.parseInt(reader.readLine());
+                    if (cancelReservation(reservationID)) {
+                        writer.println("success");
+                    } else {
+                        writer.println("fail");
+                    }
+                } else if (command.equals("getReservations")) {
+                    //Getting users reservation
+                    String user = reader.readLine();
+                    ArrayList<Reservations> reservations = getReservationsByAccount(user);
+                    writer.println(reservations.size());
+
+                    for (int i =0; i < reservations.size(); i++) {
+                        writer.println(reservations.get(i).toString());
+                    }
+                } else if (command.equals("deleteAccount")) {
+                    //Deleting account
+                    String id = reader.readLine();
+                    String password = reader.readLine();
+                    String user = reader.readLine();
+                    if (deleteAccount(id, user, password)) {
+                        writer.println("success");
+                    } else {
+                        writer.println("fail");
+                    }
+                } else if (command.equals("deleteAccountByCredentials")) {
+                    //Deleting account using username and password only
+                    String username = reader.readLine();
+                    String password = reader.readLine();
+                    // First, fetch the account using getAccountByUsername
+                    Account account = database.getAccountByUsername(username, password);
+                    if (account != null) {
+                        // Get the userID from the account
+                        String userID = account.getID();
+                        // Now delete the account using the userID
+                        boolean deleted = database.deleteAccount(userID, username, password);
+                        if (deleted) {
+                            writer.println("success");
+                            writer.flush();
+                        } else {
+                            writer.println("fail");
+                            writer.flush();
+                        }
+                    } else {
+                        writer.println("fail");
+                        writer.flush();
+                    }
+                } else if (command.equals("getALlConcerts")) {
+                    //Getting all concerts
+                    ArrayList<String> concerts = getAllConcerts();
+                    writer.println(concerts.size());
+
+                    for (int i = 0; i < concerts.size(); i++) {
+                        writer.println(concerts.get(i));
+                    }
+                } else if (command.equals("createConcert")) {
+                    //Creating a concert
+                    String name = reader.readLine();
+                    String date = reader.readLine();
+                    String time = reader.readLine();
+                    if (createConcert(name, date, time)) {
+                        writer.println("success");
+                    } else {
+                        writer.println("fail");
+                    }
+                } else if (command.equals("disconnect")) {
+                    run = false;
+                } else {
+                    writer.println("Unknown command: " + command);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+                if (writer != null) {
+                    writer.close();
+                }
+
+                socket.close();
+                System.out.println("Client disconnected");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    @Test
-    public void testGetSeatNotFound() {
-        // attempt to retrieve a non-existent seat
-        Seat retrievedSeat = chart.getSeat("Z99");
-        assertNull(retrievedSeat, "getSeat should return null for a non-existent seat ID.");
+    //Calls the database
+    @Override
+    public boolean login(String username, String password) {
+        return database.loginIntoAccount(username, password);
     }
 
-    @Test
-    public void testGetAllSeats() {
-        List<Seat> allSeats = chart.getAllSeats();
-        assertNotNull(allSeats, "getAllSeats should not return null.");
-        assertEquals(3, allSeats.size(), "The list returned should contain all 3 seats.");
-        assertTrue(allSeats.contains(seatA1), "The list must contain seat A1.");
-        assertTrue(allSeats.contains(seatC3), "The list must contain seat C3.");
+    //Calls the database
+    @Override
+    public String getTime(String concertID) {
+        return database.getTime(concertID);
     }
 
-    // -- RESERVATION AND CANCELLATION TESTS --
-
-    @Test
-    public void testReserveSeatSuccess() {
-        assertTrue(seatA1.isAvailable(), "Seat A1 should start available");
-
-        // reserve the seat
-        boolean success = chart.reserveSeat("A1");
-
-        assertTrue(success, "reserveSeat should return true on successful reservation.");
-        assertFalse(seatA1.isAvailable(), "Seat A1 must be set to unavailable after reservation.");
+    //Calls the database
+    @Override
+    public ArrayList<String> getAllConcerts() {
+        return database.getAllConcerts();
     }
 
-    @Test
-    public void testReserveSeatFailureAlreadyReserved() {
-        // first reserve the seat
-        seatB2.setAvailable(false);
-
-        // attempt to reserve it again
-        boolean success = chart.reserveSeat("B2");
-
-        assertFalse(success, "reserveSeat should return false when the seat is already reserved.");
-        assertFalse(seatB2.isAvailable(), "Seat B2 availability status should remain false.");
+    //Calls the database
+    @Override
+    public boolean createConcert(String name, String date, String time) {
+        return database.createConcert(name, date, time);
     }
 
-    @Test
-    public void testReserveSeatFailureNonExistentID() {
-        // this test relies on the original getSeat logic returning null for non-existent IDs.
-        // NOTE: the current implementation of reserveSeat will throw a NullPointerException
-        assertThrows(NullPointerException.class, () -> chart.reserveSeat("Z99"),
-                "Reserving a non-existent seat must throw NullPointerException.");
+    //Calls the database
+    @Override
+    public boolean createAccount(String firstName, String lastName, int age, String username,
+                                 String password, String email, String phoneNumber) {
+        return database.createAccount(firstName, lastName, age, username, password, email, phoneNumber);
     }
 
-    @Test
-    public void testCancelSeatSuccess() {
-        // first reserve the seat so it can be cancelled
-        seatC3.setAvailable(false);
-        assertFalse(seatC3.isAvailable(), "Seat C3 should start unavailable for this cancellation test.");
-
-        // cancel the seat
-        boolean success = chart.cancelSeat("C3");
-
-        assertTrue(success, "cancelSeat should return true on successful cancellation.");
-        assertTrue(seatC3.isAvailable(), "Seat C3 must be set to available after cancellation.");
+    //Calls the database
+    @Override
+    public boolean deleteAccount(String accountID, String username, String password) {
+        return database.deleteAccount(accountID, username, password);
     }
 
-    @Test
-    public void testCancelSeatFailureAlreadyAvailable() {
-        // seat A1 is available by default
-        assertTrue(seatA1.isAvailable(), "Seat A1 should start available.");
-
-        //attempt to cancel it
-        boolean success = chart.cancelSeat("A1");
-
-        assertFalse(success, "cancelSeat should return false when the seat is already available.");
-        assertTrue(seatA1.isAvailable(), "Seat A1 availability status should remain true.");
+    //Calls the database
+    @Override
+    public Account getAccount(String accountID, String password) {
+        return database.getAccount(accountID, password);
     }
 
-    // -- FILTERING --
+    //Calls the database
+    @Override
+    public int createReservation(String username, String password, String showID, List<String> seatIDs,
+                                 String date, String time, double totalPrice) {
+        Account account = database.getAccountByUsername(username, password);
 
-    @Test
-    public void testAvailableSeatsAllAvailable() {
-        List<Seat> available = chart.getAvailableSeats();
-        assertEquals(3, available.size(), "When all seats are available, the list size should be 3.");
-        assertTrue(available.contains(seatA1));
-        assertTrue(available.contains(seatB2));
-        assertTrue(available.contains(seatC3));
+        if (account == null) {
+            return -1;
+        }
+
+        return database.createReservation(account, showID, seatIDs, date, time, totalPrice);
     }
 
-    @Test
-    public void testGetAvailableSeatsMixedAvailability() {
-        // make B2 unavailable
-        seatB2.setAvailable(false);
-
-        // reserve C3 using the chart method
-        chart.reserveSeat("C3");
-
-        List<Seat> available = chart.getAvailableSeats();
-
-        assertEquals(1, available.size(), "Only seat A1 should be available.");
-        assertTrue(available.contains(seatA1), "The only available seat should be A1.");
-        assertFalse(available.contains(seatB2), "B2 should not be in the available list.");
-        assertFalse(available.contains(seatC3), "C3 should not be in the available list.");
+    //Calls the database
+    @Override
+    public Account getAccountByUsername(String username, String password) {
+        return database.getAccountByUsername(username, password);
     }
 
-    @Test
-    public void testGetAvailableSeatsNoneAvailable() {
-        // reserve all seats
-        chart.reserveSeat("A1");
-        chart.reserveSeat("B2");
-        chart.reserveSeat("C3");
+    //Calls the database
+    @Override
+    public boolean cancelReservation(int reservationID) {
+        return database.cancelReservation(reservationID);
+    }
 
-        List<Seat> available = chart.getAvailableSeats();
+    //Calls the database
+    @Override
+    public ArrayList<Reservations> getReservationsByAccount(String accountID) {
+        return database.getReservationsByAccount(accountID);
+    }
 
-        assertTrue(available.isEmpty(), "When all seats are reserved, the available list should be empty.");
+    //Calls the database
+    @Override
+    public Reservations getReservationByID(int reservationID) {
+        return database.getReservationByID(reservationID);
+    }
+
+    //Calls the database
+    @Override
+    public Seat getSeat(String show, String seatID) {
+        return database.getSeat(show, seatID);
+    }
+
+    //Calls the database
+    @Override
+    public boolean reserveSeat(String show, String seatID) {
+        Seat seat = database.getSeat(show, seatID);
+
+        if (seat != null && seat.isAvailable()) {
+            database.updateSeatAvailability(show, seatID, false);
+            return true;
+        }
+
+        return false;
+    }
+
+    //Calls the database
+    @Override
+    public boolean cancelSeat(String show, String seatID) {
+        Seat seat = database.getSeat(show, seatID);
+
+        if (seat != null && !seat.isAvailable()) {
+            database.updateSeatAvailability(show, seatID, true);
+            return true;
+        }
+
+        return false;
+    }
+
+    //Calls the database
+    @Override
+    public ArrayList<Seat> getAvailableSeats(String showID, String date) {
+        ArrayList<Seat> allSeats = new ArrayList<>();
+        BufferedReader br = null;
+        String name = "Concert" + showID;
+        try {
+            br = new BufferedReader(new FileReader(name));
+            String firstLine = br.readLine();
+            if (firstLine == null) {
+                return allSeats;
+            }
+            String line;
+            while ((line = br.readLine()) != null) {
+                Seat seat = new Seat(line);
+
+                if (seat.isAvailable()) {
+                    allSeats.add(seat);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return allSeats;
+    }
+
+    //Run method
+    public void run() {
+        handleClient(socket);
+    }
+
+    //Starts server
+    public static void main(String[] args) {
+        Server server = new Server();
+        try {
+            ServerSocket serverSocket = new ServerSocket(6767);
+            System.out.println("Server running on port 6767");
+
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client connected");
+
+                Thread thread = new Thread(new Server(clientSocket));
+                thread.start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
