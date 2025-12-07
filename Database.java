@@ -184,7 +184,8 @@ public class Database implements DatabaseInterface {
                 if (!(passWord.equals(password)) || !(userName1.equals(userName)) || !(id.equals(accountID))) {
                     newLines.add(lines.get(i));
                 } else {
-                    boolean isAccountToDelete = userName1.equals(userName) && passWord.equals(password) && id.equals(accountID);
+                    boolean isAccountToDelete = userName1.equals(userName) && 
+                            passWord.equals(password) && id.equals(accountID);
 
                     if (isAccountToDelete) {
                         found = true;
@@ -372,7 +373,8 @@ public class Database implements DatabaseInterface {
             if (cancelledReservation != null) {
                 for (int i = 0; i < cancelledReservation.getSeatIDs().size(); i++) {
                     //This can cause a deadlock so make sure to always have reservationO then seatO
-                    updateSeatAvailability(cancelledReservation.getShowID(), cancelledReservation.getSeatIDs().get(i), true);
+                    updateSeatAvailability(cancelledReservation.getShowID(),
+                            cancelledReservation.getSeatIDs().get(i), true);
                 }
                 try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileR))) {
                     for (int i = 0; i < newLines.size(); i++) {
