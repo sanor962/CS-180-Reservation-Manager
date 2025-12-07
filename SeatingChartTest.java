@@ -167,3 +167,4 @@ class SeatingChartTest {
         assertTrue(available.isEmpty(), "When all seats are reserved, the available list should be empty.");
     }
 }
+
