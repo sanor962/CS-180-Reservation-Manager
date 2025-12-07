@@ -16,3 +16,4 @@ public interface SeatingChartInterface {
     List<Seat> getAvailableSeats();
 
 }
+
