@@ -996,7 +996,7 @@ public class Client implements ClientInterface {
         backButton.addActionListener(e -> showPanel("Menu"));
         bottomPanel.add(backButton);
         makeReservationPanel.add(bottomPanel, BorderLayout.SOUTH);
-        
+
         /*makeReservationPanel = new JPanel(new BorderLayout());
         JPanel mainVBox = new JPanel();
         mainVBox.setLayout(new BoxLayout(mainVBox, BoxLayout.Y_AXIS));
