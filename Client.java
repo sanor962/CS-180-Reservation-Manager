@@ -649,7 +649,7 @@ public class Client implements ClientInterface {
 
                 try {
                     writer.write("deleteAccount\n");
-                    writer.write(account + "\n");
+                    writer.write(accountID + "\n");
                     writer.write(password + "\n");
                     writer.write(username + "\n");
                     writer.flush();
