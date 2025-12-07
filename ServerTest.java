@@ -96,7 +96,7 @@ public class ServerTest {
         String accountID = acc.getID();
 
         // delete the account
-        boolean deleted = server.deleteAccount(accountID,"jane_doe", "securepassword");
+        boolean deleted = server.deleteAccount(accountID, "jane_doe", "securepassword");
         assertTrue(deleted, "Account should be deleted successfully");
 
         // login should fail after deletion
@@ -109,7 +109,8 @@ public class ServerTest {
         assertTrue(created, "Concert should be created successfully.");
 
         ArrayList<String> concerts = server.getAllConcerts();
-        assertTrue(concerts.contains("RockFest,25/12/2025,19:00,1"), "Concert list should contain the created concert.");
+        assertTrue(concerts.contains("RockFest,25/12/2025,19:00,1"),
+                "Concert list should contain the created concert.");
     }
 
     @Test
