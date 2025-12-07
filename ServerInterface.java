@@ -28,3 +28,4 @@ public interface ServerInterface {
     String getTime(String concertID);
     Account getAccountByUsername(String username, String password);
 }
+
