@@ -25,3 +25,4 @@ public interface ReservationsInterface {
     void setReservationID(int reservationID);
     String toString();
 }
+
