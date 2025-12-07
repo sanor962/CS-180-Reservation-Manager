@@ -267,19 +267,19 @@ public class DatabaseTest {
         generatedID = getLatestAccountID();
         Account account = db.getAccount(generatedID, password);
 
-        String showID = "S101";
+        String showID1 = "S101";
         List<String> seatIDs = Arrays.asList("A1", "A2");
         double price = 100.00;
 
         // create and populate necessary seat file
-        String concertSeatFile = "Concert" + showID;
+        String concertSeatFile = "Concert" + showID1;
         try (FileWriter fw = new FileWriter(concertSeatFile)) {
             fw.write("101\n");
             fw.write("A1,A,true,1,50.00\n");
             fw.write("A2,A,true,1,50.00\n");
         }
 
-        int reservationID = db.createReservation(account, showID, seatIDs, "2025-12-01", "19:00", price);
+        int reservationID = db.createReservation(account, showID1, seatIDs, "2025-12-01", "19:00", price);
         assertTrue(reservationID > 0);
 
         Reservations res = db.getReservationByID(reservationID);
@@ -296,18 +296,18 @@ public class DatabaseTest {
         generatedID = getLatestAccountID();
         Account account = db.getAccount(generatedID, password);
 
-        String showID = "S101";
-        String SeatFile = "Concert" + showID;
+        String showID1 = "S101";
+        String seatFile = "Concert" + showID1;
 
         // write the seat data directly to the seats file
-        try (FileWriter fw = new FileWriter(SeatFile)) {
+        try (FileWriter fw = new FileWriter(seatFile)) {
             fw.write("101\n");
             String seatLine = seatId1 + ",A,true,1,50.00";
             fw.write(seatLine + "\n");
         }
 
         // create reservation
-        int resID = db.createReservation(account, showID, Arrays.asList(seatId1), "2025-12-01", "19:00", 50.00);
+        int resID = db.createReservation(account, showID1, Arrays.asList(seatId1), "2025-12-01", "19:00", 50.00);
         //System.out.println("Reservation ID = " + resID);
         // cancel the reservation
         assertTrue(db.cancelReservation(resID), "Cancellation should succeed.");
@@ -316,7 +316,7 @@ public class DatabaseTest {
         assertNull(db.getReservationByID(resID), "Reservation should be removed from file.");
 
         // seat availability should be updated
-        Seat seat = db.getSeat(showID, seatId1);
+        Seat seat = db.getSeat(showID1, seatId1);
         assertNotNull(seat, "Seat should be retrievable from the concert file after modification.");
         assertTrue(seat.isAvailable(), "The cancelled seat should be marked available (true) in the seats file.");
     }
