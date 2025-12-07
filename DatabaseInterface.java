@@ -8,12 +8,12 @@ import java.util.List;
  * @version 11/6/2025
  */
 public interface DatabaseInterface {
-    boolean createAccount(String firstName, String lastName, int age, 
+    boolean createAccount(String firstName, String lastName, int age,
                           String userName, String password, String email, String phoneNumber);
     boolean loginIntoAccount(String username, String password);
     boolean deleteAccount(String accountID, String userName, String password);
     Account getAccount(String accountID, String password);
-    int createReservation(Account account, String showID, List<String> seatIDs, 
+    int createReservation(Account account, String showID, List<String> seatIDs,
                           String date, String time, double totalPrice);
     boolean cancelReservation(int reservationID);
     ArrayList<Reservations> getReservationsByAccount(String accountID);
