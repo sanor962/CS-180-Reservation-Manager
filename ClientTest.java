@@ -125,8 +125,10 @@ public class ClientTest {
         String input = "2\nJohn\nDoe\n25\njohnDoe123\npassword123\njohn@example.com\n1234567890\n3\n";
         client.scanner = new java.util.Scanner(new ByteArrayInputStream(input.getBytes()));
 
+        String[] array = new String[]{"createAccount", "John", "Doe", "25",
+                "johnDoe123", "password123", "john@example.com", "1234567890"};
         // server expects createAccount command
-        mockServer(new String[]{"createAccount", "John", "Doe", "25", "johnDoe123", "password123", "john@example.com", "1234567890"},
+        mockServer(array,
                 new String[]{"success", "null", "null", "null", "null", "null", "null", "null"});
 
         client.connect();
@@ -166,7 +168,8 @@ public class ClientTest {
         client.scanner = new java.util.Scanner(new ByteArrayInputStream(input.getBytes()));
 
         // server expects reservation flow
-        mockServer(new String[]{"makeReservation", "user_test", "pass_test", "show123", "2", "A1", "A2", "03/03/2025", "pay"},
+        mockServer(new String[]{"makeReservation", "user_test", "pass_test", "show123",
+                        "2", "A1", "A2", "03/03/2025", "pay"},
                 new String[]{"150.00", null, null, null, null, null, null, null, "success\nRES123"});
 
         client.connect();
@@ -218,7 +221,8 @@ public class ClientTest {
         client.scanner = new java.util.Scanner(new ByteArrayInputStream(
                 "2\nJohn\nDoe\n25\njohnFail\npassFail\njohn@example.com\n1234567890\n3\n".getBytes()));
 
-        mockServer(new String[]{"createAccount", "John", "Doe", "25", "johnFail", "passFail", "john@example.com", "1234567890"},
+        mockServer(new String[]{"createAccount", "John", "Doe", "25", "johnFail",
+                        "passFail", "john@example.com", "1234567890"},
                 new String[]{"failure", null, null, null, null, null, null, null});
 
         client.connect();
@@ -231,7 +235,8 @@ public class ClientTest {
     @Test
     public void testMakeReservationFailure() {
         client.account = "user_test";
-        client.scanner = new java.util.Scanner(new ByteArrayInputStream("2\npass_test\nshowX\n03/03/2025\n1\nA1\ny\n8\n3\n".getBytes()));
+        client.scanner = new java.util.Scanner(
+                new ByteArrayInputStream("2\npass_test\nshowX\n03/03/2025\n1\nA1\ny\n8\n3\n".getBytes()));
 
         mockServer(new String[]{"makeReservation", "user_test", "pass_test", "showX", "1", "A1", "03/03/2025", "pay"},
                 new String[]{"failure", null, null, null, null, null, "failure"});
