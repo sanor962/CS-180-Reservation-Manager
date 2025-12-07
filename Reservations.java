@@ -167,3 +167,4 @@ public class Reservations implements ReservationsInterface, Serializable {
                 totalPrice;
     }
 }
+
