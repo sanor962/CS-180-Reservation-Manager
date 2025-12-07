@@ -109,7 +109,7 @@ public class Server implements ServerInterface, Runnable {
                         Seat s = database.getSeat(showID, seatIDs.get(i));
                         if (s == null || !s.isAvailable()) {
                             writer.println("Seat " + seatIDs.get(i) + " is unavailable.");
-                            return;
+                            continue;
                         }
                         totalPrice = totalPrice + s.getPrice();
                     }
@@ -118,7 +118,7 @@ public class Server implements ServerInterface, Runnable {
                     String payCommand = reader.readLine();
                     if (!"pay".equals(payCommand)) {
                         writer.println("cancelled");
-                        return;
+                        continue;
                     }
 
                     String time = getTime(showID);
@@ -128,7 +128,7 @@ public class Server implements ServerInterface, Runnable {
 
                     if (!success) {
                         writer.println("fail");
-                        return;
+                        continue;
                     }
 
                     if (reservationID != -1) {
