@@ -21,6 +21,7 @@ public class ServerTest {
     private static String oSeats;
     private static String oReservations;
     private static String oConcerts;
+    private static String oConcert1;
 
     @BeforeAll
     public static void backupData() throws IOException {
@@ -28,6 +29,7 @@ public class ServerTest {
         oSeats = readFileIfExists("seats.txt");
         oReservations = readFileIfExists("reservations.txt");
         oConcerts = readFileIfExists("concert.txt");
+        oConcert1 = readFileIfExists("Concert1");
     }
 
     @AfterAll
@@ -36,6 +38,16 @@ public class ServerTest {
         Files.writeString(Path.of("seats.txt"), oSeats);
         Files.writeString(Path.of("reservations.txt"), oReservations);
         Files.writeString(Path.of("concert.txt"), oConcerts);
+        if (oConcert1 != null) {
+            Files.writeString(Path.of("Concert1"), oConcert1);
+        }
+    }
+
+    @AfterEach
+    public void restoreAfterEachTest() throws IOException {
+        if (oConcert1 != null) {
+            Files.writeString(Path.of("Concert1"), oConcert1);
+        }
     }
 
     private static String readFileIfExists(String filename) throws IOException {
