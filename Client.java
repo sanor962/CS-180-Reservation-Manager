@@ -341,7 +341,9 @@ public class Client implements ClientInterface {
             } else {
                 writer.write("cancel\n");
                 writer.flush();
+                String cancelResponse = reader.readLine();
                 JOptionPane.showMessageDialog(reservationPanel, "Booking cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                //showPanel("Menu");
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(reservationPanel, "Error booking reservation: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -424,7 +426,7 @@ public class Client implements ClientInterface {
 
                         if ("success".equals(response)) {
                             JOptionPane.showMessageDialog(reservationListPanel, "Your reservation has been cancelled.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                            refreshReservationListPanel();
+                            //refreshReservationListPanel();
                         } else {
                             JOptionPane.showMessageDialog(reservationListPanel, "Cancellation failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
@@ -439,7 +441,7 @@ public class Client implements ClientInterface {
 
     //Gets the latest data for reservations
     private void refreshReservationListPanel() {
-        JTextArea reservationArea = (JTextArea)reservationListPanel.getClientProperty("reservationArea");
+        /*JTextArea reservationArea = (JTextArea)reservationListPanel.getClientProperty("reservationArea");
 
         if (reservationArea == null) {
             //System.out.println("null");
@@ -517,6 +519,77 @@ public class Client implements ClientInterface {
         } catch (Exception ex) {
             String error = "Error loading reservations: " + ex.getMessage();
             //System.out.println(error);
+            ex.printStackTrace();
+            reservationArea.setText(error);
+        }*/
+        JTextArea reservationArea = (JTextArea)reservationListPanel.getClientProperty("reservationArea");
+
+        if (reservationArea == null) {
+            JOptionPane.showMessageDialog(reservationListPanel, "Error: Reservation area not initialized.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        reservationArea.setText("Loading reservations...");
+
+        try {
+            writer.write("getReservations\n");
+            writer.write(accountID + "\n");
+            writer.flush();
+
+            String count = reader.readLine();
+
+            if (count == null || count.trim().isEmpty()) {
+                reservationArea.setText("Error: No response from server.");
+                return;
+            }
+
+            int num = Integer.parseInt(count.trim());
+
+            if (num == 0) {
+                reservationArea.setText("You have no reservations.");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                if (num > 1) {
+                    sb.append("You have ").append(num).append(" reservations:\n\n");
+                } else {
+                    sb.append("You have ").append(num).append(" reservation:\n\n");
+                }
+
+                for (int i = 0; i < num; i++) {
+                    String reservationDetails = reader.readLine();
+
+                    if (reservationDetails == null) {
+                        sb.append("Error reading reservation ").append(i+1).append("\n\n");
+                        continue;
+                    }
+
+                    String[] parts = reservationDetails.split(",");
+
+                    if (parts.length >= 7) {
+                        String reservationID = parts[0];
+                        String showID = parts[2];
+                        String seatIDs = parts[3].replace("|", ", ");
+                        String date = parts[4];
+                        String time = parts[5];
+                        String totalPrice = parts[6];
+
+                        sb.append("+++++++++++++++++++++++++++++++++++++++++\n");
+                        sb.append("Reservation ID: ").append(reservationID).append("\n");
+                        sb.append("Show ID: ").append(showID).append("\n");
+                        sb.append("Date: ").append(date).append(" at ").append(time).append("\n");
+                        sb.append("Seats: ").append(seatIDs).append("\n");
+                        sb.append("Total Price: $").append(totalPrice).append("\n");
+                        sb.append("+++++++++++++++++++++++++++++++++++++++++\n\n");
+                    } else {
+                        sb.append("Reservation ").append(i+1).append(":\n");
+                        sb.append(reservationDetails).append("\n\n");
+                    }
+                }
+
+                reservationArea.setText(sb.toString());
+            }
+        } catch (Exception ex) {
+            String error = "Error loading reservations: " + ex.getMessage();
             ex.printStackTrace();
             reservationArea.setText(error);
         }
@@ -701,14 +774,10 @@ public class Client implements ClientInterface {
     //Gets latest concert data
     private void refreshViewConcertsPanel() {
         JTextArea concertsArea = (JTextArea)viewConcertsPanel.getClientProperty("concertsArea");
-
         if (concertsArea == null) {
-            //System.out.println("Dnull");
             return;
         }
-
         concertsArea.setText("Loading concerts...");
-
         try {
             writer.write("getALlConcerts\n");
             writer.flush();
@@ -719,20 +788,34 @@ public class Client implements ClientInterface {
             } else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Available Concerts:\n\n");
+                int validConcerts = 0;
 
                 for (int i = 0; i < count; i++) {
                     String line = reader.readLine();
                     String[] parts = line.split(",");
+
                     if (parts.length >= 4) {
                         String name = parts[0];
                         String date = parts[1];
                         String time = parts[2];
                         String concertID = parts[3];
-                        sb.append(concertID).append(". ").append(name)
-                                .append(" on ").append(date).append(" at ").append(time).append("\n");
+
+                        if (date.contains("/") && time.contains(":") && !name.trim().isEmpty()) {
+                            sb.append("+++++++++++++++++++++++++++++++++++++++++\n");
+                            sb.append("Concert ID: ").append(concertID).append("\n");
+                            sb.append("Name: ").append(name).append("\n");
+                            sb.append("Date: ").append(date).append(" at ").append(time).append("\n");
+                            sb.append("+++++++++++++++++++++++++++++++++++++++++\n\n");
+                            validConcerts++;
+                        }
                     }
                 }
-                concertsArea.setText(sb.toString());
+
+                if (validConcerts == 0) {
+                    concertsArea.setText("No valid concerts available.");
+                } else {
+                    concertsArea.setText(sb.toString());
+                }
             }
         } catch (Exception ex) {
             concertsArea.setText("Error loading concerts: " + ex.getMessage());
