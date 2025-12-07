@@ -79,7 +79,7 @@ java ConcertTest
 
 ## GTA and Submission Information
 - When trying to submit on Vocareum, cloning the Github was not working as I was not able to sign in properly so I (Saanvi Verma) uploaded the files instead. One of the TA's told me to add our GTA to our Github repository to ensure that they could see our files.
-- Saanvi Verma will submit the video presentation on Brightspace.
+- Arav Nair will submit the video presentation on Brightspace.
 - Shalini Murthula will submit the report on Brightspace.
 
 ## Testing Information
@@ -113,34 +113,34 @@ java ConcertTest
 ## Class Descriptions
 
 ### Database.java
-**Purpose:** 
+**Purpose:**
 Main database manager that handles all the data storage and retrieval (in text files) for the concert reservation system. Manages four text files: accounts.txt, seats.txt, reservations.txt, concert.txt. Thread safety has been implemented within Database.java. Database is responsible for reading from and writing to files, while SeatingChart manages seats in memory.
 
 
 **Key Functionality:**
 - **Account Management:**
-  - 'createAccount()' - Creates new account for the user with a unique ID.
-  - 'loginIntoAccount()' - Validates username and password so the user can login.
-  - 'deleteAccount()' - Deletes the user's account through their ID, username, and password.
-  - 'getAccount()' - Retrieves the user's account.
+    - 'createAccount()' - Creates new account for the user with a unique ID.
+    - 'loginIntoAccount()' - Validates username and password so the user can login.
+    - 'deleteAccount()' - Deletes the user's account through their ID, username, and password.
+    - 'getAccount()' - Retrieves the user's account.
 
 - **Reservation Management:**
-  - 'createReservation()' - Books seats for a concert and generates a unique reservation ID each time.
-  - 'cancelReservation()' - Cancels the reservation and frees up seats used for the concert.
-  - 'getReservationsByAccount()' - Retrieves all reservations for a user through their ID.
-  - 'getReservationByID()' - Finds the user's specific reservation by their reservation ID.
+    - 'createReservation()' - Books seats for a concert and generates a unique reservation ID each time.
+    - 'cancelReservation()' - Cancels the reservation and frees up seats used for the concert.
+    - 'getReservationsByAccount()' - Retrieves all reservations for a user through their ID.
+    - 'getReservationByID()' - Finds the user's specific reservation by their reservation ID.
 
 - **Concert Management:**
-  - 'createConcert()' - Creates a new concert with a unique ID.
-  - 'getAllConcerts()' - Retrieves all the concerts in the file.
-  - 'getTime()' - Gets a concert time by unique concert ID.
+    - 'createConcert()' - Creates a new concert with a unique ID.
+    - 'getAllConcerts()' - Retrieves all the concerts in the file.
+    - 'getTime()' - Gets a concert time by unique concert ID.
 
 - **Seat Management (Private Helpers):**
-  - 'isSeatAvailable()' - Checks if a seat is available to book.
-  - 'updateSeatAvailability()' - Updates seat availability status based on the parameter.
+    - 'isSeatAvailable()' - Checks if a seat is available to book.
+    - 'updateSeatAvailability()' - Updates seat availability status based on the parameter.
 
 - **Seat Management**
-  - 'getSeat()' - Retrieves seat by the seat ID.
+    - 'getSeat()' - Retrieves seat by the seat ID.
 
 **Testing Done:**
 - Tested account creation with duplicate username prevention
@@ -163,8 +163,8 @@ Main database manager that handles all the data storage and retrieval (in text f
 ---
 
 ### Client.java
-**Purpose:** 
-Client class that communicates with a user (through the GUI) and handles all the different commands per menu. Ensures that the user enters an appropriate answer per question and communicates with the Server class for confirmation on actions taken by the user. 
+**Purpose:**
+Client class that communicates with a user (through the GUI) and handles all the different commands per menu. Ensures that the user enters an appropriate answer per question and communicates with the Server class for confirmation on actions taken by the user.
 
 ### Fields
 - 'boolean run' - To confirm if the Client is running
@@ -206,7 +206,7 @@ Client class that communicates with a user (through the GUI) and handles all the
 ---
 
 ### Server.java
-**Purpose:** 
+**Purpose:**
 Server class communicates with the Client class and uses the Database and PaymentManager to handle all the different commands given by the Client class. Server has been threaded properly.
 
 ### Fields
