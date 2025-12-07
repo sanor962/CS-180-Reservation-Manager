@@ -76,3 +76,4 @@ public class Seat implements SeatInterface, Serializable {
         return getSeatID() + "," + getRow() + "," + isAvailable() + "," + getNumber() + "," + getPrice();
     }
 }
+
