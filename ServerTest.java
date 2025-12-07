@@ -1,4 +1,6 @@
 import org.junit.jupiter.api.*;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,6 +17,34 @@ import java.nio.file.Path;
  */
 public class ServerTest {
     private Server server;
+    private static String oAccounts;
+    private static String oSeats;
+    private static String oReservations;
+    private static String oConcerts;
+
+    @BeforeAll
+    public static void backupData() throws IOException {
+        oAccounts = readFileIfExists("accounts.txt");
+        oSeats = readFileIfExists("seats.txt");
+        oReservations = readFileIfExists("reservations.txt");
+        oConcerts = readFileIfExists("concert.txt");
+    }
+
+    @AfterAll
+    public static void restoreData() throws IOException {
+        Files.writeString(Path.of("accounts.txt"), oAccounts);
+        Files.writeString(Path.of("seats.txt"), oSeats);
+        Files.writeString(Path.of("reservations.txt"), oReservations);
+        Files.writeString(Path.of("concert.txt"), oConcerts);
+    }
+
+    private static String readFileIfExists(String filename) throws IOException {
+        Path path = Path.of(filename);
+        if (Files.exists(path)) {
+            return Files.readString(path);
+        }
+        return "";
+    }
 
     @BeforeEach
     public void setup() throws Exception {
